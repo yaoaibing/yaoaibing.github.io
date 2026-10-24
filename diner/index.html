@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=39228f85-9a23-46a6-ae00-492c44dae3ec
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>喵喵食堂 · 猫咪餐厅经营</title>
+<meta name="description" content="喵喵食堂:接单、烹饪、上菜,经营你的猫咪餐厅!解锁菜谱、升级设施、提升口碑星级,看你的店能开多大!">
+<meta property="og:title" content="喵喵食堂 · 猫咪餐厅经营">
+<meta property="og:description" content="8道菜谱、6张餐桌、贵宾猫与口碑星级,经营你的猫咪食堂!">
+<meta name="theme-color" content="#f7ecd7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8D%9C%3C/text%3E%3C/svg%3E">
+<style>html,body{margin:0;padding:0;background:#2a1c10;min-height:100%;-webkit-tap-highlight-color:transparent}</style>
+</head>
+<body>
+<style>
+/* ===== 喵喵食堂 · 自包含样式 ===== */
+#d-root{display:block;max-width:100%;font-family:-apple-system,'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei',system-ui,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+#d-root *{box-sizing:border-box;margin:0;padding:0}
+#d-root button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+#d-stage{position:relative;padding:28px 14px 36px;display:flex;justify-content:center;overflow:hidden;
+  background:radial-gradient(circle at 1px 1px,#3a2a20 1.2px,transparent 1.6px) 0 0/22px 22px}
+#d-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 0%,rgba(255,170,80,.13),transparent 70%);pointer-events:none}
+#d-phone{position:relative;width:min(416px,100%);height:760px;background:#141414;border-radius:38px;padding:10px;
+  box-shadow:0 26px 60px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.06)}
+#d-app{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;background:#f7ecd7}
+#d-cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+@media (max-width:440px){#d-stage{padding:8px 4px 16px}#d-phone{height:calc(100dvh - 24px);min-height:600px;border-radius:26px;padding:7px}#d-app{border-radius:20px}}
+
+/* HUD */
+#d-hud{position:absolute;top:0;left:0;right:0;z-index:6;pointer-events:none;padding:9px 10px 0;display:none}
+#d-hud.show{display:block}
+#d-hudrow{display:flex;align-items:center;gap:6px}
+#d-coinchip{background:rgba(60,40,20,.72);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:900;color:#ffe08a}
+#d-daychip{background:rgba(60,40,20,.72);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:800;color:#fff}
+#d-satchip{flex:1;background:rgba(60,40,20,.72);border-radius:10px;padding:5px 9px;display:flex;align-items:center;gap:5px;min-width:0}
+#d-satbar{flex:1;height:7px;border-radius:4px;background:rgba(0,0,0,.4);overflow:hidden}
+#d-satfill{height:100%;width:70%;background:linear-gradient(90deg,#fb7185,#fbbf24,#4ade80);transition:width .4s}
+#d-stars{font-size:10px;color:#fde047;flex:none;letter-spacing:1px}
+#d-pausebtn{pointer-events:auto;width:34px;height:29px;border-radius:10px;background:rgba(60,40,20,.72);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none}
+#d-daybar{margin-top:6px;height:6px;border-radius:4px;background:rgba(60,40,20,.35);overflow:hidden}
+#d-dayfill{height:100%;width:0%;background:linear-gradient(90deg,#fbbf24,#fb923c)}
+#d-goldfly{position:absolute;top:14px;left:12px;z-index:7;pointer-events:none}
+
+/* 浮层 */
+.d-ov{position:absolute;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(30,20,12,.84);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:18px;text-align:center;color:#fff}
+.d-ov.show{display:flex}
+.d-btn{display:block;width:min(250px,84%);padding:13px 10px;border-radius:14px;font-size:15px;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(180deg,#fb923c,#ea580c);color:#3d1503;box-shadow:0 4px 0 #7c2d12,0 8px 18px rgba(0,0,0,.4);transition:transform .08s}
+.d-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #7c2d12}
+.d-btn.green{background:linear-gradient(180deg,#4ade80,#16a34a);color:#052e12;box-shadow:0 4px 0 #14532d,0 8px 18px rgba(0,0,0,.4)}
+.d-btn.blue{background:linear-gradient(180deg,#60a5fa,#2563eb);color:#0a1e3d;box-shadow:0 4px 0 #1e3a8a,0 8px 18px rgba(0,0,0,.4)}
+.d-btn.ghost{background:rgba(255,255,255,.12);color:#e5e7eb;box-shadow:0 4px 0 rgba(0,0,0,.4)}
+.d-btn.red{background:linear-gradient(180deg,#f87171,#dc2626);color:#3d0505;box-shadow:0 4px 0 #7f1d1d,0 8px 18px rgba(0,0,0,.4)}
+.d-stack{display:flex;flex-direction:column;gap:12px;align-items:center;width:100%}
+
+/* 主菜单 */
+#d-menu .d-logo{font-size:46px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.4));animation:dbob 2.4s ease-in-out infinite}
+@keyframes dbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+#d-menu h1{font-size:36px;font-weight:900;letter-spacing:5px;
+  background:linear-gradient(180deg,#fff,#fcd34d 55%,#f59e0b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 3px 0 rgba(61,21,3,.9)) drop-shadow(0 8px 16px rgba(0,0,0,.5))}
+#d-menu .d-sub{font-size:10px;letter-spacing:4px;color:#fcd34d;margin:6px 0 24px;font-weight:700}
+#d-menustats{margin-top:20px;font-size:11px;color:#c7b299;line-height:2}
+#d-menustats b{color:#ffe08a;font-weight:800}
+.d-title-anim{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+.d-title-anim i{position:absolute;bottom:-26px;font-size:17px;opacity:.3;animation:dfloat linear infinite;font-style:normal}
+@keyframes dfloat{from{transform:translateY(0) rotate(-10deg)}to{transform:translateY(-830px) rotate(12deg)}}
+
+/* 商店 */
+#d-shop h2{font-size:21px;font-weight:900;letter-spacing:3px;margin-bottom:2px}
+#d-shop .d-sub2,#d-summary .d-sub2{font-size:11px;color:#c7b299;margin-bottom:10px}
+#d-shoptabs{display:flex;gap:8px;margin-bottom:10px}
+#d-shoptabs button{flex:1;padding:9px;border-radius:11px;font-size:13px;font-weight:800;background:rgba(255,255,255,.1);color:#e7d5b8}
+#d-shoptabs button.on{background:linear-gradient(180deg,#fbbf24,#d97706);color:#3d1503}
+#d-shoplist{width:min(340px,96%);max-height:56vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;scrollbar-width:none;padding:2px}
+#d-shoplist::-webkit-scrollbar{display:none}
+.d-uprow{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;text-align:left}
+.d-upic{width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:21px;flex:none}
+.d-upm{flex:1;min-width:0}
+.d-upm b{font-size:13px;display:block}
+.d-upm i{font-style:normal;font-size:10px;color:#c7b299;display:block;margin-top:2px;line-height:1.5}
+.d-pips{display:flex;gap:3px;margin-top:4px}
+.d-pips u{width:13px;height:5px;border-radius:3px;background:rgba(255,255,255,.16);text-decoration:none}
+.d-pips u.on{background:#ffe08a}
+.d-buy{flex:none;padding:8px 12px;border-radius:10px;font-size:11px;font-weight:800;background:#ffe08a;color:#4a2a08;box-shadow:0 3px 0 #92650a}
+.d-buy:disabled{background:rgba(255,255,255,.14);color:#9ca3af;box-shadow:none}
+.d-buy.max{background:rgba(255,224,138,.25);color:#ffe08a;box-shadow:none}
+.d-locknote{font-size:9px;color:#f87171;display:block;margin-top:2px}
+
+/* 日结 */
+#d-summary .d-big{font-size:52px;line-height:1;margin-bottom:4px}
+#d-sumstars{font-size:26px;letter-spacing:4px;margin:6px 0 12px;color:#fde047}
+#d-sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(300px,92%);margin-bottom:16px}
+.d-cell{background:rgba(255,255,255,.07);border-radius:12px;padding:10px 6px}
+.d-cell i{font-style:normal;font-size:10px;color:#c7b299;display:block}
+.d-cell b{font-size:17px;font-weight:900;display:block;margin-top:3px;font-variant-numeric:tabular-nums}
+.d-cell b.gold{color:#ffe08a}
+
+#d-toast{position:absolute;left:50%;bottom:66px;transform:translateX(-50%) translateY(8px);background:rgba(30,20,12,.88);color:#fff;
+  font-size:12px;font-weight:600;padding:8px 16px;border-radius:11px;opacity:0;transition:all .25s;z-index:30;pointer-events:none;max-width:86%}
+#d-toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){#d-root *{animation:none!important;transition:none!important}}
+</style>
+
+<div id="d-root">
+ <div id="d-stage">
+  <div id="d-phone">
+   <div id="d-app">
+    <canvas id="d-cv"></canvas>
+
+    <div id="d-hud">
+      <div id="d-hudrow">
+        <span id="d-coinchip">🪙 0</span>
+        <span id="d-daychip">第1天</span>
+        <span id="d-satchip"><span id="d-satbar"><span id="d-satfill" style="display:block"></span></span><span id="d-stars">★★★</span></span>
+        <button id="d-pausebtn" type="button" aria-label="暂停">⏸</button>
+      </div>
+      <div id="d-daybar"><div id="d-dayfill"></div></div>
+    </div>
+
+    <!-- 主菜单 -->
+    <div class="d-ov show" id="d-menu">
+      <div class="d-title-anim" id="d-tanim"></div>
+      <div class="d-logo">🍜</div>
+      <h1>喵喵食堂</h1>
+      <div class="d-sub">— MEOW DINER —</div>
+      <div class="d-stack">
+        <button class="d-btn" id="d-open" type="button">🔔 开始营业</button>
+        <button class="d-btn blue" id="d-shopbtn" type="button">🏪 商店·菜单</button>
+        <button class="d-btn ghost" id="d-mute" type="button">🔊 音效</button>
+      </div>
+      <div id="d-menustats"></div>
+    </div>
+
+    <!-- 商店 -->
+    <div class="d-ov" id="d-shop">
+      <h2>🏪 喵喵商店</h2>
+      <div class="d-sub2">金币 = 💰 <span id="d-shopgold" style="color:#ffe08a;font-weight:900">0</span></div>
+      <div id="d-shoptabs">
+        <button class="on" data-tab="fac" type="button">🍳 设施</button>
+        <button data-tab="menu" type="button">📖 菜单</button>
+      </div>
+      <div id="d-shoplist"></div>
+      <button class="d-btn green" id="d-shopback" type="button">返 回</button>
+    </div>
+
+    <!-- 日结 -->
+    <div class="d-ov" id="d-summary">
+      <div class="d-big">🌙</div>
+      <h2 id="d-sumtitle">第 1 天 · 打烊啦</h2>
+      <div id="d-sumstars"></div>
+      <div id="d-sumgrid">
+        <div class="d-cell"><i>今日营业额</i><b class="gold" id="d-sumearn">0</b></div>
+        <div class="d-cell"><i>接待客人</i><b id="d-sumserve">0</b></div>
+        <div class="d-cell"><i>气跑客人</i><b id="d-sumangry">0</b></div>
+        <div class="d-cell"><i>打烊奖金</i><b class="gold" id="d-sumbonus">0</b></div>
+      </div>
+      <div class="d-stack">
+        <button class="d-btn blue" id="d-sumshop" type="button">🏪 去商店补货</button>
+        <button class="d-btn" id="d-nextday" type="button">☀️ 开始第 2 天</button>
+      </div>
+    </div>
+
+    <!-- 暂停 -->
+    <div class="d-ov" id="d-pause">
+      <h2>⏸ 暂停中</h2>
+      <div class="d-sub2">今日营业额 <span id="d-pauseearn" style="color:#ffe08a;font-weight:900">0</span></div>
+      <div class="d-stack">
+        <button class="d-btn" id="d-resume" type="button">继续营业</button>
+        <button class="d-btn ghost" id="d-mute2" type="button">🔊 音效</button>
+        <button class="d-btn red" id="d-closeday" type="button">提前打烊</button>
+      </div>
+    </div>
+
+    <div id="d-toast" role="status"></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ================= 基础 ================= */
+var TAU=Math.PI*2;
+function el(id){return document.getElementById(id)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function rf(a,b){return a+Math.random()*(b-a)}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function d2(ax,ay,bx,by){var dx=ax-bx,dy=ay-by;return dx*dx+dy*dy}
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function toast(msg){var t=el('d-toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show')},2100)}
+
+/* ================= 存档 ================= */
+var SV={coins:0,day:1,sat:65,eq:{stove:1,cook:0,table:2,decor:0,maid:0},
+  menu:[true,false,false,false,false,false,false,false],
+  stats:{days:0,served:0,angry:0,earned:0},tut:{order:0,serve:0},mute:false};
+function loadSV(){try{var s=localStorage.getItem('diner_save');if(!s)return;var o=JSON.parse(s);
+  SV.coins=o.coins|0;SV.day=Math.max(1,o.day|0);SV.sat=clamp(o.sat|0,10,100);SV.mute=!!o.mute;
+  var i;if(o.eq)for(i in SV.eq)SV.eq[i]=o.eq[i]|0;
+  if(o.menu)for(i=0;i<8;i++)SV.menu[i]=!!o.menu[i];
+  if(o.stats)for(i in SV.stats)SV.stats[i]=o.stats[i]|0;
+  if(o.tut)for(i in SV.tut)SV.tut[i]=o.tut[i]|0;
+}catch(e){}}
+function saveSV(){try{localStorage.setItem('diner_save',JSON.stringify(SV))}catch(e){}}
+loadSV();
+
+/* ================= 音效 ================= */
+var AC=null;
+function actx(){try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function beep(f,dur,type,vol,slide){if(SV.mute)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'square';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function jingle(ns,gap,type){if(SV.mute)return;for(var i=0;i<ns.length;i++)(function(n,i){setTimeout(function(){beep(n[0],n[1]||.09,type||'square',.06,n[2])},i*(gap||85))})(ns[i],i)}
+function meow(){if(SV.mute)return;var f=rf(560,760);beep(f,.14,'triangle',.05,f*1.5);setTimeout(function(){beep(f*1.2,.1,'triangle',.04,f*.9)},110)}
+function ding(){beep(1318,.09,'sine',.06);setTimeout(function(){beep(1760,.12,'sine',.05)},90)}
+function coinS(){beep(880,.05,'square',.035,1320)}
+
+/* ================= 画布 ================= */
+var cv=el('d-cv'),ctx=cv.getContext('2d');
+var W=390,H=700,DPR=1;
+function fit(){var app=el('d-app');W=app.clientWidth;H=app.clientHeight;DPR=Math.min(2,window.devicePixelRatio||1);
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0)}
+window.addEventListener('resize',function(){fit()});
+
+/* ================= 数据表 ================= */
+var DISH=[
+ {name:'小鱼饼干',price:14,time:3.0,day:1,cost:0},
+ {name:'猫爪布丁',price:22,time:3.6,day:2,cost:160},
+ {name:'香煎三文鱼',price:27,time:4.5,day:2,cost:220},
+ {name:'鲷鱼烧',price:31,time:4.0,day:3,cost:300},
+ {name:'豚骨拉面',price:40,time:6.0,day:3,cost:420},
+ {name:'元气咖喱饭',price:48,time:6.5,day:4,cost:620},
+ {name:'星空冷饮',price:36,time:3.2,day:5,cost:760},
+ {name:'传说套餐',price:92,time:9.0,day:6,cost:1500}];
+var FAC=[
+ {k:'stove',icon:'🍳',name:'新增灶台',max:3,costs:[0,500,1500],d:'同时烹饪的菜品数'},
+ {k:'cook',icon:'🔥',name:'猛火灶',max:4,base:150,d:'烹饪速度 +20%/级'},
+ {k:'table',icon:'🪑',name:'新增餐桌',max:6,costs:[0,0,300,800,1600,3000],d:'能接待更多客人'},
+ {k:'decor',icon:'🌸',name:'温馨装修',max:4,base:200,d:'客人耐心 +15%、小费 +3% /级'},
+ {k:'maid',icon:'🐈',name:'侍者小猫',max:2,costs:[0,1000,2600],d:'自动帮你上菜(14s/10s 一道)'}];
+var CATPAL=[
+ {b:'#f6d7a8',s:'#e0a86a',e:'#5b4632'},{b:'#f5f0e6',s:'#d9cbb2',e:'#7a6a52'},
+ {b:'#3d3a38',s:'#26241f',e:'#ffd76e'},{b:'#f0a860',s:'#d17f3a',e:'#4a3520'},
+ {b:'#c9c2b8',s:'#a89f92',e:'#4a453e'},{b:'#e8b4b8',s:'#d18a90',e:'#6b3a3f'}];
+var DAYLEN=120;
+function cookMul(){return 1+SV.eq.cook*.2}
+function patMul(){return 1+SV.eq.decor*.15}
+function tipMul(){return 1+SV.eq.decor*.03}
+
+/* ================= 运行状态 ================= */
+var scene='menu'; // menu day summary shop pause
+var D=null;
+var shopTab='fac';
+function toastOnce(k,msg){if(!SV.tut[k]){SV.tut[k]=1;saveSV();toast(msg)}}
+function dayInt(){return Math.max(3.2,8.5-Math.floor(SV.sat/20)*.8-(SV.day-1)*.12)}
+function availDishes(){var a=[];for(var i=0;i<8;i++)if(SV.menu[i]&&SV.day>=DISH[i].day)a.push(i);return a.length?a:[0]}
+function tablesPos(){
+  var xs=[W*.27,W*.70],ys=[H*.42,H*.60,H*.78],out=[],n=SV.eq.table;
+  var order=[[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]];
+  for(var i=0;i<n;i++)out.push({x:xs[order[i][0]],y:ys[order[i][1]],cat:null});
+  return out}
+function newDay(){
+  D={t:0,earn:0,served:0,angry:0,cats:[],queue:[],ready:[],plates:[],coins:[],parts:[],
+     spawnT:2,tables:tablesPos(),dayOver:false,drain:0,maidT:0,steam:0}
+  scene='day';showOv(null);refreshHUD();
+  el('d-daychip').textContent='第'+SV.day+'天';
+  jingle([[523,.08],[659,.08],[784,.12]],75);
+  toastOnce('order','👆 点击冒出对话泡的猫咪接单!')}
+function showOv(id){
+  var ids=['d-menu','d-shop','d-summary','d-pause'];
+  for(var i=0;i<ids.length;i++)el(ids[i]).classList.toggle('show',ids[i]===id);
+  el('d-hud').classList.toggle('show',scene==='day'||scene==='pause')}
+function refreshHUD(){
+  el('d-coinchip').textContent='🪙 '+SV.coins;
+  el('d-daychip').textContent='第'+SV.day+'天';
+  el('d-satfill').style.width=SV.sat+'%';
+  el('d-stars').textContent='★★★★★'.slice(0,Math.floor(SV.sat/20))||'☆';
+  el('d-dayfill').style.width=D?clamp(D.t/DAYLEN*100,0,100)+'%':'0%'}
+
+/* ================= 猫咪 ================= */
+function spawnCat(){
+  var rich=SV.day>=2&&Math.random()<.08;
+  var pal=CATPAL[rnd(CATPAL.length)];
+  var c={x:34,y:H-26,tx:0,ty:0,spd:88,state:'walk',t:0,
+    pal:pal,pat:rnd(3),face:1,walk:0,blink:0,bubble:false,
+    table:null,order:-1,patMax:0,pat:0,eatT:0,rich:rich,think:0,angry:false,sit:0,wantIcon:0};
+  var free=null;
+  for(var i=0;i<D.tables.length;i++)if(!D.tables[i].cat){free=D.tables[i];break}
+  if(!free){c.state='leave';c.tx=34;c.ty=H-26;D.cats.push(c);return}
+  free.cat=c;c.table=free;
+  c.tx=free.x;c.ty=free.y-38;
+  c.state='walk';
+  D.cats.push(c);
+  if(rich)toast('👑 贵宾猫大驾光临,小费 2.5 倍!')}
+function catArrive(c){
+  c.state='think';c.think=1.1;c.sit=0}
+function takeOrder(c){
+  if(c.state!=='ordering')return;
+  if(D.queue.length+D.ready.length>=10){toast('厨房忙不过来了,稍等再接!');beep(240,.15,'square',.05);return}
+  c.order=c.wantIcon;
+  c.state='waitfood';
+  c.patMax=(26+rf(0,8))*patMul();c.pat=c.patMax;
+  c.bubble=true;
+  D.queue.push({dish:c.order,cat:c,prog:0,slot:-1,done:false});
+  meow();
+  toastOnce('cook','🍳 订单进灶台了,烹饪完成后点出餐口上菜!')}
+function readyPos(i){
+  var px0=W-102;
+  return{x:px0+17+(i%3)*28,y:109+((i/3)|0)*20}}
+function angryLeave(c){
+  c.angry=true;c.state='leave';
+  c.tx=34;c.ty=H-26;
+  D.sat=clamp(SV.sat-7,5,100);SV.sat=D.sat;
+  D.angry++;SV.stats.angry++;
+  jingle([[300,.12],[220,.18]],110,'sawtooth');
+  refreshHUD()}
+function happyLeave(c,pay){
+  c.state='leave';c.happy=1;c.tx=34;c.ty=H-26;
+  D.earn+=pay;SV.coins+=pay;SV.stats.earned+=pay;D.served++;SV.stats.served++;
+  D.sat=clamp(SV.sat+1.5,5,100);SV.sat=D.sat;
+  var n=pay>=40?9:5;
+  for(var i=0;i<n;i++)D.coins.push({x:c.x+rf(-8,8),y:c.y-20,vx:rf(-70,70),vy:rf(-190,-90),t:0,ph:rf(0,1)});
+  for(i=0;i<4;i++)D.parts.push({x:c.x+rf(-10,10),y:c.y-30,vx:rf(-30,30),vy:rf(-60,-20),t:.9,kind:'heart'});
+  coinS();refreshHUD()}
+function serveDish(ri){
+  var r=D.ready[ri];
+  var target=null;
+  for(var i=0;i<D.cats.length;i++){var c=D.cats[i];
+    if(c.state==='waitfood'&&c.order===r.dish){target=c;break}}
+  if(target){
+    D.ready.splice(ri,1);
+    target.state='eating';target.eatT=5;target.bubble=false;
+    var pay=Math.round(DISH[r.dish].price*(1+ (target.pat/target.patMax)*.5 + (tipMul()-1) )*(target.rich?2.5:1));
+    target.pay=pay;
+    D.plates.push({x:r.x,y:r.y,tx:target.table.x,ty:target.table.y-16,t:0,dish:r.dish});
+    ding();toastOnce('serve','😋 客人用餐中,吃完自动结账~')}
+  else{
+    D.ready.splice(ri,1);
+    var pack=Math.round(DISH[r.dish].price*.6);
+    SV.coins+=pack;D.earn+=pack;SV.stats.earned+=pack;
+    addPop(W-70,150,'外卖+'+pack,'#ffe08a');coinS();refreshHUD()}}
+function addPop(x,y,txt,c){D.parts.push({x:x,y:y,vx:0,vy:-34,t:1,kind:'pop',txt:txt,c:c})}
+
+/* ================= 更新 ================= */
+function update(dt){
+  var i,c;
+  D.t+=dt;D.steam+=dt;
+  if(!D.dayOver&&D.t>=DAYLEN){D.dayOver=true;toast('🌙 打烊啦!送完最后的客人~')}
+  if(D.dayOver){
+    var busy=false;
+    for(i=0;i<D.cats.length;i++)if(D.cats[i].state!=='leave')busy=true;
+    if(!busy){dayEnd();return}
+    D.drain+=dt}
+  else{
+    D.spawnT-=dt;
+    if(D.spawnT<=0){D.spawnT=dayInt()+rf(0,1.6);spawnCat()}}
+  /* 厨房 */
+  var slots=SV.eq.stove;
+  for(i=0;i<D.queue.length;i++){var o=D.queue[i];
+    if(!o.done&&o.slot>=0&&o.slot>=slots){o.slot=-1}}
+  for(var s=0;s<slots;s++){
+    var working=null;
+    for(i=0;i<D.queue.length;i++)if(D.queue[i].slot===s&&!D.queue[i].done){working=D.queue[i];break}
+    if(!working){for(i=0;i<D.queue.length;i++){var q=D.queue[i];
+      if(!q.done&&q.slot<0){q.slot=s;working=q;break}}}
+    if(working){working.prog+=dt*cookMul()/DISH[working.dish].time;
+      if(working.prog>=1){working.done=true;working.slot=-1;
+        var rp=readyPos(D.ready.length);
+        D.ready.push({dish:working.dish,x:rp.x,y:rp.y});
+        ding();
+        if(D.ready.length<=2)toastOnce('serve','🍽️ 出餐口有菜了!点它给对应的客人')}}
+  }
+  /* 侍者小猫 */
+  if(SV.eq.maid>0&&D.ready.length){D.maidT-=dt;
+    var iv=SV.eq.maid>=2?10:14;
+    if(D.maidT<=0){D.maidT=iv;
+      for(i=0;i<D.ready.length;i++){var r0=D.ready[i];
+        for(var j2=0;j2<D.cats.length;j2++){var cc=D.cats[j2];
+          if(cc.state==='waitfood'&&cc.order===r0.dish){serveDish(i);break}}}}}
+  /* 猫咪 */
+  for(i=D.cats.length-1;i>=0;i--){c=D.cats[i];
+    c.t+=dt;c.blink-=dt;if(c.blink<-.12)c.blink=rf(2,4.5);
+    if(c.state==='walk'||c.state==='leave'){
+      var dx=c.tx-c.x,dy=c.ty-c.y,dl=Math.sqrt(dx*dx+dy*dy);
+      if(dl<3){
+        if(c.state==='walk')catArrive(c);
+        else{D.cats.splice(i,1);if(c.table)c.table.cat=null;continue}}
+      else{var sp=c.angry?150:(c.happy?110:88);
+        /* 先纵向后横向走 */
+        if(Math.abs(dy)>3){c.y+=Math.sign(dy)*sp*dt;c.face=1}
+        else{c.x+=Math.sign(dx)*sp*dt;c.face=dx<0?-1:1}
+        c.walk+=dt*9}}
+    else if(c.state==='think'){c.sit=1;c.think-=dt;
+      if(c.think<=0){c.state='ordering';c.bubble=true;
+        var ids2=availDishes();c.wantIcon=ids2[rnd(ids2.length)];meow();
+        toastOnce('order','👆 点击冒出对话泡的猫咪接单!')}}
+    else if(c.state==='ordering'){c.pat=(c.pat||24)-dt;
+      if(c.pat<=0)angryLeave(c)}
+    else if(c.state==='waitfood'){c.pat-=dt;
+      if(c.pat<=0)angryLeave(c)}
+    else if(c.state==='eating'){c.eatT-=dt;
+      if(c.eatT<=0)happyLeave(c,c.pay||20)}}
+  /* 餐盘飞行 */
+  for(i=D.plates.length-1;i>=0;i--){var p=D.plates[i];p.t+=dt*2.4;
+    if(p.t>=1)D.plates.splice(i,1)}
+  /* 金币 */
+  for(i=D.coins.length-1;i>=0;i--){var cn=D.coins[i];cn.t+=dt;
+    if(cn.t<.35){cn.x+=cn.vx*dt;cn.y+=cn.vy*dt;cn.vy+=560*dt}
+    else{var hx=26-cn.x,hy=14-cn.y,hl=Math.sqrt(hx*hx+hy*hy)||1;
+      cn.x+=hx/hl*560*dt;cn.y+=hy/hl*560*dt;
+      if(hl<20)D.coins.splice(i,1)}}
+  /* 粒子 */
+  for(i=D.parts.length-1;i>=0;i--){var pt=D.parts[i];pt.t-=dt;pt.x+=(pt.vx||0)*dt;pt.y+=(pt.vy||0)*dt;
+    if(pt.t<=0)D.parts.splice(i,1)}
+  refreshHUD()}
+function dayEnd(){
+  var stars=Math.floor(SV.sat/20);
+  var bonus=20+stars*30;
+  SV.coins+=bonus;SV.stats.earned+=bonus;SV.stats.days++;
+  SV.day++;saveSV();
+  scene='summary';showOv('d-summary');
+  el('d-sumtitle').textContent='第 '+(SV.day-1)+' 天 · 打烊啦';
+  el('d-sumstars').textContent='★★★★★'.slice(0,stars)||'☆ 明天加油!';
+  el('d-sumearn').textContent='¥'+D.earn;
+  el('d-sumserve').textContent=D.served;
+  el('d-sumangry').textContent=D.angry;
+  el('d-sumbonus').textContent='+'+bonus;
+  el('d-nextday').textContent='☀️ 开始第 '+(SV.day)+' 天';
+  jingle([[523,.09],[659,.09],[784,.09],[1047,.18]],90)}
+
+/* ================= 绘制 ================= */
+function drawDishIcon(id,x,y,s){
+  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+  if(id===0){ctx.fillStyle='#e8b26a';ctx.beginPath();ctx.arc(0,0,7,0,TAU);ctx.fill();
+    ctx.fillStyle='#8a5a2e';ctx.fillRect(-3,-2,2.5,2.5);ctx.fillRect(2,1,2.5,2.5);ctx.fillRect(0,-5,2,2)}
+  else if(id===1){ctx.fillStyle='#fb923c';ctx.beginPath();ctx.ellipse(-1,0,7,4.5,0,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(10,-3.5);ctx.lineTo(10,3.5);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#ea580c';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-5,-2);ctx.lineTo(2,-2);ctx.moveTo(-5,1);ctx.lineTo(2,1);ctx.stroke()}
+  else if(id===2){ctx.fillStyle='#fde68a';ctx.beginPath();ctx.moveTo(-6,4);ctx.quadraticCurveTo(-7,-6,0,-6);ctx.quadraticCurveTo(7,-6,6,4);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#b45309';ctx.beginPath();ctx.ellipse(0,-4,5,2,0,0,TAU);ctx.fill()}
+  else if(id===3){ctx.fillStyle='#e8e4d8';ctx.beginPath();ctx.arc(0,1,7.5,0,Math.PI);ctx.fill();
+    ctx.fillStyle='#f5d78e';ctx.fillRect(-6,-1,12,2.5);
+    ctx.fillStyle='#ef9a6c';ctx.fillRect(-4,-3,3,2);ctx.fillStyle='#4ade80';ctx.fillRect(1,-3,3,2);
+    ctx.strokeStyle='#8a5a2e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(4,-7);ctx.lineTo(9,-2);ctx.moveTo(6,-8);ctx.lineTo(10,-3);ctx.stroke()}
+  else if(id===4){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,7.5,0,TAU);ctx.fill();
+    ctx.fillStyle='#c2703d';ctx.beginPath();ctx.arc(-1.5,1,4.5,0,TAU);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(2.5,-1.5,3,0,TAU);ctx.fill()}
+  else if(id===5){ctx.fillStyle='#d98d4a';ctx.beginPath();ctx.ellipse(-1,0,7,4.5,0,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.moveTo(5,0);ctx.lineTo(9.5,-3);ctx.lineTo(9.5,3);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#7c4a1e';ctx.fillRect(-3,-1.5,2,2)}
+  else if(id===6){ctx.fillStyle='#a5f3fc';ctx.fillRect(-4,-6,8,12);
+    ctx.fillStyle='#818cf8';ctx.fillRect(-4,0,8,6);
+    ctx.fillStyle='#f0abfc';ctx.fillRect(-1,-10,2,6)}
+  else{ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,1,8,0,TAU);ctx.fill();
+    ctx.fillStyle='#fb923c';ctx.beginPath();ctx.ellipse(-2,-1,5,3,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#fde047';ctx.font='7px sans-serif';ctx.textAlign='center';ctx.fillText('✦',4,-4);ctx.textAlign='left'}
+  ctx.restore()}
+function drawCat(c,now){
+  var x=c.x,y=c.y,p=c.pal,f=c.face;
+  var blink=c.blink<0;
+  var walk=(c.state==='walk'||c.state==='leave');
+  var bob=walk?Math.abs(Math.sin(c.walk))*2:0;
+  var sit=!walk;
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='rgba(0,0,0,.16)';ctx.beginPath();ctx.ellipse(0,3,10,3,0,0,TAU);ctx.fill();
+  if(c.rich){ctx.fillStyle='#fde047';ctx.beginPath();ctx.moveTo(-6,-22);ctx.lineTo(-4,-27);ctx.lineTo(-1.5,-23);ctx.lineTo(0,-28);ctx.lineTo(1.5,-23);ctx.lineTo(4,-27);ctx.lineTo(6,-22);ctx.closePath();ctx.fill()}
+  if(sit){
+    /* 坐姿:身体+头 */
+    R3(-8,-8,16,11,p.b);
+    R3(-8,-8,16,3,p.s);
+    /* 尾巴摇摆 */
+    ctx.strokeStyle=p.s;ctx.lineWidth=3;ctx.lineCap='round';
+    var wag=Math.sin(now*3+(c.ph||0))*5;
+    ctx.beginPath();ctx.moveTo(8,-2);ctx.quadraticCurveTo(15,-6+wag,14+wag*.4,-13);ctx.stroke();ctx.lineCap='butt';
+    /* 头 */
+    R3(-7,-19,14,11,p.b);
+    ctx.fillStyle=p.b;
+    ctx.beginPath();ctx.moveTo(-7,-18);ctx.lineTo(-7,-24);ctx.lineTo(-3,-19);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(7,-18);ctx.lineTo(7,-24);ctx.lineTo(3,-19);ctx.closePath();ctx.fill();
+    /* 眼睛 */
+    if(blink){R3(-5,-15,3.5,1.2,p.e);R3(1.5,-15,3.5,1.2,p.e)}
+    else if(c.state==='eating'||c.happy){ctx.strokeStyle=p.e;ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.arc(-3.2,-14,1.8,Math.PI,0);ctx.stroke();
+      ctx.beginPath();ctx.arc(3.2,-14,1.8,Math.PI,0);ctx.stroke()}
+    else if(c.angry){R3(-5,-15,3,2.4,p.e);R3(2,-15,3,2.4,p.e);
+      ctx.strokeStyle='#ef4444';ctx.lineWidth=1.3;
+      ctx.beginPath();ctx.moveTo(-5.5,-18);ctx.lineTo(-1.5,-16.5);ctx.moveTo(5.5,-18);ctx.lineTo(1.5,-16.5);ctx.stroke()}
+    else{R3(-4.5,-15.5,2.6,3,p.e);R3(1.9,-15.5,2.6,3,p.e)}
+    /* 嘴/胡须 */
+    ctx.strokeStyle=p.e;ctx.lineWidth=.8;
+    if(c.state==='waitfood'){ctx.beginPath();ctx.arc(0,-11,1.6,0,Math.PI);ctx.stroke()}
+    R3(-11,-13,4,1,'rgba(0,0,0,.25)');R3(7,-13,4,1,'rgba(0,0,0,.25)');
+  }else{
+    /* 走姿 */
+    var leg=Math.sin(c.walk*2)*3;
+    R3(-7,-12,14,14,p.b);
+    R3(-7,-12,14,3,p.s);
+    R3(-6,2+Math.max(0,leg),4,4,p.b);R3(2,2+Math.max(0,-leg),4,4,p.b);
+    R3(-6.5,-21,13,10,p.b);
+    ctx.fillStyle=p.b;
+    ctx.beginPath();ctx.moveTo(-6.5,-20);ctx.lineTo(-6.5,-26);ctx.lineTo(-2.5,-21);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(6.5,-20);ctx.lineTo(6.5,-26);ctx.lineTo(2.5,-21);ctx.closePath();ctx.fill();
+    if(blink){R3(-4.5,-17,3.2,1.2,p.e);R3(1.8,-17,3.2,1.2,p.e)}
+    else{R3(-4.3,-17.5,2.6,3,p.e);R3(1.7,-17.5,2.6,3,p.e)}
+    ctx.strokeStyle=p.s;ctx.lineWidth=3;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(7,-6);ctx.quadraticCurveTo(13,-4,14,-10);ctx.stroke();ctx.lineCap='butt';
+  }
+  if(c.rich){/* 领结 */R3(-2.5,-6.5,5,3,'#ef4444')}
+  ctx.restore();
+  /* 气泡 */
+  if(c.state==='ordering'||(c.state==='waitfood'&&c.order>=0)){
+    var bx=x+16,by=y-42;
+    ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.15)';
+    roundRect(bx-17,by-15,36,32,8);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+4,y-14);ctx.lineTo(bx-6,by+14);ctx.lineTo(bx+2,by+12);ctx.closePath();
+    ctx.fillStyle='#fff';ctx.fill();
+    if(c.state==='ordering'){
+      drawDishIcon(c.wantIcon!==undefined?c.wantIcon:0,bx+1,by+1,1);
+      /* 问号闪烁 */
+      ctx.globalAlpha=(Math.sin(now*6)+1)/2*.7;
+      ctx.fillStyle='#4a3520';ctx.font='bold 9px sans-serif';ctx.textAlign='center';
+      ctx.fillText('?',bx+13,by-8);ctx.textAlign='left';ctx.globalAlpha=1}
+    else{
+      drawDishIcon(c.order,bx+1,by+1,1);
+      /* 耐心条 */
+      var r=clamp(c.pat/c.patMax,0,1);
+      ctx.fillStyle='rgba(0,0,0,.18)';roundRect(bx-13,by+19,28,4.5,2.5);ctx.fill();
+      ctx.fillStyle=r>.5?'#4ade80':r>.25?'#fbbf24':'#f87171';
+      roundRect(bx-13,by+19,28*r,4.5,2.5);ctx.fill()}}
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function R3(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}
+function c2t(v){return v}
+
+function render(now){
+  /* 墙面(随昼夜变色) */
+  var pr=D?clamp(D.t/DAYLEN,0,1):.3;
+  var sky1='rgb('+Math.round(135+pr*80)+','+Math.round(180-pr*40)+','+Math.round(235-pr*90)+')';
+  var wall='rgb('+Math.round(245-pr*70)+','+Math.round(225-pr*60)+','+Math.round(200-pr*55)+')';
+  R3(0,0,W,H,wall);
+  /* 窗户 */
+  ctx.fillStyle=sky1;roundRect(W*.10,26,W*.26,64,8);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.85)';
+  ctx.beginPath();ctx.arc(W*.16,58,7,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(W*.19,56,5,0,TAU);ctx.fill();
+  if(D){ctx.fillStyle='rgba(255,255,255,.7)';
+    for(var ci=0;ci<3;ci++){var cx2=(W*.12+ci*26+((now/40)%W*.1))%(W*.24)+W*.11;
+      ctx.beginPath();ctx.arc(cx2,40+ci*8,4,0,TAU);ctx.fill()}}
+  ctx.strokeStyle='rgba(120,84,50,.8)';ctx.lineWidth=3;
+  roundRect(W*.10,26,W*.26,64,8);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*.10+W*.13,26);ctx.lineTo(W*.10+W*.13,90);ctx.stroke();
+  /* 墙饰 */
+  ctx.fillStyle='#e8d5b5';roundRect(W*.55,30,64,44,6);ctx.fill();
+  ctx.strokeStyle='#a1743c';ctx.lineWidth=2.5;roundRect(W*.55,30,64,44,6);ctx.stroke();
+  drawDishIcon(1,W*.55+20,52,1.2);drawDishIcon(3,W*.55+44,52,1.2);
+  /* 吊灯 */
+  var lx=W*.5;
+  ctx.strokeStyle='rgba(90,60,30,.7)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(lx,14);ctx.stroke();
+  ctx.fillStyle='#d97706';ctx.beginPath();ctx.moveTo(lx-12,26);ctx.lineTo(lx+12,26);ctx.lineTo(lx+7,14);ctx.lineTo(lx-7,14);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(255,220,120,.16)';ctx.beginPath();ctx.arc(lx,30,42,0,TAU);ctx.fill();
+  /* 灶台背景带 */
+  R3(0,64,W,8,'#d9c19a');
+  /* 猫板长(厨师台) */
+  R3(10,120,W-20,34,'#b9834f');
+  R3(10,120,W-20,6,'#d6a369');
+  R3(10,150,W-20,4,'rgba(0,0,0,.15)');
+  /* 厨师猫 */
+  drawChef(now);
+  /* 灶台位 */
+  for(var s=0;s<SV.eq.stove;s++){
+    var sx=22+s*66;
+    R3(sx,92,58,30,'#8d6b47');roundRect(sx,92,58,30,6);ctx.fillStyle='rgba(0,0,0,.06)';ctx.fill();
+    R3(sx+5,97,48,20,'#5f4630');
+    var working=null;
+    if(D)for(var qi=0;qi<D.queue.length;qi++){var q=D.queue[qi];if(q.slot===s&&!q.done){working=q;break}}
+    if(working){
+      drawDishIcon(working.dish,sx+29,106,1);
+      var r=clamp(working.prog,0,1);
+      ctx.fillStyle='rgba(0,0,0,.35)';roundRect(sx+7,120,44,5,2.5);ctx.fill();
+      ctx.fillStyle='#4ade80';roundRect(sx+7,120,44*r,5,2.5);ctx.fill();
+      /* 蒸汽 */
+      if(!RM)for(var st=0;st<3;st++){var sp2=((now/300)+st*.33)%1;
+        ctx.globalAlpha=(1-sp2)*.5;ctx.fillStyle='#fff';
+        ctx.beginPath();ctx.arc(sx+20+st*9+Math.sin(now/200+st)*3,94-sp2*16,2.5+sp2*2,0,TAU);ctx.fill()}
+      ctx.globalAlpha=1}
+    else{ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='16px sans-serif';ctx.textAlign='center';ctx.fillText('🍳',sx+29,111);ctx.textAlign='left'}}
+  /* 出餐口 */
+  var px0=W-102;
+  R3(px0-6,86,96,64,'#8d6b47');roundRect(px0-6,86,96,64,8);ctx.fill();
+  ctx.fillStyle='#ffe08a';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('出餐口',px0+42,97);ctx.textAlign='left';
+  R3(px0,102,84,44,'rgba(0,0,0,.12)');
+  if(D)for(var ri=0;ri<D.ready.length;ri++){var rd=D.ready[ri];
+    var rx=px0+6+(ri%3)*28,ry=108+((ri/3)|0)*20;
+    var pulse=1+Math.sin(now/180)*.06;
+    ctx.fillStyle='#fff';roundRect(rx-2,ry-8,26,18,4);ctx.fill();
+    drawDishIcon(rd.dish,rx+11,ry+1,pulse)}
+  /* 地板 */
+  var fy=154;
+  R3(0,fy,W,H-fy,'#e5c99a');
+  for(var ty2=0;ty2<9;ty2++)for(var tx2=0;tx2<7;tx2++){
+    if((tx2+ty2)%2)continue;
+    ctx.fillStyle='rgba(190,150,100,.35)';
+    ctx.fillRect(tx2*(W/7),fy+ty2*((H-fy)/9),W/7,(H-fy)/9)}
+  /* 门与地垫 */
+  R3(6,H-58,52,58,'#a1743c');
+  R3(10,H-54,44,54,'#8a5f33');
+  ctx.fillStyle='#ffe08a';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('OPEN',32,H-24);ctx.textAlign='left';
+  ctx.fillStyle=D&&!D.dayOver?'#4ade80':'#f87171';
+  ctx.beginPath();ctx.arc(52,H-50,3.5,0,TAU);ctx.fill();
+  /* 桌子 */
+  if(D)for(var ti=0;ti<D.tables.length;ti++){var tb=D.tables[ti];
+    ctx.fillStyle='rgba(0,0,0,.14)';ctx.beginPath();ctx.ellipse(tb.x,tb.y+8,26,8,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#c98d52';ctx.beginPath();ctx.ellipse(tb.x,tb.y,26,15,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#e2ab6c';ctx.beginPath();ctx.ellipse(tb.x,tb.y-4,26,15,0,0,TAU);ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.1)';ctx.beginPath();ctx.ellipse(tb.x,tb.y-4,17,9,0,0,TAU);ctx.fill();
+    /* 小旗桌牌 */
+    ctx.strokeStyle='#8a5f33';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(tb.x+14,tb.y-8);ctx.lineTo(tb.x+14,tb.y-22);ctx.stroke();
+    ctx.fillStyle='#ef4444';ctx.beginPath();ctx.moveTo(tb.x+14,tb.y-22);ctx.lineTo(tb.x+26,tb.y-18);ctx.lineTo(tb.x+14,tb.y-14);ctx.closePath();ctx.fill()}
+  /* 猫咪(按 y 排序画) */
+  if(D){var arr=D.cats.slice().sort(function(a,b){return a.y-b.y});
+    for(var i2=0;i2<arr.length;i2++)drawCat(arr[i2],now);
+    /* 吃饭时桌上餐盘 */
+    for(i2=0;i2<D.cats.length;i2++){var cc=D.cats[i2];
+      if(cc.state==='eating'&&cc.table){drawDishIcon(cc.order,cc.table.x,cc.table.y-6,1.1)}}}
+  /* 飞行餐盘 */
+  if(D)for(i2=0;i2<D.plates.length;i2++){var pl=D.plates[i2];
+    var pxx=pl.x+(pl.tx-pl.x)*pl.t,pyy=pl.y+(pl.ty-pl.y)*pl.t-Math.sin(pl.t*Math.PI)*36;
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(pxx,pyy,9,4,0,0,TAU);ctx.fill();
+    drawDishIcon(pl.dish,pxx,pyy-4,.8)}
+  /* 金币 */
+  if(D)for(i2=0;i2<D.coins.length;i2++){var cn=D.coins[i2];
+    ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(cn.x,cn.y,5,0,TAU);ctx.fill();
+    ctx.fillStyle='#fde047';ctx.beginPath();ctx.arc(cn.x-1,cn.y-1,2.5,0,TAU);ctx.fill()}
+  /* 粒子 */
+  if(D)for(i2=0;i2<D.parts.length;i2++){var pt=D.parts[i2];
+    if(pt.kind==='heart'){ctx.fillStyle='rgba(244,114,182,'+clamp(pt.t,0,1)+')';ctx.font='11px sans-serif';ctx.fillText('💗',pt.x,pt.y)}
+    else if(pt.kind==='pop'){ctx.globalAlpha=clamp(pt.t*1.4,0,1);
+      ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+      ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillText(pt.txt,pt.x+1,pt.y+1);
+      ctx.fillStyle=pt.c;ctx.fillText(pt.txt,pt.x,pt.y);ctx.textAlign='left';ctx.globalAlpha=1}}
+}
+function drawChef(now){
+  var x=W*.5-70,y=98;
+  R3(x-10,y+6,20,16,'#f8fafc');
+  R3(x-10,y+6,20,4,'#cbd5e1');
+  R3(x-6,y-6,12,12,'#fcd9b0');
+  ctx.fillStyle='#f8fafc';roundRect(x-7,y-14,14,8,3);ctx.fill();
+  R3(x-9,y-8,18,3,'#e2e8f0');
+  var blink=(now/2600|0)%2===0&&now%2600<180;
+  if(blink){R3(x-4,y-1,3,1,'#5b4632');R3(x+1,y-1,3,1,'#5b4632')}
+  else{R3(x-4,y-2,2.6,3,'#5b4632');R3(x+1.4,y-2,2.6,3,'#5b4632')}
+  /* 手里锅铲 */
+  ctx.save();ctx.translate(x+12,y+6);ctx.rotate(Math.sin(now/300)*.4);
+  R3(-1.5,-8,3,10,'#8a5a2e');R3(-4,-12,8,5,'#94a3b8');ctx.restore()}
+
+/* ================= 点击 ================= */
+cv.addEventListener('pointerdown',function(e){
+  if(scene!=='day'||!D)return;
+  var r=cv.getBoundingClientRect();
+  var x=e.clientX-r.left,y=e.clientY-r.top;
+  /* 出餐口 */
+  var px0=W-102;
+  if(x>=px0-6&&x<=px0+90&&y>=86&&y<=152){
+    for(var i=0;i<D.ready.length;i++){
+      var rd=D.ready[i];
+      var rx=px0+6+(i%3)*28,ry=108+((i/3)|0)*20;
+      if(x>=rx-6&&x<=rx+24&&y>=ry-12&&y<=ry+12){serveDish(i);return}}
+    return}
+  /* 猫咪接单 */
+  for(i=D.cats.length-1;i>=0;i--){var c=D.cats[i];
+    if(c.state==='ordering'&&d2(x,y,c.x,c.y-18)<38*38){
+      /* 想吃的菜:气泡上画的是它 point 的菜 */
+      takeOrder(c);return}}});
+
+/* ================= 主循环 ================= */
+var last=0;
+function loop(ts){
+  requestAnimationFrame(loop);
+  var dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+  var now=ts;
+  if(scene==='day'&&D)update(dt);
+  render(now)}
+requestAnimationFrame(loop);
+
+/* ================= 商店 ================= */
+function goShop(){scene='shop';showOv('d-shop');renderShop()}
+function renderShop(){
+  el('d-shopgold').textContent=SV.coins;
+  var list=el('d-shoplist');list.innerHTML='';
+  var tabs=el('d-shoptabs').querySelectorAll('button');
+  tabs[0].classList.toggle('on',shopTab==='fac');
+  tabs[1].classList.toggle('on',shopTab==='menu');
+  if(shopTab==='fac'){
+    FAC.forEach(function(m){
+      var lv=SV.eq[m.k];
+      var maxed=lv>=m.max;
+      var cost=0;
+      if(!maxed)cost=m.costs?m.costs[lv+1]:(lv+1)*m.base;
+      var row=document.createElement('div');row.className='d-uprow';
+      var pips='',i2;for(i2=0;i2<m.max;i2++)pips+='<u class="'+(i2<lv?'on':'')+'"></u>';
+      var cur=lv===0?'未拥有':('Lv.'+lv);
+      row.innerHTML='<span class="d-upic">'+m.icon+'</span><span class="d-upm"><b>'+m.name+' · '+cur+'</b><i>'+m.d+'</i><span class="d-pips">'+pips+'</span></span>'+
+        '<button class="d-buy'+(maxed?' max':'')+'" type="button" '+(maxed||SV.coins<cost?'disabled':'')+'>'+(maxed?'满级':'🪙'+cost)+'</button>';
+      if(!maxed){var btn=row.querySelector('.d-buy');
+        btn.addEventListener('click',function(){if(SV.coins<cost)return;
+          SV.coins-=cost;SV.eq[m.k]=lv+1;saveSV();beep(880,.1,'triangle',.06);
+          jingle([[659,.07],[880,.1]],70);renderShop();
+          if(m.k==='table'&&D)D.tables=tablesPos()})}
+      list.appendChild(row)})}
+    else{
+    DISH.forEach(function(df,idx){(function(idx){
+      var unlocked=SV.menu[idx],dayOK=SV.day>=DISH[idx].day;
+      var row=document.createElement('div');row.className='d-uprow';
+      row.innerHTML='<span class="d-upic"></span><span class="d-upm"><b>'+DISH[idx].name+'</b><i>¥'+DISH[idx].price+' · 烹饪 '+DISH[idx].time+'s'+(dayOK?'':'<span class="d-locknote">第 '+DISH[idx].day+' 天解锁</span>')+'</i></span>';
+      if(unlocked)row.innerHTML+='<button class="d-buy max" disabled>已上架</button>';
+      else row.innerHTML+='<button class="d-buy" type="button" '+((SV.coins<DISH[idx].cost||!dayOK)?'disabled':'')+'>'+(dayOK?'🪙'+DISH[idx].cost:'🔒')+'</button>';
+      if(!unlocked&&dayOK){
+        var bb=row.querySelector('.d-buy');
+        bb.addEventListener('click',function(){if(SV.coins<DISH[idx].cost)return;
+          SV.coins-=DISH[idx].cost;SV.menu[idx]=true;saveSV();
+          jingle([[659,.07],[880,.1]],70);toast('📖 新菜上架:'+DISH[idx].name);renderShop()})}
+      list.appendChild(row);
+      var icEl=row.querySelector('.d-upic');
+      var icv=document.createElement('canvas');icv.width=42;icv.height=42;
+      var oldCtx=ctx;ctx=icv.getContext('2d');ctx.translate(21,21);
+      drawDishIcon(idx,0,0,1.6);ctx=oldCtx;
+      icEl.appendChild(icv)})(idx)})}
+}
+/* 商店标签切换 */
+el('d-shoptabs').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  shopTab=b.getAttribute('data-tab');renderShop()});
+
+/* ================= 按钮 ================= */
+function setMuteText(){el('d-mute').textContent=SV.mute?'🔇 静音':'🔊 音效';el('d-mute2').textContent=SV.mute?'🔇 静音':'🔊 音效'}
+el('d-open').addEventListener('click',function(){newDay()});
+el('d-shopbtn').addEventListener('click',function(){shopReturn='menu';goShop()});
+el('d-mute').addEventListener('click',function(){SV.mute=!SV.mute;saveSV();setMuteText();if(!SV.mute)beep(660,.08)});
+el('d-mute2').addEventListener('click',function(){SV.mute=!SV.mute;saveSV();setMuteText()});
+el('d-pausebtn').addEventListener('click',function(){if(scene==='day'){scene='pause';showOv('d-pause');el('d-pauseearn').textContent='¥'+D.earn}});
+el('d-resume').addEventListener('click',function(){if(scene==='pause'){scene='day';showOv(null)}});
+el('d-closeday').addEventListener('click',function(){if(scene==='pause'&&D){scene='day';showOv(null);D.t=DAYLEN;D.dayOver=true;toast('🌙 提前打烊!')}});
+el('d-sumshop').addEventListener('click',function(){el('d-summary').classList.remove('show');shopReturn='summary';goShop()});
+el('d-nextday').addEventListener('click',function(){newDay()});
+var shopReturn='menu';
+el('d-shopback').addEventListener('click',function(){
+  if(shopReturn==='summary'){scene='summary';showOv('d-summary')}
+  else goMenu()});
+function goMenu(){
+  scene='menu';D=null;showOv('d-menu');
+  el('d-mute').textContent=SV.mute?'🔇 静音':'🔊 音效';
+  el('d-menustats').innerHTML='累计营业 <b>'+SV.stats.days+'</b> 天 · 累计收入 <b>¥'+SV.stats.earned+'</b><br>接待客人 <b>'+SV.stats.served+'</b> · 满意度 <b>'+Math.round(SV.sat)+'%</b>'}
+
+/* ================= 菜单飘浮 ================= */
+(function(){var box=el('d-tanim'),icons=['🐟','🍜','🍡','🥟','🍰','🍵','🍤','💙'];
+  for(var i=0;i<12;i++){var s=document.createElement('i');
+    s.textContent=icons[i%icons.length];
+    s.style.left=(5+Math.random()*90)+'%';
+    s.style.animationDuration=(8+Math.random()*9)+'s';
+    s.style.animationDelay=(-Math.random()*13)+'s';
+    s.style.opacity=.18+Math.random()*.22;
+    box.appendChild(s)}})();
+
+/* ================= 启动 ================= */
+fit();setMuteText();goMenu();
+try{if(window.zcode&&window.zcode.setWidgetState)window.zcode.setWidgetState({modelContent:{app:'diner'},privateContent:{}}).catch(function(e){})}catch(e){}
+})();
+</script>
+
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="39228f85-9a23-46a6-ae00-492c44dae3ec" data-app-host="app.netlify.com" data-account-tier="free"></script>
