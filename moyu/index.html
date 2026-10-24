@@ -1,0 +1,3709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=2d700eb0-858a-44b8-8392-8845f8e828cb
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>摸鱼乐园</title>
+<meta name="description" content="一个专门浪费时间的正经网站。7 个小玩具，免费，不用登录，不收集数据。">
+<meta name="theme-color" content="#F9F4DF">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐟</text></svg>">
+<style>
+/* ===================================================
+   摸鱼乐园 · 糖果新粗野样式表
+   奶油底 + 白卡 + 3px 黑描边 + 无模糊硬投影
+   =================================================== */
+
+/* ---------- 变量 ---------- */
+:root {
+  --cream: #f9f4df;
+  --cream-2: #f2ebd0;
+  --ink: #1a1a23;
+  --ink-soft: #5a5a66;
+  --muted: #8a8a94;
+  --white: #ffffff;
+  --lime: #b9ff66;
+  --pink: #f8b7b8;
+  --yellow: #f8d044;
+  --violet: #5b57eb;
+  --lavender: #c9c6f5;
+  --coral: #ff6b6b;
+  --blue: #d6ebff;
+
+  --bd: 3px solid var(--ink);
+  --bd-2: 2px solid var(--ink);
+  --shadow: 6px 6px 0 var(--ink);
+  --shadow-sm: 4px 4px 0 var(--ink);
+  --shadow-lg: 8px 8px 0 var(--ink);
+  --r: 18px;
+  --r-lg: 24px;
+  --r-sm: 12px;
+
+  --font: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+  --mono: 'Sarasa Mono SC', 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+}
+
+/* ---------- 基础 ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--ink);
+}
+
+/* 焦点可见性：键盘用户友好，鼠标点击不显边框 */
+:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 2px;
+}
+
+/* ---------- 通用组件 ---------- */
+.wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* 顶部栏 */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 76px;
+  padding: 0 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  border: var(--bd);
+  border-radius: 10px;
+  background: var(--violet);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  box-shadow: 3px 3px 0 var(--ink);
+  flex-shrink: 0;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: var(--bd);
+  border-radius: var(--r-sm);
+  background: var(--white);
+  display: grid;
+  place-items: center;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.12s, box-shadow 0.12s;
+  flex-shrink: 0;
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.icon-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+/* 胶囊 */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: var(--bd);
+  border-radius: 9999px;
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.pill.yellow {
+  background: var(--yellow);
+}
+
+.pill.lime {
+  background: var(--lime);
+}
+
+.pill.pink {
+  background: var(--pink);
+}
+
+.pill.ink {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: var(--bd);
+  border-radius: 9999px;
+  background: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.12s, box-shadow 0.12s;
+  white-space: nowrap;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn.lime {
+  background: var(--lime);
+}
+
+.btn.yellow {
+  background: var(--yellow);
+}
+
+.btn.violet {
+  background: var(--violet);
+  color: var(--white);
+}
+
+.btn.pink {
+  background: var(--pink);
+}
+
+.btn.block {
+  width: 100%;
+}
+
+.btn.lg {
+  padding: 16px 28px;
+  font-size: 16px;
+}
+
+.btn.sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+/* 卡片 */
+.card {
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+/* 输入 */
+.field {
+  width: 100%;
+  padding: 13px 15px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-sm);
+  background: var(--cream);
+  font-size: 15px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.field::placeholder {
+  color: #a8a8b0;
+}
+
+.field:focus {
+  background: var(--white);
+  outline: none;
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(91, 87, 235, 0.18);
+}
+
+textarea.field {
+  resize: none;
+  line-height: 1.55;
+}
+
+/* 底栏提示条 */
+.footbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.footbar b {
+  color: var(--lime);
+  font-weight: 600;
+}
+
+/* 回到顶部 / 页脚 */
+.site-foot {
+  text-align: center;
+  padding: 36px 20px 44px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.site-foot b {
+  color: var(--ink);
+}
+
+/* ===================================================
+   首页
+   =================================================== */
+.hero {
+  background: var(--lime);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 28px;
+  margin-bottom: 26px;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 9999px;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.hero h1 {
+  font-size: 46px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 14px 0 10px;
+  font-weight: 900;
+}
+
+.hero p {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: #3a3a2e;
+  max-width: 620px;
+}
+
+.hero-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero-note {
+  font-size: 12px;
+  color: #4a4a38;
+  font-weight: 500;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.section-head h2 {
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.section-sub {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* 玩具网格 */
+.grid-tools {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.tool-card {
+  position: relative;
+  display: block;
+  text-align: left;
+  width: 100%;
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  transition: transform 0.14s, box-shadow 0.14s;
+}
+
+.tool-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.tool-card:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.tool-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tool-icon {
+  width: 48px;
+  height: 48px;
+  border: var(--bd);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.tool-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.tool-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tool-desc {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 4px 9px;
+  border-radius: 9999px;
+  background: var(--coral);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid var(--ink);
+}
+
+/* 图标底色 */
+.c-lime {
+  background: var(--lime);
+}
+
+.c-pink {
+  background: var(--pink);
+}
+
+.c-yellow {
+  background: var(--yellow);
+}
+
+.c-violet {
+  background: var(--violet);
+  color: var(--white);
+}
+
+.c-blue {
+  background: var(--blue);
+}
+
+.c-purple {
+  background: var(--lavender);
+}
+
+.c-coral {
+  background: #ffd0cf;
+}
+
+/* 搜索结果为空 */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ===================================================
+   子页面通用
+   =================================================== */
+.page-body {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px 40px;
+  flex: 1;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 26px;
+  align-items: start;
+}
+
+.tool-layout.narrow {
+  grid-template-columns: 520px 1fr;
+}
+
+/* Grid 子项默认 min-width:auto，会被 <pre> 之类的长内容撑破列宽 */
+.tool-layout > *,
+.tool-layout.narrow > * {
+  min-width: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ===================================================
+   01 今天吃什么
+   =================================================== */
+.wheel-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+#wheelCanvas {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  aspect-ratio: 1;
+  display: block;
+  touch-action: manipulation;
+}
+
+.wheel-result {
+  margin-top: 18px;
+  text-align: center;
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+}
+
+.wheel-final {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  padding: 6px 26px;
+  border: var(--bd);
+  border-radius: 14px;
+  background: var(--lime);
+  box-shadow: var(--shadow-sm);
+  animation: pop 0.32s cubic-bezier(0.2, 1.4, 0.5, 1);
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.opt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.opt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: var(--bd-2);
+  border-radius: 9999px;
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+
+.opt-chip:hover {
+  background: var(--cream-2);
+}
+
+.opt-chip .x {
+  font-size: 15px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.opt-chip .x:hover {
+  color: var(--coral);
+}
+
+/* ===================================================
+   02 指尖烟花
+   =================================================== */
+.fireworks-stage {
+  position: relative;
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  background: #12121a;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+#fireworksCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fireworks-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 0.5s;
+}
+
+.fireworks-hint.hide {
+  opacity: 0;
+}
+
+.color-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: var(--bd-2);
+  transition: transform 0.12s;
+  position: relative;
+}
+
+.color-dot:hover {
+  transform: scale(1.1);
+}
+
+.color-dot[aria-pressed='true'] {
+  box-shadow: 0 0 0 3px var(--ink);
+  transform: scale(1.06);
+}
+
+/* ===================================================
+   03 每日三件套
+   =================================================== */
+.daily-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.fortune-card {
+  background: var(--yellow);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.fortune-score {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin: 10px 0 2px;
+}
+
+.fortune-score small {
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.fortune-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.fortune-row {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.fortune-row .k {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.fortune-line {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 12.5px;
+  color: #4a4020;
+  border-top: 2px dashed rgba(26, 26, 35, 0.28);
+}
+
+.knowledge-card {
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.knowledge-num {
+  position: absolute;
+  right: 16px;
+  top: 8px;
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--cream-2);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  pointer-events: none;
+}
+
+.knowledge-text {
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 500;
+  margin: 8px 0 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timer-card {
+  background: var(--violet);
+  color: var(--white);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.timer-display {
+  font-family: var(--mono);
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 12px 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-label {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 16px;
+}
+
+.timer-total {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 2px dashed rgba(255, 255, 255, 0.24);
+}
+
+.timer-total b {
+  color: var(--lime);
+  font-size: 15px;
+}
+
+/* ===================================================
+   04 人生进度条
+   =================================================== */
+.life-grid-canvas {
+  width: 100%;
+  display: block;
+  border: var(--bd);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+.life-preview {
+  border: var(--bd);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--white);
+}
+
+.life-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.life-legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  margin-right: 5px;
+  vertical-align: -1px;
+}
+
+.big-stat {
+  background: var(--yellow);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+}
+
+.big-stat .num {
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.big-stat .lbl {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #4a4020;
+}
+
+.num-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.num-card {
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  text-align: center;
+}
+
+.num-card .v {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.num-card .k {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.milestone {
+  background: var(--ink);
+  color: var(--cream);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.milestone b {
+  color: var(--lime);
+}
+
+/* 预设按钮组 */
+.preset-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset {
+  padding: 8px 14px;
+  border: var(--bd-2);
+  border-radius: 10px;
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 0.12s, background 0.12s;
+}
+
+.preset:hover {
+  background: var(--cream-2);
+}
+
+.preset[aria-pressed='true'] {
+  background: var(--violet);
+  color: var(--white);
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border: var(--bd-2);
+  border-radius: 9999px;
+  background: var(--cream);
+  outline: none;
+  margin: 8px 0;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: var(--lime);
+  border: var(--bd-2);
+  cursor: grab;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+input[type='range']::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: var(--lime);
+  border: var(--bd-2);
+  cursor: grab;
+}
+
+/* ===================================================
+   05 许愿池
+   =================================================== */
+.wish-card {
+  background: var(--violet);
+  color: var(--white);
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+}
+
+.wish-card h3 {
+  font-size: 22px;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.wish-card .sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 16px;
+}
+
+.wish-input {
+  width: 100%;
+  padding: 14px;
+  border: var(--bd-2);
+  border-radius: var(--r-sm);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 15px;
+  min-height: 104px;
+  resize: none;
+}
+
+.wish-count {
+  text-align: right;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.66);
+  margin-top: 6px;
+}
+
+.cat-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 14px 0 16px;
+}
+
+.cat {
+  padding: 8px 14px;
+  border: var(--bd-2);
+  border-radius: 9999px;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+
+.cat:hover {
+  background: var(--cream-2);
+}
+
+.cat[aria-pressed='true'] {
+  background: var(--yellow);
+}
+
+.wish-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wish-item {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  animation: slideIn 0.35s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wish-coin {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  border: var(--bd-2);
+  flex-shrink: 0;
+}
+
+.wish-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.wish-text {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.wish-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.wish-end {
+  padding: 16px 20px;
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wish-end span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* 关键词 */
+.kw-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kw {
+  padding: 7px 13px;
+  border: var(--bd-2);
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===================================================
+   06 渐变生成器
+   =================================================== */
+.gradient-preview {
+  width: 100%;
+  min-height: 380px;
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.gradient-preview .hex-label {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border: var(--bd);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  backdrop-filter: blur(4px);
+}
+
+.code-card {
+  background: var(--ink);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.code-head .t {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lime);
+}
+
+.code-body {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--cream);
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.angle-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.angle {
+  padding: 9px 15px;
+  border: var(--bd-2);
+  border-radius: 10px;
+  background: var(--white);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.12s, color 0.12s;
+}
+
+.angle:hover {
+  background: var(--cream-2);
+}
+
+.angle[aria-pressed='true'] {
+  background: var(--violet);
+  color: var(--white);
+}
+
+.stop-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stop-swatch {
+  width: 44px;
+  height: 44px;
+  border: var(--bd-2);
+  border-radius: 10px;
+  flex-shrink: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.stop-swatch input {
+  position: absolute;
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.stop-hex {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 12px;
+  border: var(--bd-2);
+  border-radius: 8px;
+  background: var(--cream);
+  min-width: 0;
+}
+
+.stop-pos {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  width: 46px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.history-item {
+  aspect-ratio: 1.6;
+  border: var(--bd-2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.history-item:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+/* ===================================================
+   07 梗图生成器
+   =================================================== */
+.meme-stage {
+  border: var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  background: var(--ink);
+}
+
+#memeCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.meme-tpl-row {
+  display: flex;
+  gap: 10px;
+}
+
+.meme-tpl {
+  width: 100%;
+  aspect-ratio: 1.45;
+  border: var(--bd-2);
+  border-radius: 10px;
+  transition: transform 0.12s;
+  position: relative;
+  overflow: hidden;
+}
+
+.meme-tpl:hover {
+  transform: translateY(-2px);
+}
+
+.meme-tpl[aria-pressed='true'] {
+  box-shadow: 0 0 0 3px var(--ink);
+}
+
+.seg {
+  display: flex;
+  gap: 8px;
+}
+
+.seg button {
+  padding: 8px 14px;
+  border: var(--bd-2);
+  border-radius: 8px;
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.seg button[aria-pressed='true'] {
+  background: var(--violet);
+  color: var(--white);
+}
+
+/* ===================================================
+   搜索页
+   =================================================== */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 6px 6px 20px;
+  background: var(--white);
+  border: var(--bd);
+  border-radius: 9999px;
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+}
+
+.search-box svg {
+  width: 22px;
+  height: 22px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 17px;
+  min-width: 0;
+  padding: 10px 0;
+}
+
+.search-box input::placeholder {
+  color: #a8a8b0;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--white);
+  border: var(--bd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+  transition: transform 0.12s, box-shadow 0.12s;
+  width: 100%;
+  text-align: left;
+}
+
+.result-row:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.result-row .tool-icon {
+  width: 44px;
+  height: 44px;
+}
+
+.result-row .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-row .nm {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.result-row .ds {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.result-row .go {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--violet);
+  flex-shrink: 0;
+}
+
+/* 快捷搜索 chip */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.chip {
+  padding: 7px 13px;
+  border: var(--bd-2);
+  border-radius: 9999px;
+  background: var(--white);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+
+.chip:hover {
+  background: var(--cream-2);
+}
+
+.chip.on {
+  background: var(--lime);
+}
+
+/* ===================================================
+   响应式
+   =================================================== */
+@media (max-width: 1180px) {
+  .grid-tools {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .tool-layout,
+  .tool-layout.narrow {
+    grid-template-columns: 1fr;
+  }
+  .daily-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .wrap,
+  .page-body,
+  .topbar {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .grid-tools {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hero {
+    padding: 20px;
+  }
+  .hero h1 {
+    font-size: 32px;
+  }
+  .hero-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero-btns {
+    width: 100%;
+  }
+  .hero-btns .btn {
+    flex: 1;
+    padding: 13px 14px;
+    font-size: 14px;
+  }
+  .num-row {
+    grid-template-columns: 1fr;
+  }
+  .topbar {
+    height: auto;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    font-size: 18px;
+  }
+  .big-stat .num {
+    font-size: 42px;
+  }
+  .meme-tpl-row,
+  .history-grid {
+    gap: 8px;
+  }
+  .gradient-preview {
+    min-height: 240px;
+  }
+  .footbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 520px) {
+  .grid-tools {
+    grid-template-columns: 1fr;
+  }
+  /* 窄屏下代码自动折行，避免出现横向滚动条 */
+  .code-body {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: visible;
+  }
+  .history-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hero h1 {
+    font-size: 27px;
+  }
+  .timer-display {
+    font-size: 38px;
+  }
+  .fortune-score {
+    font-size: 46px;
+  }
+  .wheel-final {
+    font-size: 26px;
+  }
+}
+
+/* 减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 打印时隐藏装饰 */
+@media print {
+  .topbar,
+  .site-foot {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* 摸鱼乐园 · 数据与工具函数 */
+(function () {
+  const MT = (window.MT = window.MT || {});
+
+  /* ---------- 通用工具 ---------- */
+  const util = {
+    byId(id) {
+      return document.getElementById(id);
+    },
+    qs(sel, root) {
+      return (root || document).querySelector(sel);
+    },
+    qsa(sel, root) {
+      return Array.from((root || document).querySelectorAll(sel));
+    },
+    clamp(n, min, max) {
+      return Math.min(max, Math.max(min, n));
+    },
+    rand(min, max) {
+      return Math.random() * (max - min) + min;
+    },
+    randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    },
+    pad(n) {
+      return String(n).padStart(2, '0');
+    },
+    /* 相对时间：刚刚 / 3 分钟前 / 2 小时前 */
+    relTime(ts) {
+      const diff = Date.now() - ts;
+      const min = Math.floor(diff / 60000);
+      if (min < 1) return '刚刚';
+      if (min < 60) return min + ' 分钟前';
+      const hr = Math.floor(min / 60);
+      if (hr < 24) return hr + ' 小时前';
+      return Math.floor(hr / 24) + ' 天前';
+    },
+    /* 本地存储，失败静默（无痕模式 / 禁用 cookie 时不崩） */
+    store: {
+      get(key, fallback) {
+        try {
+          const raw = localStorage.getItem('moyu:' + key);
+          return raw === null ? fallback : JSON.parse(raw);
+        } catch (e) {
+          return fallback;
+        }
+      },
+      set(key, value) {
+        try {
+          localStorage.setItem('moyu:' + key, JSON.stringify(value));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+    },
+    /* 复制到剪贴板，带降级方案 */
+    async copy(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e2) {
+          return false;
+        }
+      }
+    },
+    /* 高 DPI 画布适配，返回绘制用的 CSS 像素尺寸 */
+    fitCanvas(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (!w || !h) return null;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w, h };
+    },
+    /* 文本按宽度折行 */
+    wrapText(ctx, text, maxWidth) {
+      const lines = [];
+      let line = '';
+      for (const ch of text) {
+        if (ch === '\n') {
+          lines.push(line);
+          line = '';
+          continue;
+        }
+        const test = line + ch;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = ch;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+  };
+
+  /* ---------- 图标 ---------- */
+  const S = (d, extra) =>
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round">' + d + (extra || '') + '</svg>';
+
+  const icons = {
+    wheel: S('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>'),
+    fireworks: S('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>'),
+    daily: S('<rect x="3" y="4" width="18" height="4.4" rx="1.6"/><rect x="3" y="10.6" width="18" height="3.2" rx="1.4"/><rect x="3" y="16.4" width="11" height="3.2" rx="1.4"/>'),
+    life: S('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9h17M3.5 14.6h17M9 3.5v17M15 3.5v17"/>'),
+    wishes: S('<circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M9.6 9.4h4.2a2 2 0 0 1 0 4H10a2 2 0 0 0 0 4h4.4"/>'),
+    gradient: S('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 16.5l17-9"/>'),
+    meme: S('<path d="M4 4.5h16v11H9.5L4 19.5z"/><path d="M8.5 9.5h7M8.5 12h4.5"/>')
+  };
+
+  /* ---------- 玩具清单 ---------- */
+  const tools = [
+    {
+      id: 'wheel',
+      name: '今天吃什么',
+      desc: '转不动的转盘，替你决定这顿吃什么',
+      color: 'c-lime',
+      icon: 'wheel',
+      badge: '最热门',
+      tags: ['吃', '午饭', '选择', '转盘', '随机']
+    },
+    {
+      id: 'fireworks',
+      name: '指尖烟花',
+      desc: '鼠标划过就炸开，点一下放一束',
+      color: 'c-pink',
+      icon: 'fireworks',
+      tags: ['烟花', '画画', '放松', 'canvas']
+    },
+    {
+      id: 'daily',
+      name: '每日三件套',
+      desc: '运势、冷知识、摸鱼计时，一次开完',
+      color: 'c-yellow',
+      icon: 'daily',
+      tags: ['运势', '冷知识', '计时', '今日']
+    },
+    {
+      id: 'life',
+      name: '人生进度条',
+      desc: '把一辈子画成格子，看看还剩多少',
+      color: 'c-violet',
+      icon: 'life',
+      tags: ['人生', '格子', '时间', '年龄']
+    },
+    {
+      id: 'wishes',
+      name: '许愿池',
+      desc: '扔一枚硬币进去，然后继续等',
+      color: 'c-blue',
+      icon: 'wishes',
+      tags: ['许愿', '情绪', '匿名', '吐槽']
+    },
+    {
+      id: 'gradient',
+      name: '渐变生成器',
+      desc: '一键生成配色，顺手复制走人',
+      color: 'c-purple',
+      icon: 'gradient',
+      tags: ['配色', 'CSS', '设计', '工具']
+    },
+    {
+      id: 'meme',
+      name: '梗图生成器',
+      desc: '打一行字，自动生成能发的图',
+      color: 'c-coral',
+      icon: 'meme',
+      tags: ['梗图', '表情包', '生成', '图片']
+    }
+  ];
+
+  /* ---------- 每日三件套：运势 ---------- */
+  const fortunes = [
+    { score: 96, title: '宜摸鱼', good: '偷偷看视频、假装在写文档', bad: '主动揽活、说「我来吧」', line: '今天你的存在本身就是一种效率。' },
+    { score: 88, title: '小吉', good: '点奶茶、假装开会', bad: '开摄像头', line: '会有人@你，但不是什么大事。' },
+    { score: 74, title: '平平', good: '整理桌面、装作很忙', bad: '跟老板对视', line: '今天不会有好事，但也不会有坏事。这已经很好了。' },
+    { score: 61, title: '微凶', good: '带薪上厕所、摸手机', bad: '回复「收到」太快', line: '你的运气在下午三点之后开始下滑。' },
+    { score: 49, title: '有点背', good: '安静坐着、什么都别碰', bad: '改需求、点提交', line: '今天适合当个透明人。' },
+    { score: 33, title: '大凶（假的）', good: '请假、关机、失联', bad: '做任何决定', line: '别慌，这个网站本来就不准。' },
+    { score: 100, title: '天选摸鱼人', good: '躺平、发呆、看云', bad: '反思自己', line: '今天你做什么都对，包括什么都不做。' }
+  ];
+
+  /* ---------- 每日三件套：冷知识 ---------- */
+  const coldKnowledge = [
+    '蜂蜜放三千年也不会坏。考古学家在古埃及墓里挖出来的蜂蜜，据说还能吃。',
+    '章鱼有三个心脏，血液是蓝色的。它比大部分同事都更有设计感。',
+    '你打喷嚏的时候，心脏会短暂停跳一下。所以「吓一跳」是真的字面意思。',
+    '香蕉在植物学上算浆果，草莓不算。分类学就是这么不讲道理。',
+    '人的胃酸能溶解刀片。但请不要验证这件事。',
+    '云的平均重量大约是 50 万公斤。你头顶上一直悬着五百吨水。',
+    '一只蜗牛可以睡三年。它可能是这个世界上唯一真正休息过的生物。',
+    '你身体里的原子，大部分来自恒星爆炸。所以「你是星辰」这句话不是鸡汤。',
+    '打印机卡纸的时候，全世界的人都会先打开再关上，希望它自己想通。',
+    '人类的 DNA 和香蕉有大约 60% 相同。这解释了某些会议的质量。',
+    '打哈欠会传染，但读文字打哈欠的传染性更强——你现在可能已经想打一个了。',
+    '星期一不是一周的第一天，只是痛苦的第一天。',
+    '在冰岛，给马起名字需要政府批准。',
+    '你一辈子平均会花 6 个月等红灯。这还没算等编译的时间。',
+    '蜜蜂能认出人的脸。所以你对蜜蜂做鬼脸，它记得。'
+  ];
+
+  /* ---------- 转盘选项 ---------- */
+  const wheelOptions = ['火锅', '日料', '麻辣烫', '沙拉', '汉堡', '炒饭', '面条', '随便吧'];
+  const wheelColors = ['#B9FF66', '#F8B7B8', '#F8D044', '#C9C6F5', '#D6EBFF', '#FFB86B', '#9BE7C4', '#F5C6E0'];
+
+  /* ---------- 许愿池：种子愿望 ---------- */
+  const seedWishes = [
+    { text: '希望明天开会不会超过二十分钟', cat: '工作', coins: 1, ago: 0.4, coin: '#F8D044' },
+    { text: '想在今年秋天去看一次真正的海', cat: '生活', coins: 3, ago: 2, coin: '#F8B7B8' },
+    { text: '求求了让我抽到那个隐藏款', cat: '暴富', coins: 2, ago: 5, coin: '#B9FF66' },
+    { text: '希望我妈别再问我什么时候结婚了', cat: '感情', coins: 1, ago: 8, coin: '#C9C6F5' },
+    { text: '希望明年今天的我，比现在自由一点', cat: '生活', coins: 5, ago: 11, coin: '#FFE0B8' },
+    { text: '世界和平，顺便让楼下装修停一停', cat: '世界和平', coins: 7, ago: 14, coin: '#D6EBFF' },
+    { text: '让我这辈子只加一次班就够了', cat: '工作', coins: 2, ago: 18, coin: '#B9FF66' }
+  ];
+
+  const wishCats = ['工作', '生活', '感情', '暴富', '世界和平'];
+
+  /* ---------- 梗图模板 ---------- */
+  const memeTemplates = [
+    { id: 'dusk', name: '黄昏渐变', colors: ['#5B57EB', '#F8B7B8'] },
+    { id: 'paper', name: '废纸报纸', colors: ['#E8E2CE', '#C8C0A8'] },
+    { id: 'acid', name: '荧光暴力', colors: ['#B9FF66', '#5B57EB'] }
+  ];
+
+  MT.data = {
+    tools,
+    icons,
+    fortunes,
+    coldKnowledge,
+    wheelOptions,
+    wheelColors,
+    seedWishes,
+    wishCats,
+    memeTemplates
+  };
+  MT.util = util;
+  MT.tools = {};
+})();
+</script>
+<script>
+/* 01 今天吃什么 · 转盘 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  let options = data.wheelOptions.slice();
+  let rotation = 0;      // 当前角度（弧度）
+  let spinning = false;
+  let lastPick = null;
+
+  function render(tool, shell) {
+    shell(
+      tool,
+      '<div class="tool-layout narrow">' +
+        '<div>' +
+        '<div class="wheel-stage">' +
+        '<canvas id="wheelCanvas" width="520" height="520" role="img" aria-label="今天吃什么转盘"></canvas>' +
+        '</div>' +
+        '<div class="wheel-result" id="result"></div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="card">' +
+        '<h3 class="card-title">转盘里有什么</h3>' +
+        '<div class="opt-row" id="optRow"></div>' +
+        '<div style="display:flex;gap:8px">' +
+        '<input class="field" id="newOpt" placeholder="加一个选项，比如「螺蛳粉」" maxlength="12" style="flex:1">' +
+        '<button class="btn sm lime" id="addOpt">加</button>' +
+        '</div>' +
+        '</div>' +
+        '<button class="btn violet lg block" id="spinBtn">' + MT.app.ICON.shuffle + '开始转</button>' +
+        '<div class="card">' +
+        '<h3 class="card-title">怎么玩</h3>' +
+        '<p style="margin:0;font-size:13px;color:var(--ink-soft);line-height:1.7">' +
+        '点「开始转」，转盘会转三秒左右停下。<br>' +
+        '结果不满意？再转一次。反正你还是不会做饭。' +
+        '</p>' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+    );
+
+    drawWheel(0);
+    renderOptions();
+
+    util.byId('spinBtn').addEventListener('click', spin);
+    util.byId('wheelCanvas').addEventListener('click', spin);
+    util.byId('addOpt').addEventListener('click', addOption);
+    util.byId('newOpt').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addOption();
+    });
+  }
+
+  function renderOptions() {
+    const row = util.byId('optRow');
+    if (!row) return;
+    row.innerHTML = options
+      .map(
+        (o, i) =>
+          '<button class="opt-chip" data-i="' + i + '">' + o +
+          (options.length > 2 ? '<span class="x" data-del="' + i + '">×</span>' : '') +
+          '</button>'
+      )
+      .join('');
+
+    util.qsa('.x', row).forEach((x) => {
+      x.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const i = Number(x.dataset.del);
+        options.splice(i, 1);
+        renderOptions();
+        drawWheel(rotation);
+      });
+    });
+  }
+
+  function addOption() {
+    const input = util.byId('newOpt');
+    const v = input.value.trim();
+    if (!v) return;
+    if (options.length >= 10) {
+      input.value = '';
+      input.placeholder = '最多 10 个，选不出来就都吃';
+      return;
+    }
+    if (!options.includes(v)) options.push(v);
+    input.value = '';
+    renderOptions();
+    drawWheel(rotation);
+  }
+
+  /* 绘制转盘：固定指向顶部的指针 */
+  function drawWheel(rot) {
+    const canvas = util.byId('wheelCanvas');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const size = 520;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+
+    const cx = size / 2;
+    const cy = size / 2;
+    const r = size / 2 - 26;
+    const n = options.length;
+    const seg = (Math.PI * 2) / n;
+
+    /* 内部阴影底 */
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#F9F4DF';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#1A1A23';
+    ctx.stroke();
+
+    for (let i = 0; i < n; i++) {
+      const start = rot + i * seg - Math.PI / 2 - seg / 2;
+      const end = start + seg;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
+      ctx.closePath();
+      ctx.fillStyle = data.wheelColors[i % data.wheelColors.length];
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#1A1A23';
+      ctx.stroke();
+
+      /* 文字沿半径摆放 */
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(start + seg / 2);
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#1A1A23';
+      const label = options[i];
+      const fs = label.length > 4 ? 18 : 22;
+      ctx.font = '700 ' + fs + 'px "Noto Sans SC", sans-serif';
+      /* 长文案截断 */
+      const maxW = r - 68;
+      let text = label;
+      if (ctx.measureText(text).width > maxW) {
+        while (text.length > 1 && ctx.measureText(text + '…').width > maxW) {
+          text = text.slice(0, -1);
+        }
+        text += '…';
+      }
+      ctx.fillText(text, r - 20, 0);
+      ctx.restore();
+    }
+
+    /* 中心圆 */
+    ctx.beginPath();
+    ctx.arc(cx, cy, 42, 0, Math.PI * 2);
+    ctx.fillStyle = '#1A1A23';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 34, 0, Math.PI * 2);
+    ctx.fillStyle = '#F8D044';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#1A1A23';
+    ctx.stroke();
+
+    /* 中心字 */
+    ctx.fillStyle = '#1A1A23';
+    ctx.font = '700 15px "Noto Sans SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(spinning ? '转…' : '吃啥', cx, cy);
+
+    /* 顶部指针 */
+    ctx.beginPath();
+    ctx.moveTo(cx - 17, 4);
+    ctx.lineTo(cx + 17, 4);
+    ctx.lineTo(cx, 40);
+    ctx.closePath();
+    ctx.fillStyle = '#FF6B6B';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#1A1A23';
+    ctx.stroke();
+  }
+
+  function spin() {
+    if (spinning) return;
+    const n = options.length;
+    if (n < 2) return;
+
+    spinning = true;
+    drawWheel(rotation);
+
+    /* 随机目标扇区 + 提前确定落点，保证指针精确对准该扇区中心 */
+    const targetIndex = util.randInt(0, n - 1);
+    const seg = (Math.PI * 2) / n;
+    const turns = util.randInt(5, 8);
+    /* 指针在顶部 (-90deg)，扇区 i 的中心角需转到 -90deg */
+    const targetRot = -targetIndex * seg + turns * Math.PI * 2 + util.rand(-seg * 0.3, seg * 0.3);
+
+    const startRot = rotation;
+    const delta = targetRot - startRot;
+    const duration = 3200;
+    const t0 = performance.now();
+
+    function frame(now) {
+      const p = util.clamp((now - t0) / duration, 0, 1);
+      /* easeOutQuart，收尾非常慢，有「转不动了」的滑稽感 */
+      const ease = 1 - Math.pow(1 - p, 4);
+      rotation = startRot + delta * ease;
+      drawWheel(rotation);
+      if (p < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        spinning = false;
+        rotation = targetRot;
+        drawWheel(rotation);
+        showResult(options[targetIndex]);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function showResult(name) {
+    lastPick = name;
+    const el = util.byId('result');
+    if (!el) return;
+    el.innerHTML = '<span class="wheel-final">就吃 ' + name + '</span>';
+
+    /* 记录历史，仅本地 */
+    const hist = util.store.get('wheelHistory', []);
+    hist.unshift({ name, at: Date.now() });
+    util.store.set('wheelHistory', hist.slice(0, 30));
+  }
+
+  MT.tools['wheel'] = { render };
+})();
+</script>
+<script>
+/* 02 指尖烟花 · Canvas 粒子 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  const PALETTES = {
+    糖果: ['#B9FF66', '#F8B7B8', '#F8D044', '#C9C6F5', '#D6EBFF'],
+    霓虹: ['#5B57EB', '#00F0FF', '#FF3D8B', '#B9FF66', '#FFFFFF'],
+    火焰: ['#FFB86B', '#FF6B6B', '#F8D044', '#FF3D5A', '#FFF3C4'],
+    冷焰: ['#D6EBFF', '#9BE7C4', '#C9C6F5', '#FFFFFF', '#7EC8E3']
+  };
+
+  let particles = [];
+  let rockets = [];
+  let raf = null;
+  let ctx = null;
+  let W = 0;
+  let H = 0;
+  let palette = PALETTES['糖果'];
+  let running = false;
+
+  function render(tool, shell) {
+    shell(
+      tool,
+      '<div class="tool-layout">' +
+        '<div class="stack">' +
+        '<div class="fireworks-stage" id="stage" style="height:clamp(420px,58vh,620px)">' +
+        '<canvas id="fireworksCanvas"></canvas>' +
+        '<div class="fireworks-hint" id="hint">点一下放一束 · 按住拖动会连发</div>' +
+        '</div>' +
+        '<div class="footbar"><span>画的东西不会保存，关掉就没了。</span><b>这大概就是烟花的意义</b></div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="card">' +
+        '<h3 class="card-title">换个颜色</h3>' +
+        '<div class="color-row" id="paletteRow"></div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">玩法</h3>' +
+        '<p style="margin:0;font-size:13px;color:var(--ink-soft);line-height:1.75">' +
+        '· 单击 = 放一束<br>· 按住拖动 = 连发<br>· 双击 = 来一场大的' +
+        '</p>' +
+        '</div>' +
+        '<button class="btn lime block" id="boomBtn">' + MT.app.ICON.fireworks + '全部炸一遍</button>' +
+        '<button class="btn block" id="clearBtn">' + MT.app.ICON.trash + '清空画布</button>' +
+        '</div>' +
+        '</div>'
+    );
+
+    initCanvas();
+    renderPalettes();
+    bindEvents();
+  }
+
+  function renderPalettes() {
+    const row = util.byId('paletteRow');
+    row.innerHTML = Object.keys(PALETTES)
+      .map(
+        (k, i) =>
+          '<button class="color-dot" aria-pressed="' + (i === 0) + '" data-p="' + k + '" ' +
+          'style="background:linear-gradient(135deg,' + PALETTES[k][0] + ',' + PALETTES[k][1] + ' 50%,' + PALETTES[k][2] + ')" ' +
+          'aria-label="' + k + '配色"></button>'
+      )
+      .join('');
+
+    util.qsa('.color-dot', row).forEach((d) => {
+      d.addEventListener('click', () => {
+        palette = PALETTES[d.dataset.p];
+        util.qsa('.color-dot', row).forEach((x) => x.setAttribute('aria-pressed', String(x === d)));
+        /* 换色时现场补一朵，立刻有反馈 */
+        burst(W / 2, H / 2, 34);
+      });
+    });
+  }
+
+  function initCanvas() {
+    const canvas = util.byId('fireworksCanvas');
+    const fit = util.fitCanvas(canvas);
+    if (!fit) return;
+    ctx = fit.ctx;
+    W = fit.w;
+    H = fit.h;
+    ctx.fillStyle = '#12121A';
+    ctx.fillRect(0, 0, W, H);
+    startLoop();
+  }
+
+  function startLoop() {
+    if (running) return;
+    running = true;
+    const canvas = util.byId('fireworksCanvas');
+
+    function loop() {
+      if (!util.byId('fireworksCanvas')) {
+        running = false;
+        return;
+      }
+      step();
+      raf = requestAnimationFrame(loop);
+    }
+    raf = requestAnimationFrame(loop);
+
+    /* 尺寸变化重设 */
+    const ro = new ResizeObserver(() => {
+      if (!util.byId('fireworksCanvas')) {
+        ro.disconnect();
+        return;
+      }
+      const again = util.fitCanvas(canvas);
+      if (again) {
+        ctx = again.ctx;
+        W = again.w;
+        H = again.h;
+        ctx.fillStyle = '#12121A';
+        ctx.fillRect(0, 0, W, H);
+      }
+    });
+    ro.observe(canvas.parentElement);
+  }
+
+  function step() {
+    /* 拖尾：用半透明黑覆盖，产生长尾 */
+    ctx.fillStyle = 'rgba(18,18,26,0.16)';
+    ctx.fillRect(0, 0, W, H);
+
+    /* 上升的火箭 */
+    for (let i = rockets.length - 1; i >= 0; i--) {
+      const r = rockets[i];
+      r.x += r.vx;
+      r.y += r.vy;
+      r.vy += 0.16;
+      r.life--;
+
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFF3C4';
+      ctx.fill();
+
+      if (r.life <= 0 || r.vy >= -0.6) {
+        burst(r.x, r.y, r.count, r.color);
+        rockets.splice(i, 1);
+      }
+    }
+
+    /* 粒子 */
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.055;       /* 重力 */
+      p.vx *= 0.985;       /* 空气阻力 */
+      p.vy *= 0.985;
+      p.life -= p.decay;
+
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    /* 粒子太多时裁剪，保证帧率 */
+    if (particles.length > 1400) particles.splice(0, particles.length - 1400);
+  }
+
+  function burst(x, y, count, forceColor) {
+    const n = count || util.randInt(26, 42);
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.PI * 2 * i) / n + util.rand(-0.12, 0.12);
+      const speed = util.rand(1.6, 5.2);
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: forceColor || util.pick(palette),
+        size: util.rand(1.6, 3.4),
+        life: 1,
+        decay: util.rand(0.008, 0.018)
+      });
+    }
+  }
+
+  function launch(x, y) {
+    if (!W || !H) return;
+    rockets.push({
+      x: x !== undefined ? x : util.rand(W * 0.2, W * 0.8),
+      y: GY(y),
+      vx: util.rand(-0.6, 0.6),
+      vy: util.rand(-9.5, -7.5),
+      life: util.randInt(28, 42),
+      count: util.randInt(30, 46),
+      color: util.pick(palette)
+    });
+  }
+
+  function GY(y) {
+    return typeof y === 'number' ? y : H - 10;
+  }
+
+  function bindEvents() {
+    const stage = util.byId('stage');
+    const hint = util.byId('hint');
+    let down = false;
+    let throttle = 0;
+
+    function pos(e) {
+      const r = stage.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+
+    function fire(e) {
+      const p = pos(e);
+      burst(p.x, p.y, 30);
+      if (hint) hint.classList.add('hide');
+      if (navigator.vibrate) navigator.vibrate(8);
+    }
+
+    stage.addEventListener('pointerdown', (e) => {
+      down = true;
+      fire(e);
+      e.preventDefault();
+    });
+
+    stage.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const now = performance.now();
+      if (now - throttle < 90) return;
+      throttle = now;
+      const p = pos(e);
+      burst(p.x, p.y, 12);
+    });
+
+    window.addEventListener('pointerup', () => {
+      down = false;
+    });
+
+    stage.addEventListener('dblclick', () => {
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => launch(util.rand(W * 0.15, W * 0.85), H + 4), i * 120);
+      }
+    });
+
+    util.byId('boomBtn').addEventListener('click', () => {
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => launch(util.rand(W * 0.1, W * 0.9), H + 4), i * 130);
+      }
+      if (hint) hint.classList.add('hide');
+    });
+
+    util.byId('clearBtn').addEventListener('click', () => {
+      particles = [];
+      rockets = [];
+      ctx.fillStyle = '#12121A';
+      ctx.fillRect(0, 0, W, H);
+      if (hint) hint.classList.remove('hide');
+    });
+  }
+
+  MT.tools['fireworks'] = { render };
+})();
+</script>
+<script>
+/* 03 每日三件套 · 运势 / 冷知识 / 摸鱼计时器 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  let timerId = null;
+  let seconds = 0;
+  let ticking = false;
+
+  /* 按当天日期生成稳定的运势与冷知识（同一天刷新不变） */
+  function dayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+
+  function hashOf(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return Math.abs(h);
+  }
+
+  function render(tool, shell) {
+    const key = dayKey();
+    const seed = hashOf(key + 'moyu');
+    const fortune = data.fortunes[seed % data.fortunes.length];
+    const know = data.coldKnowledge[(seed >> 3) % data.coldKnowledge.length];
+
+    /* 累计摸鱼时长（历史） */
+    const total = util.store.get('moyuTotal', 0);
+
+    shell(
+      tool,
+      '<div class="tool-layout">' +
+        '<div class="daily-grid" style="grid-column:1/-1">' +
+        /* 运势 */
+        '<div class="fortune-card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+        '<div><div class="fortune-title" style="margin:0">今日运势</div>' +
+        '<div style="font-size:12px;color:#5a4a10">' + key + '</div></div>' +
+        '<span class="pill" style="background:#1A1A23;color:#F9F4DF;border-width:2px">' + fortune.title + '</span>' +
+        '</div>' +
+        '<div class="fortune-score">' + fortune.score + '<small>分</small></div>' +
+        '<div class="fortune-row"><span class="k">宜</span><span>' + fortune.good + '</span></div>' +
+        '<div class="fortune-row"><span class="k">忌</span><span>' + fortune.bad + '</span></div>' +
+        '<div class="fortune-line">' + fortune.line + '</div>' +
+        '</div>' +
+        /* 冷知识 */
+        '<div class="knowledge-card">' +
+        '<span class="knowledge-num">#</span>' +
+        '<div class="fortune-title" style="margin:0 0 0 0">今日冷知识</div>' +
+        '<p class="knowledge-text">' + know + '</p>' +
+        '<div style="margin-top:auto;padding-top:14px;display:flex;gap:8px">' +
+        '<button class="btn sm lime" id="nextKnow">换一条</button>' +
+        '</div>' +
+        '</div>' +
+        /* 计时器 */
+        '<div class="timer-card">' +
+        '<div class="fortune-title" style="margin:0;color:#fff">摸鱼计时器</div>' +
+        '<div class="timer-display" id="timerDisplay" aria-live="off">00:00</div>' +
+        '<div class="timer-label" id="timerLabel">今天还没开始摸</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button class="btn sm lime" id="timerToggle">开始摸</button>' +
+        '<button class="btn sm" id="timerReset" style="background:transparent;color:#fff;border-color:#fff">清零</button>' +
+        '</div>' +
+        '<div class="timer-total">累计摸鱼 <b id="totalTime">' + fmt(total) + '</b></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="footbar" style="grid-column:1/-1;margin-top:16px"><span>今天的三件套开完了。</span><b>明天还有新的，但可能也差不多</b></div>'
+    );
+
+    /* 冷知识换一条 */
+    let knowIdx = (seed >> 3) % data.coldKnowledge.length;
+    util.byId('nextKnow').addEventListener('click', () => {
+      knowIdx = (knowIdx + 1) % data.coldKnowledge.length;
+      util.qs('.knowledge-text').textContent = data.coldKnowledge[knowIdx];
+    });
+
+    /* 计时器 */
+    renderTimer(total);
+    util.byId('timerToggle').addEventListener('click', toggleTimer);
+    util.byId('timerReset').addEventListener('click', resetTimer);
+  }
+
+  function fmt(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    if (h > 0) return h + ' 小时 ' + m + ' 分';
+    if (m > 0) return m + ' 分钟';
+    return sec + ' 秒';
+  }
+
+  function clock(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    if (h > 0) return util.pad(h) + ':' + util.pad(m) + ':' + util.pad(s);
+    return util.pad(m) + ':' + util.pad(s);
+  }
+
+  function renderTimer(total) {
+    const d = util.byId('timerDisplay');
+    if (!d) return;
+    d.textContent = clock(seconds);
+    util.byId('totalTime').textContent = fmt(total + seconds);
+    util.byId('timerLabel').textContent = ticking
+      ? '正在摸鱼 · 别被发现'
+      : seconds > 0
+      ? '已暂停 · 摸得还不够'
+      : '今天还没开始摸';
+
+    const btn = util.byId('timerToggle');
+    btn.textContent = ticking ? '暂停' : seconds > 0 ? '继续摸' : '开始摸';
+    btn.className = 'btn sm ' + (ticking ? 'pink' : 'lime');
+  }
+
+  function toggleTimer() {
+    ticking = !ticking;
+    if (ticking) {
+      timerId = setInterval(() => {
+        seconds++;
+        renderTimer(util.store.get('moyuTotal', 0));
+      }, 1000);
+    } else {
+      clearInterval(timerId);
+      timerId = null;
+      /* 暂停时把这一轮计入累计，并保留秒数用于显示（不清零，可继续） */
+      const base = util.store.get('moyuTotal', 0);
+      util.store.set('moyuTotal', base + seconds);
+      seconds = 0;
+    }
+    renderTimer(util.store.get('moyuTotal', 0));
+  }
+
+  function resetTimer() {
+    clearInterval(timerId);
+    timerId = null;
+    ticking = false;
+    seconds = 0;
+    util.store.set('moyuTotal', 0);
+    renderTimer(0);
+  }
+
+  MT.tools['daily'] = { render };
+})();
+</script>
+<script>
+/* 04 人生进度条 · 输入 + 结果 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  const COLS = 52;   /* 一年 52 周 → 一列一年？这里按「一年一格」的经典版式 */
+  const WEEKS_PER_YEAR = 52;
+
+  let birth = util.store.get('lifeBirth', '1994-06-12');
+  let lifespan = util.store.get('lifeSpan', 80);
+  let stage = 'input';   /* input | result */
+
+  function render(tool, shell) {
+    if (stage === 'result') return renderResult(tool, shell);
+    return renderInput(tool, shell);
+  }
+
+  /* ---------------- 输入页 ---------------- */
+  function renderInput(tool, shell) {
+    shell(
+      tool,
+      '<div class="tool-layout narrow">' +
+        '<div class="stack">' +
+        '<div class="card">' +
+        '<h3 style="font-size:24px;margin:0 0 6px;letter-spacing:-.02em">你的人生还剩多少格</h3>' +
+        '<p style="margin:0 0 18px;font-size:13px;color:var(--ink-soft)">填两个数字，把一辈子画成格子。</p>' +
+        '<label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">生日</label>' +
+        '<input class="field" type="date" id="birth" value="' + birth + '" max="' + todayStr() + '">' +
+        '<label style="display:block;font-size:13px;font-weight:700;margin:18px 0 6px">预计活到 <span id="spanLabel">' + lifespan + '</span> 岁</label>' +
+        '<input type="range" id="span" min="40" max="120" step="1" value="' + lifespan + '">' +
+        '<div class="preset-row" style="margin-top:8px">' +
+        [60, 70, 80, 90, 120]
+          .map((v) => '<button class="preset" data-v="' + v + '" aria-pressed="' + (v === lifespan) + '">' + v + ' 岁</button>')
+          .join('') +
+        '</div>' +
+        '<button class="btn lime lg block" id="calcBtn" style="margin-top:22px">把一生画出来</button>' +
+        '<p style="margin:14px 0 0;font-size:11.5px;color:var(--muted);line-height:1.6">生日只存在你自己的浏览器里，没人看得到。</p>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">填完的人说</h3>' +
+        '<p style="margin:0;font-size:13px;color:var(--ink-soft);line-height:1.75">' +
+        '「看完之后我立刻去请假了。」<br>' +
+        '「不知道有什么用，但确实睡不着了。」<br>' +
+        '「建议别在周一早上看。」' +
+        '</p>' +
+        '</div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="card">' +
+        '<h3 class="card-title">先看一眼大概长什么样</h3>' +
+        '<div class="life-preview"><canvas id="previewCanvas" class="life-grid-canvas"></canvas></div>' +
+        '<div class="life-legend">' +
+        '<span><i style="background:#5B57EB"></i>已经过去</span>' +
+        '<span><i style="background:#B9FF66"></i>接下来</span>' +
+        '<span><i style="background:#FFFFFF"></i>还没填</span>' +
+        '</div>' +
+        '</div>' +
+        '<div class="milestone">' +
+        '<b>一个小提示</b><br>' +
+        '这张图不是用来焦虑的。它只是提醒你：格子不多，别都花在开会上面。' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+    );
+
+    const birthEl = util.byId('birth');
+    const spanEl = util.byId('span');
+    const spanLabel = util.byId('spanLabel');
+
+    function syncPreset() {
+      util.qsa('.preset').forEach((p) => {
+        p.setAttribute('aria-pressed', String(Number(p.dataset.v) === Number(spanEl.value)));
+      });
+    }
+
+    birthEl.addEventListener('change', () => {
+      birth = birthEl.value || birth;
+      drawPreview();
+    });
+    spanEl.addEventListener('input', () => {
+      lifespan = Number(spanEl.value);
+      spanLabel.textContent = lifespan;
+      syncPreset();
+      drawPreview();
+    });
+    util.qsa('.preset').forEach((p) => {
+      p.addEventListener('click', () => {
+        spanEl.value = p.dataset.v;
+        spanEl.dispatchEvent(new Event('input'));
+      });
+    });
+
+    util.byId('calcBtn').addEventListener('click', () => {
+      util.store.set('lifeBirth', birth);
+      util.store.set('lifeSpan', lifespan);
+      stage = 'result';
+      MT.app.route();
+    });
+
+    drawPreview();
+  }
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + util.pad(d.getMonth() + 1) + '-' + util.pad(d.getDate());
+  }
+
+  function ageOf(birthStr) {
+    const b = new Date(birthStr);
+    if (isNaN(b)) return 0;
+    const now = new Date();
+    let ms = now - b;
+    if (ms < 0) ms = 0;
+    return ms / (365.2425 * 24 * 3600 * 1000);
+  }
+
+  /* 绘制格子：一年一行，一行 52 周，共 lifespan 行 */
+  function drawGrid(canvas, years, cols, opts) {
+    opts = opts || {};
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = canvas.clientWidth || 620;
+    const cell = opts.cell || Math.max(5, Math.floor((cssW - (cols - 1) * 2) / cols));
+    const gap = opts.gap || 2;
+    const w = cols * cell + (cols - 1) * gap;
+    const h = years * cell + (years - 1) * gap;
+    canvas.style.height = h + 'px';
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = '100%';
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    const passed = opts.passed || 0;
+    for (let y = 0; y < years; y++) {
+      const yearStart = y;
+      for (let c = 0; c < cols; c++) {
+        const idx = yearStart + c / cols;
+        let fill = '#FFFFFF';
+        if (idx < passed) fill = opts.passedColor || '#5B57EB';
+        else if (idx < passed + 1) fill = opts.currentColor || '#F8D044';
+        else fill = opts.futureColor || '#B9FF66';
+        if (passed === 0 && idx >= 0) fill = '#B9FF66';
+        ctx.fillStyle = fill;
+        ctx.beginPath();
+        ctx.roundRect(c * (cell + gap), y * (cell + gap), cell, cell, Math.max(1.5, cell * 0.18));
+        ctx.fill();
+      }
+    }
+    /* 顶部高亮已过部分的背景条 */
+    return { w, h, cell, gap };
+  }
+
+  function drawPreview() {
+    const canvas = util.byId('previewCanvas');
+    if (!canvas) return;
+    const age = ageOf(birth);
+    const passed = Math.min(age, lifespan);
+    drawGrid(canvas, lifespan, WEEKS_PER_YEAR, {
+      cell: 6,
+      gap: 1.6,
+      passed: passed / 1,
+      passedColor: '#5B57EB',
+      futureColor: '#B9FF66'
+    });
+  }
+
+  /* ---------------- 结果页 ---------------- */
+  function renderResult(tool, shell) {
+    birth = util.store.get('lifeBirth', birth);
+    lifespan = util.store.get('lifeSpan', lifespan);
+    const age = Math.min(ageOf(birth), lifespan);
+    const pct = (age / lifespan) * 100;
+    const left = lifespan - age;
+    const weeksLeft = Math.floor(left * WEEKS_PER_YEAR);
+    const daysLeft = Math.floor(left * 365.2425);
+
+    shell(
+      tool,
+      '<div class="tool-layout">' +
+        '<div class="stack">' +
+        '<div class="card" style="padding:18px">' +
+        '<h3 class="card-title" style="margin-bottom:10px">你的一辈子 · ' + lifespan + ' 年 × 52 周</h3>' +
+        '<canvas id="resultCanvas" class="life-grid-canvas"></canvas>' +
+        '<div class="life-legend">' +
+        '<span><i style="background:#5B57EB"></i>已经过去 ' + age.toFixed(1) + ' 年</span>' +
+        '<span><i style="background:#B9FF66"></i>还有 ' + left.toFixed(1) + ' 年</span>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="big-stat">' +
+        '<div class="num">' + pct.toFixed(1) + '<span style="font-size:26px">%</span></div>' +
+        '<div class="lbl">已经过完了</div>' +
+        '</div>' +
+        '<div class="num-row">' +
+        '<div class="num-card"><div class="v">' + age.toFixed(0) + '</div><div class="k">岁</div></div>' +
+        '<div class="num-card"><div class="v">' + weeksLeft.toLocaleString() + '</div><div class="k">周还剩</div></div>' +
+        '<div class="num-card"><div class="v">' + daysLeft.toLocaleString() + '</div><div class="k">天还剩</div></div>' +
+        '</div>' +
+        '<div class="milestone">' +
+        '<b>换个说法</b><br>' +
+        '如果每两周见一次父母，你大概还能见他们 <b>' + Math.floor(weeksLeft / 2).toLocaleString() + '</b> 次。<br>' +
+        '这比你想的少，但还没少到不能开始。' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button class="btn lime" id="againBtn">改一下参数</button>' +
+        '<button class="btn" id="saveBtn">' + MT.app.ICON.download + '存成图片</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+    );
+
+    const canvas = util.byId('resultCanvas');
+    drawGrid(canvas, lifespan, WEEKS_PER_YEAR, {
+      cell: 9,
+      gap: 2,
+      passed: age,
+      passedColor: '#5B57EB',
+      currentColor: '#F8D044',
+      futureColor: '#B9FF66'
+    });
+
+    util.byId('againBtn').addEventListener('click', () => {
+      stage = 'input';
+      MT.app.route();
+    });
+
+    util.byId('saveBtn').addEventListener('click', () => {
+      try {
+        const link = document.createElement('a');
+        link.download = '我的人生格子.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        alert('存不下来，截个屏吧。');
+      }
+    });
+  }
+
+  /* 离开页面重置阶段，避免回退后停在结果页 */
+  window.addEventListener('hashchange', () => {
+    stage = 'input';
+  });
+
+  MT.tools['life'] = { render };
+})();
+</script>
+<script>
+/* 05 许愿池 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  const COIN_COLORS = ['#F8D044', '#F8B7B8', '#B9FF66', '#C9C6F5', '#FFE0B8', '#D6EBFF'];
+  let cat = '生活';
+
+  function getWishes() {
+    const saved = util.store.get('wishes', null);
+    if (saved && Array.isArray(saved)) return saved;
+    /* 首次进入，用种子数据铺满 */
+    const seed = data.seedWishes.map((w, i) => ({
+      id: 'seed' + i,
+      text: w.text,
+      cat: w.cat,
+      coins: w.coins,
+      at: Date.now() - w.ago * 60000,
+      coin: w.coin
+    }));
+    util.store.set('wishes', seed);
+    return seed;
+  }
+
+  function render(tool, shell) {
+    const wishes = getWishes();
+    const totalCoins = wishes.reduce((s, w) => s + w.coins, 0) + 38204;
+
+    shell(
+      tool,
+      '<div class="tool-layout narrow">' +
+        '<div class="stack">' +
+        '<div class="wish-card">' +
+        '<h3>说个愿望吧</h3>' +
+        '<p class="sub">反正也不会实现，但说出来心里舒服点。</p>' +
+        '<textarea class="wish-input" id="wishInput" maxlength="60" placeholder="比如：希望明天的会取消"></textarea>' +
+        '<div class="wish-count"><span id="wc">0</span>/60</div>' +
+        '<div class="cat-row" id="catRow">' +
+        data.wishCats
+          .map((c) => '<button class="cat" data-c="' + c + '" aria-pressed="' + (c === cat) + '">' + c + '</button>')
+          .join('') +
+        '</div>' +
+        '<button class="btn yellow block lg" id="throwBtn">' + MT.app.ICON.coin + '投一枚硬币许愿</button>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">许愿须知（认真就输了）</h3>' +
+        '<p style="margin:0;font-size:13px;color:var(--ink-soft);line-height:1.85">' +
+        '· 每天限投三枚，多投无效<br>' +
+        '· 所有愿望匿名公开，谁都能看<br>' +
+        '· 实现率 0.03%，已经很努力了' +
+        '</p>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">这周大家都在许什么</h3>' +
+        '<div class="kw-row">' +
+        '<span class="kw" style="background:#F8D044">不想上班</span>' +
+        '<span class="kw" style="background:#B9FF66">脱单</span>' +
+        '<span class="kw" style="background:#F8B7B8">涨工资</span>' +
+        '<span class="kw" style="background:#C9C6F5">早点下班</span>' +
+        '<span class="kw" style="background:#fff">世界和平</span>' +
+        '<span class="kw" style="background:#D6EBFF">猫不生病</span>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="section-head" style="margin-bottom:2px">' +
+        '<h2 style="font-size:19px">刚刚有人许了愿</h2>' +
+        '<span class="section-sub">实时刷新 · 全部匿名</span>' +
+        '</div>' +
+        '<div class="wish-stream" id="stream"></div>' +
+        '</div>' +
+        '</div>'
+    );
+
+    const input = util.byId('wishInput');
+    const wc = util.byId('wc');
+
+    input.addEventListener('input', () => {
+      wc.textContent = input.value.length;
+    });
+
+    util.qsa('.cat').forEach((b) => {
+      b.addEventListener('click', () => {
+        cat = b.dataset.c;
+        util.qsa('.cat').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      });
+    });
+
+    util.byId('throwBtn').addEventListener('click', () => {
+      const text = input.value.trim();
+      if (!text) {
+        input.focus();
+        input.placeholder = '写点什么再投币，不然硬币会掉进水里';
+        return;
+      }
+      addWish(text, cat);
+      input.value = '';
+      wc.textContent = '0';
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        util.byId('throwBtn').click();
+      }
+    });
+
+    paintStream(wishes);
+  }
+
+  function paintStream(wishes) {
+    const stream = util.byId('stream');
+    if (!stream) return;
+    const top = wishes.slice(0, 8);
+    stream.innerHTML =
+      top
+        .map(
+          (w) =>
+            '<div class="wish-item">' +
+            '<span class="wish-coin" style="background:' + w.coin + '"></span>' +
+            '<div class="wish-body">' +
+            '<div class="wish-text">' + escapeHtml(w.text) + '</div>' +
+            '<div class="wish-meta">' + w.cat + ' · ' + util.relTime(w.at) + ' · 已投 ' + w.coins + ' 枚</div>' +
+            '</div>' +
+            '</div>'
+        )
+        .join('') +
+      '<div class="wish-end">就看到这儿吧，下面的愿望都太惨了<span>下拉刷新，说不定就轮到你那条了。</span></div>';
+  }
+
+  function addWish(text, category) {
+    const wishes = getWishes();
+    /* 每天限三枚 */
+    const today = new Date().toDateString();
+    const mine = util.store.get('myWishesDay', { day: '', count: 0 });
+    if (mine.day !== today) {
+      mine.day = today;
+      mine.count = 0;
+    }
+    if (mine.count >= 3) {
+      const btn = util.byId('throwBtn');
+      btn.textContent = '今天三枚投完了，明天再来';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = MT.app.ICON.coin + '投一枚硬币许愿';
+        btn.disabled = false;
+      }, 2600);
+      return;
+    }
+    mine.count++;
+    util.store.set('myWishesDay', mine);
+
+    wishes.unshift({
+      id: 'w' + Date.now(),
+      text,
+      cat: category,
+      coins: 1,
+      at: Date.now(),
+      coin: util.pick(COIN_COLORS)
+    });
+    util.store.set('wishes', wishes);
+    paintStream(wishes);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  MT.tools['wishes'] = { render };
+})();
+</script>
+<script>
+/* 06 渐变生成器 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  const PRESETS = [
+    ['#5B57EB', '#F8B7B8', '#B9FF66'],
+    ['#F8D044', '#FF6B6B'],
+    ['#1A1A23', '#5B57EB'],
+    ['#B9FF66', '#D6EBFF'],
+    ['#F8B7B8', '#C9C6F5'],
+    ['#FFE0B8', '#FF6B6B', '#5B57EB']
+  ];
+
+  let stops = ['#5B57EB', '#F8B7B8', '#B9FF66'];
+  let angle = 135;
+  let history = util.store.get('gradHistory', []);
+
+  function render(tool, shell) {
+    if (history.length === 0) {
+      history = PRESETS.slice(0, 3).map((p) => ({ stops: p.slice(), angle: 135 }));
+      util.store.set('gradHistory', history);
+    }
+
+    shell(
+      tool,
+      '<div class="tool-layout">' +
+        '<div class="stack">' +
+        '<div class="gradient-preview" id="preview">' +
+        '<span class="hex-label" id="previewHex">' + stops.join(' · ') + '</span>' +
+        '</div>' +
+        '<div class="code-card">' +
+        '<div class="code-head">' +
+        '<span class="t">复制这段就能用</span>' +
+        '<button class="btn sm yellow" id="copyBtn">' + MT.app.ICON.copy + '复制 CSS</button>' +
+        '</div>' +
+        '<pre class="code-body" id="code"></pre>' +
+        '</div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="card">' +
+        '<h3 class="card-title">角度</h3>' +
+        '<div class="angle-row" id="angleRow">' +
+        [0, 45, 90, 135, 180, 270]
+          .map(
+            (a) =>
+              '<button class="angle" data-a="' + a + '" aria-pressed="' + (a === angle) + '">' + a + '°</button>'
+          )
+          .join('') +
+        '</div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title" id="stopTitle">色标 · 3 个</h3>' +
+        '<div class="stack" id="stopList" style="gap:10px"></div>' +
+        '<div style="display:flex;gap:8px;margin-top:14px">' +
+        '<button class="btn sm lime" id="addStop">加一个色标</button>' +
+        '<button class="btn sm" id="randomBtn">' + MT.app.ICON.shuffle + '随机</button>' +
+        '</div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">最近调的几版</h3>' +
+        '<div class="history-grid" id="history"></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+    );
+
+    bindAll();
+    update();
+    paintStops();
+    paintHistory();
+  }
+
+  function cssString() {
+    const parts = stops
+      .map((c, i) => {
+        const pos = stops.length === 1 ? 0 : Math.round((i / (stops.length - 1)) * 100);
+        return c + ' ' + pos + '%';
+      })
+      .join(', ');
+    return 'background: linear-gradient(\n  ' + angle + 'deg,\n  ' + parts.split(', ').join(',\n  ') + '\n);';
+  }
+
+  function update() {
+    const preview = util.byId('preview');
+    if (!preview) return;
+    const parts = stops
+      .map((c, i) => {
+        const pos = stops.length === 1 ? 0 : Math.round((i / (stops.length - 1)) * 100);
+        return c + ' ' + pos + '%';
+      })
+      .join(', ');
+    preview.style.background = 'linear-gradient(' + angle + 'deg, ' + parts + ')';
+    util.byId('code').textContent = cssString();
+    util.byId('previewHex').textContent = stops.join(' · ');
+    util.byId('stopTitle').textContent = '色标 · ' + stops.length + ' 个';
+  }
+
+  function paintStops() {
+    const list = util.byId('stopList');
+    if (!list) return;
+    list.innerHTML = stops
+      .map(
+        (c, i) =>
+          '<div class="stop-row">' +
+          '<label class="stop-swatch" style="background:' + c + '">' +
+          '<input type="color" value="' + c + '" data-i="' + i + '" aria-label="第 ' + (i + 1) + ' 个色标">' +
+          '</label>' +
+          '<input class="stop-hex" value="' + c + '" data-hex="' + i + '" maxlength="7" spellcheck="false">' +
+          '<span class="stop-pos">' + (stops.length === 1 ? 0 : Math.round((i / (stops.length - 1)) * 100)) + '%</span>' +
+          (stops.length > 2
+            ? '<button class="icon-btn" style="width:32px;height:32px;box-shadow:2px 2px 0 var(--ink)" data-del="' + i + '" aria-label="删除色标">' + MT.app.ICON.trash + '</button>'
+            : '') +
+          '</div>'
+      )
+      .join('');
+
+    util.qsa('input[type=color]', list).forEach((inp) => {
+      inp.addEventListener('input', () => {
+        stops[Number(inp.dataset.i)] = inp.value.toUpperCase();
+        update();
+        paintStops();
+      });
+    });
+
+    util.qsa('.stop-hex', list).forEach((inp) => {
+      inp.addEventListener('change', () => {
+        let v = inp.value.trim();
+        if (!v.startsWith('#')) v = '#' + v;
+        if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+          stops[Number(inp.dataset.hex)] = v.toUpperCase();
+          update();
+          paintStops();
+        } else {
+          inp.value = stops[Number(inp.dataset.hex)];
+        }
+      });
+    });
+
+    util.qsa('[data-del]', list).forEach((b) => {
+      b.addEventListener('click', () => {
+        stops.splice(Number(b.dataset.del), 1);
+        update();
+        paintStops();
+      });
+    });
+  }
+
+  function paintHistory() {
+    const box = util.byId('history');
+    if (!box) return;
+    box.innerHTML = history
+      .slice(0, 6)
+      .map((h, i) => {
+        const parts = h.stops
+          .map((c, j) => c + ' ' + Math.round((j / Math.max(1, h.stops.length - 1)) * 100) + '%')
+          .join(', ');
+        return (
+          '<button class="history-item" data-h="' + i + '" style="background:linear-gradient(' +
+          h.angle +
+          'deg,' +
+          parts +
+          ')" aria-label="历史配色 ' + (i + 1) + '"></button>'
+        );
+      })
+      .join('');
+
+    util.qsa('[data-h]', box).forEach((b) => {
+      b.addEventListener('click', () => {
+        const h = history[Number(b.dataset.h)];
+        stops = h.stops.slice();
+        angle = h.angle;
+        util.qsa('.angle').forEach((x) => x.setAttribute('aria-pressed', String(Number(x.dataset.a) === angle)));
+        update();
+        paintStops();
+      });
+    });
+  }
+
+  function bindAll() {
+    util.qsa('.angle').forEach((b) => {
+      b.addEventListener('click', () => {
+        angle = Number(b.dataset.a);
+        util.qsa('.angle').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        update();
+      });
+    });
+
+    util.byId('addStop').addEventListener('click', () => {
+      if (stops.length >= 5) return;
+      stops.push(util.pick(['#FFE0B8', '#D6EBFF', '#FF6B6B', '#9BE7C4']));
+      update();
+      paintStops();
+    });
+
+    util.byId('randomBtn').addEventListener('click', () => {
+      const pool = ['#5B57EB', '#B9FF66', '#F8B7B8', '#F8D044', '#FF6B6B', '#C9C6F5', '#D6EBFF', '#FFE0B8', '#1A1A23'];
+      const n = util.randInt(2, 4);
+      stops = [];
+      const used = new Set();
+      while (stops.length < n) {
+        const c = util.pick(pool);
+        if (!used.has(c)) {
+          used.add(c);
+          stops.push(c);
+        }
+      }
+      angle = util.pick([0, 45, 90, 135, 180, 225, 270, 315]);
+      util.qsa('.angle').forEach((x) => x.setAttribute('aria-pressed', String(Number(x.dataset.a) === angle)));
+      update();
+      paintStops();
+      pushHistory();
+    });
+
+    util.byId('copyBtn').addEventListener('click', async () => {
+      const ok = await util.copy(cssString());
+      const btn = util.byId('copyBtn');
+      const old = btn.innerHTML;
+      btn.innerHTML = ok ? '✓ 已复制' : '复制失败';
+      btn.classList.toggle('lime', ok);
+      setTimeout(() => {
+        btn.innerHTML = old;
+        btn.classList.remove('lime');
+      }, 1600);
+    });
+  }
+
+  function pushHistory() {
+    history.unshift({ stops: stops.slice(), angle });
+    history = history.slice(0, 8);
+    util.store.set('gradHistory', history);
+    paintHistory();
+  }
+
+  MT.tools['gradient'] = { render };
+})();
+</script>
+<script>
+/* 07 梗图生成器 */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+
+  let tplIndex = 0;
+  let topText = '当老板说「我们是一家人」';
+  let bottomText = '那我这个家人能不能先下班';
+  let fontSize = 'md';
+  let textColor = '#FFFFFF';
+
+  const SIZE_MAP = { sm: 0.042, md: 0.056, lg: 0.072 };
+  const COLOR_SWATCHES = ['#FFFFFF', '#F8D044', '#1A1A23', '#F8B7B8', '#B9FF66'];
+
+  function render(tool, shell) {
+    shell(
+      tool,
+      '<div class="tool-layout">' +
+        '<div class="stack">' +
+        '<div class="meme-stage">' +
+        '<canvas id="memeCanvas" width="900" height="900"></canvas>' +
+        '</div>' +
+        '</div>' +
+        '<div class="stack">' +
+        '<div class="card">' +
+        '<h3 class="card-title">挑个模板</h3>' +
+        '<div class="meme-tpl-row" id="tplRow">' +
+        data.memeTemplates
+          .map(
+            (t, i) =>
+              '<button class="meme-tpl" data-i="' + i + '" aria-pressed="' + (i === 0) + '" ' +
+              'style="background:linear-gradient(135deg,' + t.colors[0] + ',' + t.colors[1] + ')" ' +
+              'aria-label="' + t.name + '"></button>'
+          )
+          .join('') +
+        '</div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">写两句台词</h3>' +
+        '<input class="field" id="topInput" maxlength="26" placeholder="上面那句" value="' + escapeAttr(topText) + '">' +
+        '<div style="height:10px"></div>' +
+        '<input class="field" id="bottomInput" maxlength="26" placeholder="下面那句" value="' + escapeAttr(bottomText) + '">' +
+        '</div>' +
+        '<div class="card">' +
+        '<h3 class="card-title">字的样子</h3>' +
+        '<div class="seg" id="sizeSeg" style="margin-bottom:14px">' +
+        '<button data-s="sm" aria-pressed="false">小</button>' +
+        '<button data-s="md" aria-pressed="true">中</button>' +
+        '<button data-s="lg" aria-pressed="false">大</button>' +
+        '</div>' +
+        '<div class="color-row" id="colorRow"></div>' +
+        '</div>' +
+        '<button class="btn lime block lg" id="exportBtn">' + MT.app.ICON.download + '导出这张图</button>' +
+        '</div>' +
+        '</div>'
+    );
+
+    bind();
+    draw();
+  }
+
+  function escapeAttr(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+
+  function bind() {
+    util.qsa('.meme-tpl').forEach((b) => {
+      b.addEventListener('click', () => {
+        tplIndex = Number(b.dataset.i);
+        util.qsa('.meme-tpl').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        draw();
+      });
+    });
+
+    ['topInput', 'bottomInput'].forEach((id) => {
+      util.byId(id).addEventListener('input', (e) => {
+        if (id === 'topInput') topText = e.target.value;
+        else bottomText = e.target.value;
+        draw();
+      });
+    });
+
+    util.qsa('#sizeSeg button').forEach((b) => {
+      b.addEventListener('click', () => {
+        fontSize = b.dataset.s;
+        util.qsa('#sizeSeg button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        draw();
+      });
+    });
+
+    const crow = util.byId('colorRow');
+    crow.innerHTML = COLOR_SWATCHES.map(
+      (c, i) =>
+        '<button class="color-dot" data-c="' + c + '" aria-pressed="' + (i === 0) + '" ' +
+        'style="background:' + c + '" aria-label="字色 ' + c + '"></button>'
+    ).join('');
+
+    util.qsa('.color-dot', crow).forEach((b) => {
+      b.addEventListener('click', () => {
+        textColor = b.dataset.c;
+        util.qsa('.color-dot', crow).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        draw();
+      });
+    });
+
+    util.byId('exportBtn').addEventListener('click', () => {
+      const canvas = util.byId('memeCanvas');
+      try {
+        const link = document.createElement('a');
+        link.download = '梗图-' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        alert('导不出来，截个屏吧。');
+      }
+    });
+  }
+
+  function draw() {
+    const canvas = util.byId('memeCanvas');
+    if (!canvas) return;
+    const S = 900;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = S * dpr;
+    canvas.height = S * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const tpl = data.memeTemplates[tplIndex];
+
+    /* 背景底 */
+    ctx.fillStyle = '#1A1A23';
+    ctx.fillRect(0, 0, S, S);
+
+    /* 中间的照片区：渐变块 + 装饰 */
+    const imgY = 250;
+    const imgH = 420;
+    const imgX = 80;
+    const imgW = S - 160;
+
+    const g = ctx.createLinearGradient(imgX, imgY, imgX + imgW, imgY + imgH);
+    g.addColorStop(0, tpl.colors[0]);
+    g.addColorStop(1, tpl.colors[1]);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.roundRect(imgX, imgY, imgW, imgH, 26);
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#1A1A23';
+    ctx.stroke();
+
+    /* 照片区里的抽象图形：三个圆，代表「一家人」 */
+    if (tpl.id === 'acid') {
+      ctx.fillStyle = 'rgba(26,26,35,0.85)';
+      [0, 1, 2].forEach((i) => {
+        ctx.beginPath();
+        ctx.arc(imgX + imgW / 2 + (i - 1) * 120, imgY + imgH / 2, 56, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    } else if (tpl.id === 'paper') {
+      /* 报纸横线纹理 */
+      ctx.strokeStyle = 'rgba(26,26,35,0.22)';
+      ctx.lineWidth = 3;
+      for (let y = imgY + 40; y < imgY + imgH - 20; y += 34) {
+        ctx.beginPath();
+        ctx.moveTo(imgX + 40, y);
+        ctx.lineTo(imgX + imgW - 40 - Math.random() * 0, y);
+        ctx.stroke();
+      }
+    } else {
+      /* 黄昏：一轮斜阳 */
+      ctx.beginPath();
+      ctx.arc(imgX + imgW * 0.62, imgY + imgH * 0.42, 92, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.32)';
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#1A1A23';
+      ctx.stroke();
+      /* 地平线 */
+      ctx.beginPath();
+      ctx.moveTo(imgX, imgY + imgH * 0.72);
+      ctx.lineTo(imgX + imgW, imgY + imgH * 0.72);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#1A1A23';
+      ctx.stroke();
+    }
+
+    /* 文字 */
+    const fs = Math.round(S * SIZE_MAP[fontSize]);
+    ctx.font = '700 ' + fs + 'px "Noto Sans SC", "PingFang SC", sans-serif';
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    /* 描边提高可读性 */
+    function drawLineText(text, y, maxW) {
+      if (!text) return;
+      const lines = util.wrapText(ctx, text, maxW);
+      const lh = fs * 1.24;
+      /* 多行时向上/下扩展 */
+      const startY = y - ((lines.length - 1) * lh) / 2;
+      lines.forEach((ln, i) => {
+        const yy = startY + i * lh;
+        ctx.lineWidth = Math.max(6, fs * 0.16);
+        ctx.strokeStyle = 'rgba(0,0,0,0.72)';
+        ctx.lineJoin = 'round';
+        ctx.strokeText(ln, S / 2, yy);
+        ctx.fillText(ln, S / 2, yy);
+      });
+    }
+
+    drawLineText(topText, 140, S - 160);
+    drawLineText(bottomText, 760, S - 160);
+
+    /* 水印 */
+    ctx.font = '600 22px "Noto Sans SC", sans-serif';
+    ctx.fillStyle = '#F9F4DF';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const wmText = '摸鱼乐园 · 梗图生成器';
+    const wmW = ctx.measureText(wmText).width + 34;
+    ctx.beginPath();
+    ctx.roundRect(80, S - 70, wmW, 42, 21);
+    ctx.fillStyle = '#F9F4DF';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#1A1A23';
+    ctx.stroke();
+    ctx.fillStyle = '#1A1A23';
+    ctx.fillText(wmText, 97, S - 48);
+  }
+
+  MT.tools['meme'] = { render };
+})();
+</script>
+<!-- app.js 必须最后加载：它负责路由，依赖上面所有工具注册完毕 -->
+<script>
+/* ===================================================
+   摸鱼乐园 · 路由与页面骨架
+   =================================================== */
+(function () {
+  const MT = window.MT;
+  const { util, data } = MT;
+  const root = () => util.byId('app');
+
+  /* ---------- 内联 SVG 小图标 ---------- */
+  const ICON = {
+    back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>',
+    dice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>',
+    coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M9.6 9.4h4.2a2 2 0 0 1 0 4H10a2 2 0 0 0 0 4h4.4"/></svg>',
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 11l4.5 4.5 4.5-4.5M5 19.5h14"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/><path d="M15.5 5.5H6.5a1 1 0 0 0-1 1v9"/></svg>',
+    shuffle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3M17 14l3 3-3 3"/><path d="M4 7h5c2.5 0 4 1.5 5.5 4s3 4 5.5 4"/><path d="M4 17h5c1.2 0 2.2-.4 3-1.1"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.5h15M9.5 6.5V4.5h5v2M6.5 6.5l1 13h9l1-13"/></svg>',
+    help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.5a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .9-1 1.6v.3"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg>'
+  };
+
+  /* ---------- 落地页渲染：整站只有 #app ---------- */
+  function shell(inner, opts) {
+    opts = opts || {};
+    root().innerHTML = inner;
+    document.title = (opts.title ? opts.title + ' · ' : '') + '摸鱼乐园';
+    window.scrollTo(0, 0);
+  }
+
+  function topbar(title, right) {
+    return (
+      '<div class="topbar">' +
+      '<div class="topbar-left">' +
+      (title
+        ? '<a class="icon-btn" href="#/" aria-label="返回首页">' + ICON.back + '</a>' +
+          '<h1 class="page-title">' + title + '</h1>'
+        : '<a class="brand" href="#/"><span class="brand-mark">🐟</span>摸鱼乐园</a>') +
+      '</div>' +
+      '<div class="topbar-right">' +
+      (right || '') +
+      '<a class="icon-btn" href="#/search" aria-label="搜索小玩具">' + ICON.search + '</a>' +
+      '</div>' +
+      '</div>'
+    );
+  }
+
+  /* ===================================================
+     首页
+     =================================================== */
+  function renderHome() {
+    const cards = data.tools
+      .map(
+        (t) =>
+          '<a class="tool-card" href="#/t/' + t.id + '">' +
+          (t.badge ? '<span class="badge">' + t.badge + '</span>' : '') +
+          '<span class="tool-head">' +
+          '<span class="tool-icon ' + t.color + '">' + data.icons[t.icon] + '</span>' +
+          '<span class="tool-name">' + t.name + '</span>' +
+          '</span>' +
+          '<p class="tool-desc">' + t.desc + '</p>' +
+          '</a>'
+      )
+      .join('');
+
+    const html =
+      topbar() +
+      '<main class="page-body stack" style="gap:0">' +
+      '<section class="hero">' +
+      '<span class="hero-tag">全站 ' + data.tools.length + ' 个小玩具 · 免费 · 不用登录</span>' +
+      '<h1>摸鱼乐园</h1>' +
+      '<p>一个专门浪费时间的正经网站。点开任意一个玩具，玩完就走，不留痕迹、不上传、不打扰任何人。</p>' +
+      '<div class="hero-bottom">' +
+      '<div class="hero-btns">' +
+      '<button class="btn lime" id="randomTool">' + ICON.dice + '随机来一个</button>' +
+      '<a class="btn" href="#/t/wishes">' + ICON.coin + '去许个愿</a>' +
+      '</div>' +
+      '<span class="hero-note">※ 本网站不收集任何数据。因为它连数据库都没有。</span>' +
+      '</div>' +
+      '</section>' +
+      '<div class="section-head">' +
+      '<h2>玩具盒</h2>' +
+      '<span class="section-sub">共 ' + data.tools.length + ' 个 · 随便点</span>' +
+      '</div>' +
+      '<div class="grid-tools">' + cards + '</div>' +
+      '<div class="footbar"><span>7 个小玩具，全都不要登录。玩完关掉就行。</span><b>做一个快乐的废物 →</b></div>' +
+      '</main>' +
+      '<footer class="site-foot">摸鱼乐园 · 所有数据只存在你自己的浏览器里 · <b>关掉页面就什么都没了</b></footer>';
+
+    shell(html);
+
+    util.byId('randomTool').addEventListener('click', () => {
+      const t = util.pick(data.tools);
+      location.hash = '#/t/' + t.id;
+    });
+  }
+
+  /* ===================================================
+     搜索
+     =================================================== */
+  function renderSearch(prefill) {
+    const html =
+      topbar('搜索') +
+      '<main class="page-body">' +
+      '<div class="search-box">' +
+      ICON.search +
+      '<input id="q" type="search" placeholder="搜一下：吃、烟花、配色、愿望……" autocomplete="off" spellcheck="false">' +
+      '</div>' +
+      '<div class="chip-row" id="chips"></div>' +
+      '<div id="results"></div>' +
+      '</main>';
+
+    shell(html, { title: '搜索' });
+
+    const q = util.byId('q');
+    const results = util.byId('results');
+    const chips = util.byId('chips');
+
+    /* 底部「本周最热」 */
+    function renderChips() {
+      const hot = ['随机', '吃饭', '烟花', '运势', '人生', '许愿', '配色', '梗图'];
+      chips.innerHTML = hot
+        .map((h) => '<button class="chip" data-q="' + h + '">' + h + '</button>')
+        .join('');
+      util.qsa('.chip', chips).forEach((c) => {
+        c.addEventListener('click', () => {
+          q.value = c.dataset.q;
+          run();
+        });
+      });
+    }
+
+    function run() {
+      const kw = q.value.trim().toLowerCase();
+      const list = data.tools.filter((t) => {
+        if (!kw) return true;
+        const hay = (t.name + t.desc + t.tags.join(' ') + (t.id || '')).toLowerCase();
+        return hay.includes(kw);
+      });
+
+      util.qsa('.chip', chips).forEach((c) => {
+        c.classList.toggle('on', c.dataset.q === q.value.trim());
+      });
+
+      if (!list.length) {
+        results.innerHTML =
+          '<div class="empty">没搜到「' + escapeHtml(q.value) + '」。<br>这里只有 7 个玩具，试试「烟花」或者「许愿」。</div>';
+        return;
+      }
+
+      results.innerHTML =
+        '<div class="section-head"><h2 style="font-size:17px">' +
+        (kw ? '搜到 ' + list.length + ' 个' : '全部小玩具') +
+        '</h2></div>' +
+        list
+          .map(
+            (t) =>
+              '<a class="result-row" href="#/t/' + t.id + '">' +
+              '<span class="tool-icon ' + t.color + '">' + data.icons[t.icon] + '</span>' +
+              '<span class="info"><span class="nm">' + t.name + '</span><br><span class="ds">' + t.desc + '</span></span>' +
+              '<span class="go">进去 →</span>' +
+              '</a>'
+          )
+          .join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    renderChips();
+    q.addEventListener('input', run);
+    /* 自动聚焦，但避免移动端键盘弹起干扰 —— 仅有输入意图时聚焦 */
+    if (prefill) {
+      q.value = prefill;
+    }
+    if (window.matchMedia('(min-width: 820px)').matches) q.focus();
+    run();
+  }
+
+  /* ===================================================
+     工具页外壳
+     =================================================== */
+  function toolShell(tool, bodyHtml, rightHtml) {
+    const html =
+      topbar(tool.name, rightHtml) +
+      '<main class="page-body">' +
+      bodyHtml +
+      '</main>' +
+      '<footer class="site-foot">摸鱼乐园 · ' + tool.name + '</footer>';
+
+    shell(html, { title: tool.name });
+  }
+
+  /* ===================================================
+     路由
+     =================================================== */
+  const routes = {
+    '': renderHome,
+    '/': renderHome,
+    '/search': renderSearch
+  };
+
+  function route() {
+    const hash = location.hash.replace(/^#/, '') || '/';
+    const m = hash.match(/^\/t\/([\w-]+)/);
+
+    if (m) {
+      const id = m[1];
+      const tool = data.tools.find((t) => t.id === id);
+      const mod = MT.tools[id];
+      if (tool && mod && typeof mod.render === 'function') {
+        mod.render(tool, toolShell);
+        return;
+      }
+    }
+
+    const fn = routes[hash];
+    if (fn) {
+      fn();
+      return;
+    }
+    /* 未知路由回首页 */
+    location.hash = '#/';
+  }
+
+  MT.app = { route, toolShell, ICON };
+
+  window.addEventListener('hashchange', route);
+  window.addEventListener('DOMContentLoaded', route);
+  if (document.readyState !== 'loading') route();
+})();
+</script>
+</body>
+</html><script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="2d700eb0-858a-44b8-8392-8845f8e828cb" data-app-host="app.netlify.com" data-account-tier="free"></script>
