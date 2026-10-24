@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>气球大作战 · 飞镖爆爆爆</title>
+<meta name="description" content="气球大作战:点击发射飞镖扎气球!彩色气球+1,金气球+5,彩虹气球+10,黑炸弹别扎!60秒限时,连击加成,看你能得多少分!超解压!">
+<meta property="og:title" content="气球大作战 · 飞镖爆爆爆">
+<meta property="og:description" content="飞镖扎气球,连击爆分,60秒挑战!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#10305a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%88%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#10305a;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+#hud{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;display:flex;justify-content:center;align-items:center;gap:14px;z-index:5;pointer-events:none}
+#score{font-size:32px;font-weight:900;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.4),0 6px 20px rgba(255,140,90,.3)}
+#time{font-size:17px;font-weight:900;color:#ffd45c;background:rgba(10,20,40,.55);padding:6px 14px;border-radius:999px;border:1px solid rgba(255,212,92,.35)}
+#time.danger{color:#ff6a5a;animation:blink .5s infinite}
+@keyframes blink{50%{opacity:.4}}
+#combo{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;z-index:5;pointer-events:none;
+  font-size:19px;font-weight:900;color:#8affc8;letter-spacing:2px;text-shadow:0 2px 0 rgba(0,0,0,.5);opacity:0;transition:opacity .15s}
+#combo.show{opacity:1}
+#mutebtn{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:10px;z-index:8;border:0;width:38px;height:38px;border-radius:12px;font-size:16px;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(8,20,44,.8);color:#fff;text-align:center;padding:20px}
+.screen.hide{display:none}
+.title{font-size:42px;font-weight:900;letter-spacing:5px;color:#ffd8a8;text-shadow:0 3px 0 #a05a20,0 8px 26px rgba(255,160,60,.4);margin-bottom:2px}
+.title small{display:block;font-size:15px;letter-spacing:10px;color:#8ad8ff;margin-top:8px}
+.howto{font-size:14px;line-height:2.1;color:#ffe8d0;background:rgba(255,255,255,.07);border:1px solid rgba(255,180,100,.3);
+  border-radius:16px;padding:14px 20px;max-width:420px;margin:22px 0 24px;text-align:left}
+.howto b{color:#ffd8a8}
+.bigbtn{border:0;border-radius:999px;padding:15px 52px;font-size:19px;font-weight:900;letter-spacing:4px;color:#5a2a08;cursor:pointer;
+  background:linear-gradient(180deg,#ffe0a8,#ffb05c);box-shadow:0 5px 0 #a05a20,0 10px 30px rgba(255,160,60,.4)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #a05a20}
+#over .title{font-size:34px}
+#ostats{font-size:16px;line-height:2.3;color:#ffe8d0;background:rgba(255,255,255,.07);border:1px solid rgba(255,180,100,.3);
+  border-radius:16px;padding:14px 36px;margin-bottom:24px}
+#ostats b{color:#ffd45c;font-size:24px}
+#onewrec{color:#ffd45c;font-weight:900;letter-spacing:2px;animation:blink2 1s infinite}
+@keyframes blink2{50%{opacity:.25}}
+#bestline{margin-top:16px;font-size:13px;color:rgba(255,255,255,.6)}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span id="score">0</span><span id="time">60</span></div>
+<div id="combo"></div>
+<button id="mutebtn" type="button">♪</button>
+<div id="start" class="screen">
+  <div class="title">气球大作战<small>· 飞 镖 爆 爆 爆 ·</small></div>
+  <div class="howto">
+    🎯 <b>点击屏幕</b>,飞镖从炮台射向指尖!<br>
+    🎈 彩球 +1 · ⭐金球 +5 · 🌈彩虹球 +10(稀有)<br>
+    💣 <b>黑炸弹别扎</b>:-8 分还断连击!<br>
+    ⚡ 连续命中攒<b>连击</b>,分数翻倍涨<br>
+    ⏱️ <b>60 秒</b>限时,扎爆一切,解压爽翻天!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 火</button>
+  <div id="bestline"></div>
+</div>
+<div id="over" class="screen hide">
+  <div class="title">时间到!</div>
+  <div id="ostats"></div>
+  <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+</div>
+<script>
+(function(){
+'use strict';
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+var AC=null,muted=lsGet('bl_mute')==='1';
+function actx(){try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var len=Math.floor(a.sampleRate*dur),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);
+  for(var i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=s;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+function sShoot(){tone(900,.05,'square',.025,300)}
+function sPop(n){tone(500+n*60,.09,'sine',.06,180);noise(.06,.03)}
+function sBomb(){noise(.25,.1);tone(140,.25,'sawtooth',.07,50)}
+function sClock(){tone(880,.1,'sine',.05,1320)}
+function sEnd(){[[660,.1],[550,.1],[440,.12],[330,.2]].forEach(function(n,i){setTimeout(function(){tone(n[0],n[1],'sine',.06)},i*110)})}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+var cv=$('cv'),ctx=cv.getContext('2d');
+var VW=0,VH=0,DPR=1;
+function resize(){
+  DPR=Math.min(1.75,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.floor(VW*DPR);cv.height=Math.floor(VH*DPR);
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0)}
+window.addEventListener('resize',resize);resize();
+
+var state='start';
+var T=60,score=0,combo=0,maxCombo=0,popped=0,gt=0;
+var best=+(lsGet('bl_best')||0);
+var balloons=[],darts=[],parts=[],pops=[];
+var cannon={x:0,y:0,a:-Math.PI/2};
+var KINDS=[
+ {k:'red',c:'#ff5a5a',v:1,w:52,e:null},
+ {k:'blue',c:'#5a9aff',v:1,w:16,e:null},
+ {k:'green',c:'#5ad88a',v:1,w:16,e:null},
+ {k:'gold',c:'#ffd45c',v:5,w:9,glow:1},
+ {k:'rain',c:'#c07dff',v:10,w:3,glow:1},
+ {k:'bomb',c:'#2a2a3a',v:-8,w:12,e:'💣'}];
+function pickKind(t){
+  var r=frnd();
+  if(t>25&&r<.02)return KINDS[4];
+  if(r<.10)return KINDS[3];
+  if(r<.25)return KINDS[5];
+  if(r<.40)return KINDS[1];
+  if(r<.55)return KINDS[2];
+  return KINDS[0]}
+function spawnBalloon(){
+  var kd=pickKind(60-T);
+  var r=22+rnd(12);
+  balloons.push({x:40+rnd(VW-80),y:VH+r+10,r:r,kd:kd,
+    vy:-(36+frnd()*36)*(1+(60-T)/200),
+    vx:(frnd()-.5)*30,ph:frnd()*6.28,alive:1})}
+function fire(tx,ty){
+  if(state!=='play')return;
+  cannon.a=Math.atan2(ty-cannon.y,tx-cannon.x);
+  darts.push({x:cannon.x,y:cannon.y,a:cannon.a,sp:860});
+  sShoot()}
+function reset(){
+  T=60;score=0;combo=0;maxCombo=0;popped=0;
+  balloons=[];darts=[];parts=[];pops=[];
+  cannon.x=VW/2;cannon.y=VH-56;
+  updHUD()}
+function burst(x,y,c,n,sp){for(var i=0;i<(n||8);i++){
+  var a=frnd()*6.283,v=(sp||110)*(.35+frnd()*.9);
+  parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,t:.4+frnd()*.3,c:c})}}
+function popBalloon(b,dx,dy){
+  b.alive=0;popped++;
+  if(b.kd.k==='bomb'){
+    score+=b.kd.v;combo=0;sBomb();shake=.4;
+    burst(b.x,b.y,'#ff8a3c',16,180);burst(b.x,b.y,'#555',8,120);
+    pops.push({x:b.x,y:b.y,s:'-8',c:'#ff8a8a',t:.8})}
+  else{
+    combo++;maxCombo=Math.max(maxCombo,combo);
+    var mul=combo>=20?3:combo>=10?2:combo>=5?1.5:1;
+    var pts=Math.round(b.kd.v*mul);
+    score+=pts;
+    sPop(Math.min(combo,8));
+    burst(b.x,b.y,b.kd.c,9,140);
+    pops.push({x:b.x,y:b.y,s:'+'+pts,c:mul>1?'#ffd45c':'#fff',t:.7,big:b.kd.v>=5})}
+  updHUD()}
+var shake=0;
+function update(dt){
+  gt+=dt;
+  T-=dt;
+  if(T<=0){T=0;gameOver();return}
+  if(frnd()<dt*(1.35+(60-T)/45))spawnBalloon();
+  balloons.forEach(function(b){
+    b.y+=b.vy*dt;
+    b.x+=Math.sin(gt*1.4+b.ph)*22*dt+b.vx*dt;
+    if(b.x<b.r)b.x=b.r;
+    if(b.x>VW-b.r)b.x=VW-b.r});
+  /* 飞镖 */
+  for(var i=darts.length-1;i>=0;i--){var d=darts[i];
+    d.x+=Math.cos(d.a)*d.sp*dt;
+    d.y+=Math.sin(d.a)*d.sp*dt;
+    if(d.x<-20||d.x>VW+20||d.y<-20||d.y>VH+20){darts.splice(i,1);
+      if(combo>0){combo=0;updHUD()}
+      continue}
+    for(var j=0;j<balloons.length;j++){var b=balloons[j];
+      if(!b.alive)continue;
+      if(Math.hypot(d.x-b.x,d.y-b.y)<b.r+4){
+        popBalloon(b);
+        darts.splice(i,1);break}}}
+  balloons=balloons.filter(function(b){
+    if(b.alive&&b.y<-b.r-14){
+      if(b.kd.k!=='bomb'&&combo>0){combo=0;updHUD()}
+      return false}
+    return b.alive});
+  for(i=parts.length-1;i>=0;i--){var p=parts[i];
+    p.t-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt;
+    if(p.t<=0)parts.splice(i,1)}
+  for(i=pops.length-1;i>=0;i--){pops[i].t-=dt;pops[i].y-=46*dt;if(pops[i].t<=0)pops.splice(i,1)}
+  if(shake>0)shake=Math.max(0,shake-dt*1.5);
+  updHUD()}
+function updHUD(){
+  $('score').textContent=score;
+  var tEl=$('time');
+  tEl.textContent=Math.ceil(T);
+  tEl.classList.toggle('danger',T<10);
+  var cEl=$('combo');
+  if(combo>=5){cEl.textContent='🔥 连击 x'+combo+(combo>=20?' 分数×3!':combo>=10?' 分数×2!':'');cEl.classList.add('show')}
+  else cEl.classList.remove('show')}
+function gameOver(){
+  state='over';sEnd();
+  var rec='';
+  if(score>best){best=score;lsSet('bl_best',String(best));rec='<div id="onewrec">🎆 新纪录!</div>'}
+  $('ostats').innerHTML='得分 <b>'+score+'</b> · 扎爆 '+popped+' 只<br>最高连击 x'+maxCombo+rec+'<br>历史最高:'+best;
+  $('over').classList.remove('hide')}
+function startGame(){
+  reset();state='play';
+  $('start').classList.add('hide');$('over').classList.add('hide')}
+cv.addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  if(state==='play')fire(e.clientX,e.clientY)});
+$('startbtn').addEventListener('click',startGame);
+$('againbtn').addEventListener('click',startGame);
+$('mutebtn').addEventListener('click',function(){muted=!muted;lsSet('bl_mute',muted?'1':'0');this.textContent=muted?'✕':'♪'});
+$('mutebtn').textContent=muted?'✕':'♪';
+(function(){var b=+(lsGet('bl_best')||0);
+  if(b)$('bestline').textContent='🏆 最高纪录:'+b+' 分'})();
+/* 渲染 */
+var stars=[];(function(){for(var i=0;i<40;i++)stars.push({x:frnd(),y:frnd(),s:frnd()})})();
+function render(){
+  var shx=(frnd()-.5)*shake*16,shy=(frnd()-.5)*shake*16;
+  ctx.save();ctx.translate(shx,shy);
+  var g=ctx.createLinearGradient(0,0,0,VH);
+  g.addColorStop(0,'#1a3a72');g.addColorStop(.6,'#10305a');g.addColorStop(1,'#0a2040');
+  ctx.fillStyle=g;ctx.fillRect(-10,-10,VW+20,VH+20);
+  for(var i=0;i<stars.length;i++){var s=stars[i];
+    ctx.globalAlpha=.2+s.s*.4;
+    ctx.fillStyle='#ffe9c2';ctx.fillRect(s.x*VW,s.y*VH*.5,2,2)}
+  ctx.globalAlpha=1;
+  /* 气球 */
+  balloons.forEach(function(b){
+    if(!b.alive)return;
+    var sway=Math.sin(gt*1.4+b.ph)*3;
+    var x=b.x+sway,y=b.y;
+    if(b.kd.glow){
+      ctx.globalAlpha=.3+.15*Math.sin(gt*5+b.ph);
+      ctx.fillStyle=b.kd.c;
+      ctx.beginPath();ctx.arc(x,y,b.r*1.5,0,7);ctx.fill();
+      ctx.globalAlpha=1}
+    /* 线 */
+    ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,y+b.r+16);
+    ctx.quadraticCurveTo(x+6,y+b.r+34,x,y+b.r+50);ctx.stroke();
+    /* 球体 */
+    ctx.fillStyle=b.kd.c;
+    ctx.beginPath();ctx.ellipse(x,y,b.r,b.r*1.18,0,0,7);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.3)';
+    ctx.beginPath();ctx.ellipse(x-b.r*.3,y-b.r*.4,b.r*.3,b.r*.42,-.4,0,7);ctx.fill();
+    ctx.fillStyle=b.kd.c;
+    ctx.beginPath();ctx.moveTo(x-5,y+b.r*1.16);ctx.lineTo(x+5,y+b.r*1.16);ctx.lineTo(x,y+b.r*1.16+9);ctx.closePath();ctx.fill();
+    if(b.kd.e)drawEm(b.kd.e,x,y,b.r*1.1);
+    if(b.kd.k==='gold')drawEm('⭐',x,y-b.r*.1,b.r*1.05);
+    if(b.kd.k==='rain')drawEm('🌈',x,y,b.r*1.05)});
+  /* 飞镖 */
+  darts.forEach(function(d){
+    ctx.save();ctx.translate(d.x,d.y);ctx.rotate(d.a);
+    ctx.fillStyle='#e8ecff';
+    ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-4,-4);ctx.lineTo(-2,0);ctx.lineTo(-4,4);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#ffd45c';ctx.fillRect(-11,-2,7,4);
+    ctx.restore()});
+  /* 炮台 */
+  ctx.save();ctx.translate(cannon.x,cannon.y);
+  ctx.rotate(cannon.a);
+  ctx.fillStyle='#3a4a70';ctx.fillRect(0,-7,38,14);
+  ctx.fillStyle='#5a6a90';ctx.fillRect(0,-7,38,5);
+  ctx.fillStyle='#8a9ac0';
+  ctx.beginPath();ctx.moveTo(38,-9);ctx.lineTo(52,0);ctx.lineTo(38,9);ctx.closePath();ctx.fill();
+  ctx.restore();
+  ctx.fillStyle='#2a3a5c';
+  ctx.beginPath();ctx.arc(cannon.x,cannon.y,26,Math.PI,0);ctx.fill();
+  ctx.fillStyle='#ffd45c';
+  ctx.beginPath();ctx.arc(cannon.x,cannon.y,10,0,7);ctx.fill();
+  /* 粒子 */
+  parts.forEach(function(p){
+    ctx.globalAlpha=clamp(p.t*2.2,0,1);
+    ctx.fillStyle=p.c;
+    ctx.fillRect(p.x-2,p.y-2,4,4)});
+  ctx.globalAlpha=1;
+  /* 飘字 */
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  pops.forEach(function(p){
+    ctx.globalAlpha=clamp(p.t*1.6,0,1);
+    ctx.font=(p.big?'bold 22px':'bold 15px')+' "Microsoft YaHei",sans-serif';
+    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillText(p.s,p.x+1,p.y+1);
+    ctx.fillStyle=p.c;ctx.fillText(p.s,p.x,p.y)});
+  ctx.globalAlpha=1;
+  ctx.restore()}
+var spCache={};
+function drawEm(em,x,y,px){
+  var s=Math.ceil(px/8)*8,k=em+'@'+s;
+  if(!spCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    spCache[k]=c}
+  ctx.drawImage(spCache[k],x-px/2,y-px/2,px,px)}
+var lastTs=0;
+function loop(ts){
+  requestAnimationFrame(loop);
+  var dt=Math.min(.033,(ts-lastTs)/1000||.016);
+  lastTs=ts;
+  if(state==='play')update(dt);else gt+=dt;
+  render()}
+requestAnimationFrame(loop);
+window.__B={
+  start:startGame,fire:fire,
+  get state(){return state},get score(){return score},get combo(){return combo},
+  get T(){return T},get balloons(){return balloons},get darts(){return darts},
+  get popped(){return popped},
+  spawn:function(kd){var k=KINDS[kd];balloons.push({x:100+rnd(180),y:VH*.5,r:26,kd:k,vy:0,vx:0,ph:0,alive:1})},
+  end:function(){T=.01}};
+})();
+</script>
+</body>
+</html>
