@@ -52,12 +52,12 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
 
 <nav>
   <b>🎮 游戏路口(点开即玩):</b><br>
-  <a class="back" href="../">🏠 返回路口</a>
-  <a href="/fc/">🕹️ FC21合1</a><a href="/run/">🏃 跑酷</a>
-  <a href="/balloon/">🎈 气球</a><a href="/link/">🐱 连连看</a>
-  <a href="/match/">🍬 消消乐</a><a href="/snake/">🐍 蛇蛇</a>
-  <a href="/shousui/">🧨 守岁</a><a href="/jump/">🐸 跳一跳</a>
-  <a href="/diner/">🐱 喵喵食堂</a><a href="/moyu/">🐟 摸鱼乐园</a>
+  <a class="back" href="./index.html">🏠 返回路口</a>
+  <a href="https://tongnian-fc.netlify.app/">🕹️ FC21合1</a><a href="https://tongnian-run.netlify.app/">🏃 跑酷</a>
+  <a href="https://tongnian-balloon.netlify.app/">🎈 气球</a><a href="https://tongnian-link.netlify.app/">🐱 连连看</a>
+  <a href="https://tongnian-match.netlify.app/">🍬 消消乐</a><a href="https://tongnian-snake.netlify.app/">🐍 蛇蛇</a>
+  <a href="https://tongnian-shousui.netlify.app/">🧨 守岁</a><a href="https://tongnian-jump.netlify.app/">🐸 跳一跳</a>
+  <a href="https://tongnian-diner.netlify.app/">🐱 喵喵食堂</a><a href="https://tongnian-moyu.netlify.app/">🐟 摸鱼乐园</a>
 </nav>
 <div class="fcnav">
   <b>🕹️ FC游戏厅 21合1 · 攻略快速跳转:</b><br>
@@ -66,11 +66,14 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
   <a href="#dino">🦖恐龙</a><a href="#g2048">🔢2048</a><a href="#flappy">🐤跳跳鸟</a><a href="#racer">🏎️赛车</a><a href="#catch">🪙接金币</a>
   <a href="#bubble">🫧泡泡龙</a><a href="#maze">🗝️迷宫</a><a href="#soko">📦推箱</a><a href="#gomoku">⚫五子棋</a>
   <a href="#run">🏃跑酷</a><a href="#balloon">🎈气球</a><a href="#link">🐱连连看</a>
+  <a href="#reversi">⚫黑白棋</a><a href="#sudoku">🔢数独</a><a href="#klotski">🀄华容道</a><a href="#fish">🐟吃鱼</a>
+  <a href="#pipes">🔧水管</a><a href="#stack">🧱叠塔</a><a href="#pong">🏓乒乓</a><a href="#slash">🍉切水果</a>
+  <a href="#tank">🎖️坦克</a><a href="#simon">🧠记忆</a>
 </div>
 
-<a class="bigbar" href="/fc/">🕹️ 一键进入 FC 游戏厅 · 21合1</a>
+<a class="bigbar" href="https://tongnian-fc.netlify.app/">🕹️ 一键进入 FC 游戏厅 · 21合1</a>
 
-<h2 id="fc">🕹️ FC游戏厅 · 21合1<span class="sub">· 通用操作</span></h2>
+<h2 id="fc">🕹️ FC游戏厅 · 31合1<span class="sub">· 通用操作 · 新增黑白棋/数独/华容道/吃鱼/水管/叠塔/乒乓/切水果/坦克/记忆十款!</span></h2>
 <div class="card">
   <p><b>怎么选游戏:</b>开机后是「选卡菜单」,按 <kbd>↑</kbd><kbd>↓</kbd> 或屏幕方向键移动橙色光条,按 <kbd>Enter</kbd>/<kbd>Ⓐ</kbd> 开始,也可直接点列表里的游戏。每款右侧显示你的最高分(HI)。</p>
   <p><b>通用按键:</b><kbd>Enter</kbd> 暂停/继续;<kbd>Shift</kbd>/<kbd>⌂</kbd> 回菜单;<kbd>↻</kbd> 重开;<kbd>♪</kbd> 静音;<b>GAME OVER 画面点屏幕/Ⓐ 即重开</b>。</p>
@@ -215,43 +218,103 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
   <div class="tip"><b>技巧:</b>① <b>先消边缘角落</b>——外圈连通后两侧可绕外相连;② 中间牌挡路优先清;③ 同图案先连转弯少的直连。</div>
 </div>
 
+<h3 id="reversi">⚫ 黑白棋</h3>
+<div class="card">
+  <p><b>目标:</b>你执黑与 AI 对弈,落子夹住对方棋子即翻面,终局子多者胜。绿点=可落子位。</p>
+  <div class="tip"><b>技巧:</b>① <b>四角是黄金位</b>,占了就翻不了;② 少占贴角的 X 位(送角);③ 前期少翻子留后手,让对方无路可走你就连下两手。</div>
+</div>
+
+<h3 id="sudoku">🔢 数独</h3>
+<div class="card">
+  <p><b>目标:</b>填满 9×9,每行/列/宫 1-9 不重复。点格选中,<kbd>Z</kbd> 数字+1,<kbd>X</kbd> 数字-1,冲突格变红。</p>
+  <div class="tip"><b>技巧:</b>① 先找某行/列/宫只剩一个空的;② 看数字 9 出现最多的地方,交叉排除;③ 红格提示你哪儿撞了,及时改。</div>
+</div>
+
+<h3 id="klotski">🀄 华容道</h3>
+<div class="card">
+  <p><b>目标:</b>经典滑块:把 2×2 的红色曹操移到底部中间出口。<kbd>Z</kbd>/<kbd>X</kbd> 选块,方向键移动(或点选)。</p>
+  <div class="tip"><b>技巧:</b>① 先给曹操上方腾出 2 格宽通道;② 小兵最灵活,用它们当"缓冲垫";③ 横刀立马最优 81 步,不追求最少,通就是赢。</div>
+</div>
+
+<h3 id="fish">🐟 大鱼吃小鱼</h3>
+<div class="card">
+  <p><b>目标:</b>方向键/拖动游动,吃比你小的鱼变大,躲比你大的;长到 SIZE 26 通关。</p>
+  <div class="tip"><b>技巧:</b>① 小虾(🦐🐙)永远能吃,先苟发育;② 中型鱼群旁边常有大鱼,吃两口就撤;③ 变大后之前的威胁变成自助餐。</div>
+</div>
+
+<h3 id="pipes">🔧 接水管</h3>
+<div class="card">
+  <p><b>目标:</b>点击旋转水管,把左侧绿口连到右侧红口,连通 10 节以上过关(LEN 实时显示)。</p>
+  <div class="tip"><b>技巧:</b>① 先从入口沿已有管道推进;② 盯 LEN 数字,快到 10 时优先补缺口;③ 弯管两头都能接,别死磕一个方向。</div>
+</div>
+
+<h3 id="stack">🧱 叠塔</h3>
+<div class="card">
+  <p><b>目标:</b>移动的方块落点点击/Z 叠上,对得越齐块越宽,偏了被削;叠 25 层封顶。完美对齐连击加分。</p>
+  <div class="tip"><b>技巧:</b>① 盯虚线参考线,快对齐时松手;② 连续 PERFECT 会连击,分数暴涨;③ 块越窄越要小心,宁早勿晚。</div>
+</div>
+
+<h3 id="pong">🏓 乒乓对战</h3>
+<div class="card">
+  <p><b>目标:</b>vs AI 的经典乒乓,先到 7 分获胜。↑↓/拖动球拍。</p>
+  <div class="tip"><b>技巧:</b>① 用拍子<b>边缘</b>击球打出斜线甩开 AI;② 对拉回合越多球速越快,AI 反应跟不上快球;③ 领先后稳守中路。</div>
+</div>
+
+<h3 id="slash">🍉 疯狂切水果</h3>
+<div class="card">
+  <p><b>目标:</b>水果抛起时<b>滑动切割</b>,连击加倍;💣炸弹切到直接结束;漏切断连击。</p>
+  <div class="tip"><b>技巧:</b>① 一刀多果触发连击,分最高;② 炸弹出现时手收住,等它落下;③ 水果到最高点时最慢,最好切。</div>
+</div>
+
+<h3 id="tank">🎖️ 坦克守卫战</h3>
+<div class="card">
+  <p><b>目标:</b>守住底部红色基地:←→移动,Z/点击开火,消灭来犯敌坦克(会反击、会拆沙袋墙)。</p>
+  <div class="tip"><b>技巧:</b>① 基地只有 3 点血,敌坦克冲到底部就掉血——<b>优先打深入者</b>;② 沙袋能挡子弹但会碎,别全指望;③ 保持移动躲敌方弹道。</div>
+</div>
+
+<h3 id="simon">🧠 记忆大师</h3>
+<div class="card">
+  <p><b>目标:</b>看四色灯的亮灯序列,然后照样按出来;每过一关序列长一位,按错即败。</p>
+  <div class="tip"><b>技巧:</b>① 默念颜色口诀(红蓝绿黄…)比记位置牢;② 长序列分段记(前4后4);③ 音调每个颜色不同,听声辅助记忆。</div>
+</div>
+
 <h2>🎮 独立游戏(大屏专属版)</h2>
 
 <h3>🍬 糖果消消乐</h3>
 <div class="card">
   <p><b>目标:</b>8×8 三消:交换相邻成三连,连锁加成;四连💥炸弹(3×3)、五连🌈彩虹(清全同色);限步数达目标分,三星过关,关卡无限。</p>
   <div class="tip"><b>技巧:</b>先找能凑四连/五连的位;彩虹留到场上颜色最多时用;连锁层数越多分越高;剩步×30 奖励——省步数冲三星。卡住点顶部 HUD 有提示。</div>
-  <a class="play" href="/match/">▶ 去玩</a>
+  <a class="play" href="https://tongnian-match.netlify.app/">▶ 去玩</a>
 </div>
 
 <h3>🐍 蛇蛇争霸</h3>
 <div class="card">
   <p><b>目标:</b>8 蛇竞技:拖动转向吃光点变长,⚡按住加速(耗长度),头撞蛇身(含自己)即死,死蛇爆光蛋。</p>
   <div class="tip"><b>技巧:</b>前期绕外圈苟发育;大蛇加速堵你时蛇头永远别对别人身体冲;阴人=贴对方头前横切让它撞你;光蛋区最肥也最危险捡外围先。</div>
-  <a class="play" href="/snake/">▶ 去玩</a>
+  <a class="play" href="https://tongnian-snake.netlify.app/">▶ 去玩</a>
 </div>
 
 <h3>🧨 守岁大作战</h3>
 <div class="card">
   <p><b>目标:</b>除夕年兽围城:拖动走位武器全自动,捡🧧升级三选一(鞭炮/烟花/风火轮+4被动),75 秒一只龙王掉宝箱。</p>
   <div class="tip"><b>技巧:</b>开局先拿输出,二件拿风火轮护体;永远绕圈走位;龙王先拉远再打;血半拿棉袄/饺子;压岁钱×1.15 叠伤害后期质变。</div>
-  <a class="play" href="/shousui/">▶ 去玩</a>
+  <a class="play" href="https://tongnian-shousui.netlify.app/">▶ 去玩</a>
 </div>
 
 <h3>🐸 跳一跳 · 摘星</h3>
 <div class="card">
   <p><b>目标:</b>按住蓄力松手跳,踩正中心连击 +2/4/8…翻倍;🎵🏪🎁特殊块彩蛋;越跳块越小越远。</p>
   <div class="tip"><b>技巧:</b>能量环外沿够到目标中心就松手;连击断了从头来,稳比快重要;移动块在中心经过时松手。</div>
-  <a class="play" href="/jump/">▶ 去玩</a>
+  <a class="play" href="https://tongnian-jump.netlify.app/">▶ 去玩</a>
 </div>
 
 <h3>🏃🎈🐱 跑酷 / 气球 / 连连看(独立大屏版)</h3>
 <div class="card">
   <p>三款已并入 FC 21合1(玩法攻略见上方),独立站是<b>全屏大屏版</b>:跑酷视差星夜更炫、气球炮台更精致、连连看图案更大——手机上想玩大屏版就来这里。</p>
   <p style="margin-top:8px">
-    <a class="play" href="/run/">▶ 跑酷</a>
-    <a class="play" href="/balloon/">▶ 气球</a>
-    <a class="play" href="/link/">▶ 连连看</a>
+    <a class="play" href="https://tongnian-run.netlify.app/">▶ 跑酷</a>
+    <a class="play" href="https://tongnian-balloon.netlify.app/">▶ 气球</a>
+    <a class="play" href="https://tongnian-link.netlify.app/">▶ 连连看</a>
   </p>
 </div>
 
@@ -260,15 +323,15 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
   <p><b>喵喵食堂:</b>铃响接单→烹饪→及时上菜;收入升级设施解锁菜谱,口碑冲五星。<b>思路:先升烹饪速度→解锁贵价菜→贵宾猫优先伺候。</b></p>
   <p><b>摸鱼乐园:</b>7 个解压玩具:今天吃什么/指尖烟花/每日三件套/人生进度条/许愿池/渐变生成器/梗图生成器——打开就玩两下。</p>
   <p style="margin-top:8px">
-    <a class="play" href="/diner/">▶ 喵喵食堂</a>
-    <a class="play" href="/moyu/">▶ 摸鱼乐园</a>
+    <a class="play" href="https://tongnian-diner.netlify.app/">▶ 喵喵食堂</a>
+    <a class="play" href="https://tongnian-moyu.netlify.app/">▶ 摸鱼乐园</a>
   </p>
 </div>
 
 <div style="text-align:center;margin-top:34px">
-  <a class="bigbar" href="../">🎮 返回游戏路口 · 挑一款开玩</a>
+  <a class="bigbar" href="./index.html">🎮 返回游戏路口 · 挑一款开玩</a>
 </div>
-<footer>全游戏唯一攻略站 · 收藏本页网址即可<br>把游戏路口转发给好友一起玩 · 各游戏最高分保存在自己手机上</footer>
+<footer>全游戏唯一攻略站 · 收藏本页: tongnian-hub.netlify.app/guide.html<br>把游戏路口转发给好友一起玩 · 各游戏最高分保存在自己手机上</footer>
 </div>
 </body>
 </html>
