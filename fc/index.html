@@ -157,7 +157,7 @@ body.fc-lock{overflow:hidden;touch-action:none}
         <div id="fc-menu" class="hide">
           <div id="fc-mhead"><b>★ 童年FC游戏厅 ★</b><i>- CHILDHOOD 31 IN 1 -</i></div>
           <div id="fc-list"></div>
-          <div id="fc-mfoot">↑↓ SELECT · ENTER START<br>P1 READY</div>
+          <div id="fc-mfoot">↑↓选择 · ENTER开始 · SELECT换分类<br>Ⓐ = 确认 / 重试</div>
         </div>
         <div id="fc-off"></div>
       </div>
@@ -235,8 +235,10 @@ function beep(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;tr
   if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,slide),t+dur);
   g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
-function jingle(ns,gap,type){if(muted)return;ns.forEach(function(n,i){setTimeout(function(){beep(n[0],n[1]||.09,type||'square',.06,n[2])},i*(gap||85))})}
-function boom(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+function jingle(ns,gap,type){if(muted)return;try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+  ns.forEach(function(n,i){setTimeout(function(){beep(n[0],n[1]||.09,type||'square',.06,n[2])},i*(gap||85))})}
+function boom(dur,vol){try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}
+  if(muted)return;var a=actx();if(!a)return;try{
   var len=Math.floor(a.sampleRate*(dur||.25)),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);
   for(var i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
   var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol||.08;s.buffer=buf;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
@@ -267,6 +269,8 @@ function toMenu(){phase='menu';cur=null;curDef=null;pauseF=false;refreshMenu();
   document.getElementById('fc-mode').classList.remove('show');saveW()}
 function startGame(def){
   curDef=def;score=0;best=def.bestVal();newBest=false;phase='ready';readyT=80;pauseF=false;
+  try{if(def.id)lsSet('fc90_last',def.id)}catch(e){}
+  lastId=def.id||'';
   cur=def.make();
   document.getElementById('fc-menu').classList.add('hide');
   setTitle(def.name,def.hint);
@@ -285,9 +289,10 @@ document.addEventListener('keydown',function(e){
   kd(k);
   if(!power)return;
   if(k==='st'&&(phase==='play'||phase==='ready')){pauseF=!pauseF;beep(pauseF?392:523,.06,'square',.05)}
-  if(k==='sel'&&phase!=='menu'&&phase!=='boot')toMenu();
+  if(k==='sel'&&phase!=='menu'&&phase!=='boot'){toMenu();return}
   if(k==='a'&&phase==='over')startGame(curDef);
-  if(phase==='menu'){if(k==='u')menuMove(-1);if(k==='d')menuMove(1);if(k==='a'||k==='st')menuEnter()}});
+  if(phase==='menu'){if(k==='u')menuMove(-1);if(k==='d')menuMove(1);if(k==='a'||k==='st')menuEnter();
+    if(k==='sel'){menuCat=(menuCat+1)%3;menuIdx=0;refreshMenu();beep(880,.05,'square',.05)}}});
 document.addEventListener('keyup',function(e){var k=KMAP[e.code];if(k)ku(k)});
 /* 手柄按钮 */
 Array.prototype.forEach.call(ROOT.querySelectorAll('[data-k]'),function(b){
@@ -295,9 +300,10 @@ Array.prototype.forEach.call(ROOT.querySelectorAll('[data-k]'),function(b){
   function on(ev){ev.preventDefault();kd(k);b.classList.add('hold');
     if(!power)return;
     if(k==='st'&&(phase==='play'||phase==='ready')){pauseF=!pauseF;beep(pauseF?392:523,.06,'square',.05)}
-    if(k==='sel'&&phase!=='menu'&&phase!=='boot')toMenu();
+    if(k==='sel'&&phase!=='menu'&&phase!=='boot'){toMenu();return}
     if(k==='a'&&phase==='over')startGame(curDef);
-    if(phase==='menu'){if(k==='u')menuMove(-1);if(k==='d')menuMove(1);if(k==='a'||k==='st')menuEnter()}}
+    if(phase==='menu'){if(k==='u')menuMove(-1);if(k==='d')menuMove(1);if(k==='a'||k==='st')menuEnter();
+      if(k==='sel'){menuCat=(menuCat+1)%3;menuIdx=0;refreshMenu();beep(880,.05,'square',.05)}}}
   function off(ev){ev.preventDefault();ku(k);b.classList.remove('hold')}
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);
   b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off)});
@@ -357,18 +363,55 @@ document.addEventListener('keydown',function(e){if(e.code==='KeyF'&&!e.repeat){s
 
 /* ================= 选卡菜单 ================= */
 var GAMES=[];
-function menuMove(d){menuIdx=(menuIdx+d+GAMES.length)%GAMES.length;beep(660,.03,'square',.04);menuPaint()}
-function menuEnter(){if(GAMES[menuIdx])startGame(GAMES[menuIdx])}
+var menuCat=0;                 /* 0全部 1街机 2益智 */
+var CATNAMES=['全部游戏','街机 · 动作','益智 · 动脑'];
+var viewGAMES=[];              /* 当前分类下可见游戏 */
+var lastId=lsGet('fc90_last')||'';
+function buildView(){
+  viewGAMES=[];
+  if(menuCat===0)viewGAMES.push({random:true,icon:'🎲',name:'随机玩一个',en:'RANDOM',_html:'<span class="fc-ic">🎲</span><span class="fc-nm">随机玩一个<b>RANDOM</b></span><span class="fc-hi">31选1</span>'});
+  GAMES.forEach(function(g){if(menuCat===0||g.cat===menuCat)viewGAMES.push(g)})}
+function menuMove(d){
+  menuIdx=(menuIdx+d+viewGAMES.length)%viewGAMES.length;
+  beep(660,.03,'square',.04);menuPaint()}
+function menuEnter(){
+  var g=viewGAMES[menuIdx];
+  if(!g)return;
+  if(g.random){
+    var pick=GAMES[rnd(GAMES.length)];
+    toast2('🎲 来一局 '+pick.name+'!');
+    startGame(pick);
+    return}
+  startGame(g)}
 function fmtHi(n){n=n||0;return n>9999?Math.floor(n/1000)+'K':String(n)}
-function refreshMenu(){var l=document.getElementById('fc-list');l.innerHTML='';
-  GAMES.forEach(function(g,i){
-    var d=document.createElement('div');d.className='fc-it'+(i===menuIdx?' on':'');
-    d.innerHTML='<span class="fc-ic">'+g.icon+'</span><span class="fc-nm">'+g.name+'<b>'+g.en+'</b></span><span class="fc-hi">HI '+fmtHi(g.bestVal())+'</span>';
-    d.addEventListener('pointerdown',function(){if(menuIdx===i){menuEnter()}else{menuIdx=i;menuPaint();beep(660,.03,'square',.04)}});
-    l.appendChild(d)})}
-function menuPaint(){var l=document.getElementById('fc-list');
+function refreshMenu(){
+  buildView();
+  if(menuIdx>=viewGAMES.length)menuIdx=0;
+  var l=document.getElementById('fc-list');l.innerHTML='';
+  viewGAMES.forEach(function(g,i){
+    var d=document.createElement('div');
+    d.className='fc-it'+(i===menuIdx?' on':'');
+    var html=g._html||('<span class="fc-ic">'+g.icon+'</span><span class="fc-nm">'+g.name+'<b>'+g.en+'</b></span><span class="fc-hi">HI '+fmtHi(g.bestVal())+'</span>');
+    if(!g.random&&g.id===lastId)html='<span class="fc-ic">▶</span>'+html.replace('fc-nm">','fc-nm"><b style="display:none"></b>').replace(g.name,'▲'+g.name);
+    d.innerHTML=html;
+    d.addEventListener('pointerdown',function(){
+      if(menuIdx===i){menuEnter()}
+      else{menuIdx=i;menuPaint();beep(660,.03,'square',.04)}});
+    l.appendChild(d)});
+  document.getElementById('fc-mhead').innerHTML='<b>★ 童年FC游戏厅 ★</b><i>- '+CATNAMES[menuCat]+' ('+viewGAMES.length+') - SELECT换分类</i>';
+  menuPaint()}
+function menuPaint(){
+  var l=document.getElementById('fc-list');
   Array.prototype.forEach.call(l.children,function(c,i){c.classList.toggle('on',i===menuIdx)});
-  var on=l.children[menuIdx];if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest'})}catch(e){}}
+  var on=l.children[menuIdx];
+  if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest'})}catch(e){}}
+var toastEl2=null;
+function toast2(s){
+  var t=document.getElementById('fc-toast');
+  if(!t)return;
+  t.textContent=s;t.classList.add('show');
+  clearTimeout(toastEl2);
+  toastEl2=setTimeout(function(){t.classList.remove('show')},1500)}
 
 /* ================= 主循环 ================= */
 var stars=[];for(var si=0;si<40;si++)stars.push({x:rnd(256),y:rnd(240),s:.3+Math.random()*1.2});
@@ -1038,7 +1081,7 @@ function makeDino(){
       if(jumpKey&&y===0){vy=-7.4;beep(660,.08,'square',.05,990)}
       if(y<0){vy+=.45;y+=vy;if(!dn('u')&&!dn('a')&&vy<-3)vy=-3;
         if(y>=0){y=0;vy=0}}
-      speed=Math.min(8,3+dist/900);
+      speed=Math.min(7,2.8+dist/1100);
       dist+=speed;
       nextT--;
       if(nextT<=0){nextT=Math.max(24,80-(speed*5|0))+rnd(30);
@@ -1167,10 +1210,10 @@ function makeFlappy(){
   return{update:function(){
       t++;
       if(tp('a')||tp('u'))flap();
-      vy+=.26;if(vy>7)vy=7;by+=vy;
+      vy+=.23;if(vy>6.4)vy=6.4;by+=vy;
       if(by<8){by=8;vy=.5}
-      var spd=1.4+Math.min(1.3,t/2400);
-      nxt--;if(nxt<=0){nxt=92+rnd(34);pipes.push({x:W+14,gy:64+rnd(100),pd:false})}
+      var spd=1.4+Math.min(1.2,t/2800);
+      nxt--;if(nxt<=0){nxt=104+rnd(40);pipes.push({x:W+14,gy:64+rnd(100),pd:false})}
       pipes.forEach(function(p){p.x-=spd;if(!p.pd&&p.x+24<66){p.pd=true;S(10);beep(988,.06,'square',.05)}});
       pipes=pipes.filter(function(p){return p.x>-32});
       for(var i=0;i<pipes.length;i++){var p=pipes[i];
@@ -1201,7 +1244,7 @@ function makeRacer(){
   var px=128,t=0,dist=0,cars=[],nxt=40,roadL=44,roadW=168;
   var CC=['#f8b800','#3cbcfc','#6844fc','#ff8ba0','#fca044'];
   return{update:function(){
-      t++;var spd=3+dist/1600;dist+=spd;score=(dist/8|0);
+      t++;var spd=2.6+dist/1900;dist+=spd;score=(dist/8|0);
       if(dn('l'))px-=3.4;if(dn('r'))px+=3.4;
       if(px<roadL+12)px=roadL+12;if(px>roadL+roadW-12)px=roadL+roadW-12;
       nxt--;if(nxt<=0){nxt=Math.max(16,38-((t/120)|0))+rnd(16);
@@ -1227,7 +1270,7 @@ function makeRacer(){
       R(px-8,194,16,8,'#0e1020');R(px-8,204,16,6,'#0e1020');
       R(px-12,191,3,8,'#111');R(px+9,191,3,8,'#111');R(px-12,205,3,8,'#111');R(px+9,205,3,8,'#111');
       R(px-6,182,12,6,'#f8b800');
-      hud('SCORE',score,'SPD',(3+dist/1600).toFixed(1))},
+      hud('SCORE',score,'SPD',(2.6+dist/1900).toFixed(1))},
     }
 }
 
@@ -1238,7 +1281,7 @@ function makeCatch(){
   var px=128,pw=46,lives=3,t=0,items=[],nxt=36,combo=0,flash=0;
   return{update:function(){
       t++;if(flash>0)flash--;
-      var spd=1.5+Math.min(2.2,t/2100);
+      var spd=1.3+Math.min(2,t/2600);
       nxt--;if(nxt<=0){nxt=Math.max(14,34-((t/150)|0))+rnd(14);
         var r=Math.random(),k=r<.55?'coin':r<.78?'gold':r<.9?'gem':'bomb';
         items.push({x:16+rnd(224),y:-10,k:k,vy:spd*(.85+Math.random()*.4),vx:(Math.random()-.5)*.6})}
@@ -2540,7 +2583,7 @@ function makeStack(){
     var top=blocks[blocks.length-1];
     var goRight=blocks.length%2===0;
     cur={x:goRight?-top.w:256,w:top.w,y:top.y-16,dir:goRight?1:-1,land:false};
-    speed=Math.min(4.6,2.2+blocks.length*.09)}
+    speed=Math.min(4.2,2+blocks.length*.07)}
   newBlock();
   function drop(){
     if(!cur)return;
@@ -2991,6 +3034,15 @@ GAMES=[
  {id:'simon',icon:'🧠',name:'记忆大师',en:'SIMON',make:makeSimon,
   hint:'看亮灯序列然后照样按 · 每关长一位 · 越长分越高 · 按错即败',bestVal:function(){return bv('simon')}}
 ];
+/* 分类:0全部 1街机 2益智 */
+(function(){
+  var A={tetris:1,snake:1,breakout:1,shooter:1,pac:1,whack:1,flappy:1,racer:1,catch:1,bubble:1,dino:1,run:1,balloon:1,slash:1,tank:1,fish:1,stack:1,pong:1};
+  var P={mines:2,memory:2,g2048:2,maze:2,soko:2,gomoku:2,link:2,reversi:2,sudoku:2,klotski:2,pipes:2,simon:2,melon:2};
+  GAMES.forEach(function(g){g.cat=A[g.id]?1:P[g.id]?2:0});
+  /* 缓存 HTML(列表项内容不变,预生成一次) */
+  GAMES.forEach(function(g){
+    g._html='<span class="fc-ic">'+g.icon+'</span><span class="fc-nm">'+g.name+'<b>'+g.en+'</b></span><span class="fc-hi">HI '+fmtHi(g.bestVal())+'</span>'});
+})();
 
 /* ================= 微信分享 ================= */
 var ISWX=/micromessenger/i.test(navigator.userAgent);
