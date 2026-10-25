@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>飞刀挑战 · 童年游戏路口</title>
+<meta name="description" content="飞刀挑战:点一下抛一把刀扎中旋转木靶!刀撞刀当场炸,小心黑色禁区与BOSS金属护盾,扎苹果解锁飞刀皮肤,看你能闯到第几关!">
+<meta property="og:title" content="飞刀挑战 · 童年游戏路口">
+<meta property="og:description" content="旋转木靶扎飞刀,刀撞刀就炸,BOSS护盾等你破!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#2a1030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%97%A1%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#2a1030;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:#ffd45c;margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(8,12,32,.86);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:#ff9ee8;text-shadow:0 3px 0 #5c1c4c,0 8px 26px rgba(255,120,220,.4);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:#ffd45c;margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#f2dcf5;background:rgba(255,255,255,.06);border:1px solid rgba(255,150,230,.25);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:#ff9ee8}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;color:#3d0b2a;cursor:pointer;
+  background:linear-gradient(180deg,#ffd6f4,#ff7ed2);box-shadow:0 5px 0 #a3277e,0 10px 30px rgba(255,126,210,.35)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #a3277e}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:#ffd45c}
+#ostats{font-size:15px;line-height:2.1;color:#f2dcf5;background:rgba(255,255,255,.06);border:1px solid rgba(255,150,230,.25);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:#ffd45c;font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+
+/* ===== 皮肤条 ===== */
+#skins{margin:-6px 0 6px}
+.skinbtn{border:0;border-radius:14px;padding:7px 11px;font-size:12px;font-weight:800;color:#fff;cursor:pointer;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+.skinbtn i{display:block;font-style:normal;font-size:10px;opacity:.7;margin-top:2px}
+.skinbtn.on{background:rgba(255,255,255,.3);border-color:#ffd45c}
+.skinbtn.lock{opacity:.38}
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud">
+  <span class="chip">分<b id="hscore">0</b></span>
+  <span class="chip">关<b id="hlevel">1</b></span>
+  <span class="chip">刀<b id="hknife">0</b></span>
+</div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">飞刀挑战<small>· 童 年 手 感 ·</small></div>
+  <div class="howto">
+    👆 <b>点一下屏幕</b>抛一把刀,刀从下方直飞靶心<br>
+    🔪 插进木盘的刀<b>跟着靶盘转</b>,<b>扎到已有的刀</b>当场失败<br>
+    ⬛ 盘上<b>黑色禁区</b>沾到就炸,🍎<b>苹果</b>扎中加分还能解锁皮肤<br>
+    👹 每 5 关一个 <b>BOSS 靶</b>:先用刀崩掉金属护盾,再扎满刀数<br>
+    🎯 在刀用完前扎满数量即过关,越往后靶盘<b>忽快忽慢还会反向</b>
+  </div>
+  <div class="row" id="skins"></div>
+  <button class="bigbtn" id="startbtn" type="button">开 扎</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">游戏结束</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='knif_best',PLAY='knif_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* ================== GAME · 飞刀挑战 ================== */
+var TAU=Math.PI*2;
+var FLY_T=0.12;          // 飞行时间(秒):极短,手感跟手
+var THROW_CD=0.13;       // 两刀之间最小间隔,防连点自杀
+var SKINS=[
+  {n:'木柄铁刀',b:'#dfe8f5',h:'#8a5a2a',need:0},
+  {n:'烈焰赤刃',b:'#ffc08a',h:'#c0392b',need:5},
+  {n:'幽紫寒刃',b:'#e0c4ff',h:'#6b3fa0',need:15},
+  {n:'黄金圣刃',b:'#ffeaa8',h:'#c9962c',need:30},
+  {n:'碧海青锋',b:'#a8ffe0',h:'#1d7a63',need:55}
+];
+var appleTotal=(+lsGet('knif_apple','0'))||0;
+var skinIdx=clamp((+lsGet('knif_skin','0'))||0,0,SKINS.length-1);
+
+var G={
+  state:'start',phase:'idle',phaseT:0,
+  score:0,level:1,applesHit:0,maxLevel:1,
+  isBoss:false,req:0,quota:0,stuck:0,
+  target:{x:0,y:0,r:80,rot:0,spd:1.2,dir:1,mul:1,chgT:0},
+  baseR:80,startY:0,
+  list:[],apples:[],zones:[],shields:[],
+  fly:null,queue:0,cd:0,
+  parts:[],floats:[],
+  shake:0,flash:0,dieAng:0,fail:'',clearHigh:0,lvT:0
+};
+
+function angDiff(a,b){var d=(a-b)%TAU;if(d>Math.PI)d-=TAU;if(d<-Math.PI)d+=TAU;return d<0?-d:d}
+function knifeW(){return Math.max(7,G.target.r*0.13)}
+function unlocked(i){return appleTotal>=SKINS[i].need}
+
+/* --- 布局 --- */
+function onResize(){
+  var t=G.target;
+  t.x=VW/2;
+  t.y=Math.max(148,Math.round(VH*0.34));
+  G.baseR=clamp(Math.min(VW*0.30,VH*0.19,t.y-96),46,120);
+  if(!G.isBoss)t.r=G.baseR;else t.r=G.baseR*1.16;
+  G.startY=VH-Math.max(44,Math.round(VH*0.07));
+}
+/* --- 建关 --- */
+function zoneCover(a,pad){
+  for(var i=0;i<G.zones.length;i++){
+    if(angDiff(a,G.zones[i].c)<G.zones[i].h+pad)return true;
+  }
+  return false;
+}
+function setupLevel(){
+  var t=G.target,n=G.level;
+  G.isBoss=(n%5===0);
+  onResize();
+  t.rot=frnd()*TAU;
+  t.dir=frnd()<.5?1:-1;t.mul=1;t.chgT=1.4+frnd();
+  t.spd=Math.min(3.2,1.05+n*0.075)*(G.isBoss?0.85:1);
+  G.list=[];G.apples=[];G.zones=[];G.shields=[];
+  G.req=Math.min(16,5+Math.floor(n*0.75));
+  G.quota=G.req+2;G.stuck=0;G.clearHigh=0;G.lvT=1.3;
+
+  // 黑色禁区:3 关起 1 条,8 关起最多 2 条
+  var zn = n<3?0:(n<8?1:2);
+  for(var i=0;i<zn;i++){
+    var c=frnd()*TAU,guard=0;
+    while(guard++<20&&zoneCover(c,0.9))c=frnd()*TAU;
+    G.zones.push({c:c,h:0.26+frnd()*0.16});
+  }
+  // 苹果:1-2 个,避开禁区
+  var an=1+rnd(2);
+  for(var j=0;j<an;j++){
+    var a=frnd()*TAU,g2=0;
+    while(g2++<24&&zoneCover(a,0.5))a=frnd()*TAU;
+    G.apples.push({a:a,dead:0});
+  }
+  // BOSS:金属护盾(多段)
+  if(G.isBoss){
+    var cnt=3,hp=1+Math.floor(n/10);
+    for(var k=0;k<cnt;k++)G.shields.push({c:k*TAU/cnt+frnd()*0.5,half:0.5,hp:hp,max:hp});
+  }
+}
+function startGame(){
+  G.score=0;G.level=1;G.applesHit=0;G.state='play';
+  G.parts=[];G.floats=[];G.fly=null;G.queue=0;G.cd=0;
+  G.shake=0;G.flash=0;G.phase='idle';G.phaseT=0;G.fail='';
+  setupLevel();
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  KIT.addPlay();KIT.streak();
+  run();
+}
+
+/* --- 表现 --- */
+function addParts(x,y,col,n){
+  n=Math.min(n,150-G.parts.length);
+  for(var i=0;i<n;i++)G.parts.push({x:x,y:y,vx:(frnd()-.5)*260,vy:(frnd()-.5)*260-70,
+    life:.4+frnd()*.5,col:col,s:2+frnd()*3});
+}
+function addFloat(x,y,txt,col){if(G.floats.length<14)G.floats.push({x:x,y:y,t:txt,c:col,life:1})}
+function ptAngle(a,r){return{x:G.target.x+Math.cos(a)*r,y:G.target.y+Math.sin(a)*r}}
+
+/* --- 抛刀 --- */
+function throwKnife(){
+  if(G.fly||G.phase!=='idle'||G.quota<=0)return;
+  G.quota--;
+  G.fly={t:0};
+  tone(760,.05,'triangle',.04,980);
+}
+function tryThrow(){
+  if(G.state!=='play')return;
+  if(G.phase==='idle'&&!G.fly&&G.cd<=0)throwKnife();
+  else G.queue=Math.min(3,G.queue+1);   // 连点不丢刀,排队等着飞
+}
+
+/* --- 命中判定 --- */
+function land(){
+  var t=G.target,R=t.r;
+  var rel=Math.PI/2-t.rot;                 // 相对木盘的角度
+  var half=(knifeW()*0.5+1.5)/R;           // 刀自身半角
+  var hx=t.x,hy=t.y+R;
+
+  // 1 金属护盾:崩掉一块,刀被弹开(退还这一刀)
+  for(var i=0;i<G.shields.length;i++){
+    var s=G.shields[i];
+    if(angDiff(rel,s.c)<s.half+half){
+      s.hp--;G.quota++;G.score+=5;
+      addParts(hx,hy,'#cfe4ff',8);addParts(hx,hy,'#8fa6c8',5);
+      addFloat(hx,hy-18,s.hp>0?'护盾 '+s.hp:'-护盾-','#cfe4ff');
+      if(s.hp<=0)G.shields.splice(i,1);
+      G.fly=null;G.shake=Math.max(G.shake,.12);
+      tone(1200,.06,'square',.05,500);noise(.06,.05);
+      return;
+    }
+  }
+  // 2 黑色禁区:直接失败
+  for(var z=0;z<G.zones.length;z++){
+    if(angDiff(rel,G.zones[z].c)<G.zones[z].h+half)return die('扎在黑色禁区上');
+  }
+  // 3 刀撞刀:新刀位置与任意已插入刀的角度差过小
+  var thr=(knifeW()+3)/R;
+  for(var k=0;k<G.list.length;k++){
+    if(angDiff(G.list[k].rel+t.rot,Math.PI/2)<thr)return die('这一刀扎到了另一把刀');
+  }
+  // 4 苹果
+  for(var a=0;a<G.apples.length;a++){
+    var ap=G.apples[a];
+    if(!ap.dead&&angDiff(rel,ap.a)<0.3){
+      ap.dead=1;appleTotal++;lsSet('knif_apple',appleTotal);
+      G.applesHit++;G.score+=25;
+      addFloat(hx,hy-30,'🍎 +25','#ff6b6b');
+      tone(1040,.09,'sine',.06,1560);
+      for(var si=0;si<SKINS.length;si++){      // 苹果数跨过阈值 → 解锁皮肤
+        if(SKINS[si].need===appleTotal){
+          addFloat(hx,hy-48,'🔓 '+SKINS[si].n,'#ffd45c');
+          tone(1320,.18,'triangle',.06,1760);
+        }
+      }
+    }
+  }
+  // 5 插上
+  G.list.push({rel:rel,wob:1});
+  G.stuck++;G.score+=10;
+  addParts(hx,hy,'#c98d55',7);addParts(hx,hy,'#7a4a1c',4);
+  G.shake=Math.max(G.shake,.18);
+  tone(320,.07,'square',.05,140);noise(.07,.05);   // 咔
+  if(G.stuck>=G.req)return levelClear();
+  if(G.quota<=0)return die('刀用光了还没扎满');
+  G.fly=null;
+}
+function levelClear(){
+  var bonus=G.level*10;G.score+=bonus;
+  addFloat(G.target.x,G.target.y,'过关 +'+bonus,'#ffd45c');
+  G.level++;if(G.level>G.maxLevel)G.maxLevel=G.level;
+  G.clearHigh=(+lsGet('knif_lv','0'))||0;
+  if(G.maxLevel>G.clearHigh){G.clearHigh=G.maxLevel;lsSet('knif_lv',G.maxLevel)}
+  G.phase='clear';G.phaseT=0;G.fly=null;G.queue=0;
+  G.dieAng=frnd()*TAU;G.shake=.32;
+  addParts(G.target.x,G.target.y,'#ffd45c',14);
+  tone(523,.1,'sine',.06);setTimeout(function(){tone(659,.1,'sine',.06)},90);
+  setTimeout(function(){tone(784,.16,'sine',.06)},180);
+}
+function die(msg){
+  if(G.phase==='die')return;
+  G.phase='die';G.phaseT=0;G.fail=msg;
+  G.dieAng=frnd()*TAU;G.shake=.6;G.flash=.55;G.fly=null;G.queue=0;
+  for(var i=0;i<G.list.length;i++){
+    var p=ptAngle(G.list[i].rel+G.target.rot,G.target.r);
+    addParts(p.x,p.y,'#ffe9a8',4);
+  }
+  addParts(G.target.x,G.target.y,'#ff5a5a',16);
+  noise(.34,.1);tone(220,.34,'sawtooth',.08,70);
+}
+function gameOver(){
+  G.state='over';
+  var isNew=KIT.setBest(G.score);
+  $('onewrec').style.display=isNew?'block':'none';
+  $('ostats').innerHTML=
+    '本局得分 <b>'+G.score+'</b><br>'+
+    '到达关卡 <b>第 '+G.level+' 关</b><br>'+
+    '扎爆苹果 <b>'+G.applesHit+'</b> 个<br>'+
+    (G.fail?'失败原因 <b style="font-size:15px">'+G.fail+'</b><br>':'')+
+    '历史最高 <b>'+KIT.best()+'</b>';
+  $('mini2').innerHTML='最高纪录 <b>第 '+(G.clearHigh||1)+' 关</b> · 已玩 <b>'+KIT.plays()+'</b> 局 · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥';
+  $('over').classList.remove('hide');
+  buildSkins();
+  tone(330,.16,'sine',.05);setTimeout(function(){tone(247,.3,'sine',.05)},170);
+}
+
+/* --- 更新 --- */
+function updParts(dt){
+  for(var q=G.parts.length-1;q>=0;q--){
+    var pt=G.parts[q];pt.life-=dt;
+    pt.x+=pt.vx*dt;pt.y+=pt.vy*dt;pt.vy+=560*dt;pt.vx*=.98;
+    if(pt.life<=0)G.parts.splice(q,1);
+  }
+  for(var f=G.floats.length-1;f>=0;f--){
+    var fl=G.floats[f];fl.life-=dt*.75;fl.y-=36*dt;
+    if(fl.life<=0)G.floats.splice(f,1);
+  }
+}
+function update(dt){
+  var t=G.target;
+  if(G.state==='start'){t.rot+=0.7*dt;updParts(dt);return}
+  if(G.state==='over'){updParts(dt);if(G.flash>0)G.flash-=dt;return}
+
+  if(G.shake>0)G.shake-=dt;
+  if(G.flash>0)G.flash-=dt;
+  if(G.lvT>0)G.lvT-=dt;
+  for(var i=0;i<G.list.length;i++)if(G.list[i].wob>0)G.list[i].wob-=dt*3.2;
+
+  if(G.phase==='clear'||G.phase==='die'){
+    G.phaseT+=dt;
+    t.rot+=t.spd*t.dir*Math.max(0,1-G.phaseT*3)*dt;
+    updParts(dt);
+    if(G.phase==='clear'&&G.phaseT>0.85){setupLevel();G.phase='idle';G.phaseT=0}
+    else if(G.phase==='die'&&G.phaseT>1.05)gameOver();
+    syncHUD();return;
+  }
+
+  // 靶盘转动:忽快忽慢 + 高关卡反向
+  if(G.level>=4||G.isBoss){
+    t.chgT-=dt;
+    if(t.chgT<=0){
+      t.chgT=1.1+frnd()*1.9;
+      t.mul=pick([0.45,0.75,1,1.25,1.7,2.05]);
+      if(frnd()<0.45)t.dir=-t.dir;
+    }
+  }
+  t.rot+=t.spd*t.dir*t.mul*dt;
+
+  if(G.cd>0)G.cd-=dt;
+  if(G.fly){
+    G.fly.t+=dt;
+    if(G.fly.t>=FLY_T){land()}
+  }else if(G.phase==='idle'&&G.cd<=0&&G.queue>0&&G.quota>0){
+    G.queue--;throwKnife();
+  }
+  updParts(dt);
+  syncHUD();
+}
+function syncHUD(){
+  $('hscore').textContent=G.score;
+  $('hlevel').textContent=G.level+(G.isBoss?' 👹':'');
+  $('hknife').textContent=G.quota;
+}
+
+/* --- 绘制 --- */
+function drawBoard(){
+  var t=G.target,R=t.r;
+  var g=ctx.createRadialGradient(-R*.35,-R*.35,R*.08,0,0,R);
+  g.addColorStop(0,'#d2955c');g.addColorStop(.55,'#a4682f');g.addColorStop(1,'#5f3512');
+  ctx.beginPath();ctx.arc(0,0,R,0,TAU);ctx.fillStyle=g;ctx.fill();
+  // 木纹
+  ctx.lineWidth=2;ctx.strokeStyle='rgba(80,44,12,.32)';
+  for(var i=1;i<5;i++){ctx.beginPath();ctx.arc(0,0,R*i/5.2,0,TAU);ctx.stroke()}
+  ctx.beginPath();ctx.arc(0,0,R-3,0,TAU);ctx.lineWidth=3;ctx.strokeStyle='rgba(255,220,170,.18)';ctx.stroke();
+
+  // 黑色禁区
+  for(var z=0;z<G.zones.length;z++){
+    var zn=G.zones[z];
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,zn.c-zn.h,zn.c+zn.h);ctx.closePath();
+    ctx.fillStyle='#150a1c';ctx.fill();
+    ctx.strokeStyle='rgba(255,80,120,.55)';ctx.lineWidth=2;ctx.stroke();
+  }
+  // 苹果
+  for(var a=0;a<G.apples.length;a++){
+    var ap=G.apples[a];if(ap.dead)continue;
+    var px=Math.cos(ap.a)*R*.74,py=Math.sin(ap.a)*R*.74,rr=R*.13;
+    ctx.beginPath();ctx.arc(px,py,rr,0,TAU);ctx.fillStyle='#e8323c';ctx.fill();
+    ctx.beginPath();ctx.arc(px-rr*.35,py-rr*.35,rr*.35,0,TAU);ctx.fillStyle='rgba(255,255,255,.45)';ctx.fill();
+    ctx.strokeStyle='#4a7a2a';ctx.lineWidth=Math.max(1.5,rr*.22);
+    ctx.beginPath();ctx.moveTo(px,py-rr*.9);ctx.lineTo(px+rr*.1,py-rr*1.5);ctx.stroke();
+  }
+  // 已插入的刀
+  for(var k=0;k<G.list.length;k++)drawStuck(G.list[k]);
+  // 中心轴
+  ctx.beginPath();ctx.arc(0,0,R*.14,0,TAU);ctx.fillStyle='#3a2410';ctx.fill();
+  ctx.beginPath();ctx.arc(0,0,R*.07,0,TAU);ctx.fillStyle='#e7c89a';ctx.fill();
+}
+function knifeShape(){
+  var R=G.target.r,bl=R*0.52,hl=R*0.4,w=knifeW(),sk=SKINS[skinIdx];
+  ctx.beginPath();                                   // 刀身(斜三角)
+  ctx.moveTo(-bl,0);ctx.lineTo(-bl*0.55,-w/2);ctx.lineTo(0,-w/2);
+  ctx.lineTo(0,w/2);ctx.lineTo(-bl*0.55,w/2);ctx.closePath();
+  var g=ctx.createLinearGradient(0,-w/2,0,w/2);
+  g.addColorStop(0,sk.b);g.addColorStop(.55,'#ffffff');g.addColorStop(1,'#8a93a5');
+  ctx.fillStyle=g;ctx.fill();
+  ctx.fillStyle=sk.h;                                // 刀柄
+  ctx.fillRect(0,-w*0.62,w*0.5+hl,w*1.24);
+  ctx.fillStyle='rgba(0,0,0,.28)';
+  ctx.fillRect(0,w*0.32,w*0.5+hl,w*0.3);
+  ctx.fillStyle='#f2d98a';                           // 护手
+  ctx.fillRect(-w*0.16,-w*0.95,w*0.5,w*1.9);
+}
+function drawStuck(kn){
+  var R=G.target.r;
+  ctx.save();
+  ctx.rotate(kn.rel);
+  if(kn.wob>0){                                      // 命中抖动
+    var k=kn.wob*kn.wob;
+    ctx.translate(Math.sin(kn.wob*46)*k*2.2,0);
+    ctx.rotate(Math.sin(kn.wob*38)*k*0.12);
+  }
+  ctx.translate(R,0);
+  knifeShape();
+  ctx.restore();
+}
+function drawShields(){
+  var t=G.target,R=t.r;
+  for(var i=0;i<G.shields.length;i++){
+    var s=G.shields[i];
+    ctx.beginPath();ctx.arc(0,0,R*1.1,s.c-s.half,s.c+s.half);
+    ctx.lineWidth=R*0.16;
+    ctx.strokeStyle=s.hp>1?'#9fb4d8':'#d7e6ff';
+    ctx.stroke();
+    ctx.beginPath();ctx.arc(0,0,R*1.1,s.c-s.half,s.c+s.half);
+    ctx.lineWidth=R*0.05;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.stroke();
+  }
+}
+function drawTargetWhole(){
+  var t=G.target;
+  ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.rot);
+  ctx.save();ctx.rotate(-t.rot);drawShields();ctx.restore();
+  drawBoard();
+  ctx.restore();
+}
+function drawTargetSplit(off){
+  var t=G.target,ang=G.dieAng;
+  for(var s=0;s<2;s++){
+    ctx.save();
+    ctx.translate(t.x,t.y);ctx.rotate(ang);
+    ctx.beginPath();
+    if(s===0)ctx.rect(-1400,-1400,2800,1400);else ctx.rect(-1400,0,2800,1400);
+    ctx.clip();
+    ctx.translate(0,s===0?-off:off);
+    ctx.rotate(-ang);ctx.rotate(t.rot);
+    drawBoard();
+    ctx.restore();
+  }
+}
+function drawBottom(){
+  var y=G.startY,t=G.target;
+  if(G.state==='play'&&G.phase==='idle'&&!G.fly&&G.quota>0){
+    ctx.save();ctx.translate(VW/2,y+t.r*0.52);ctx.rotate(Math.PI/2);
+    knifeShape();ctx.restore();
+  }
+  // 剩余刀数:底部小刀排
+  var n=Math.min(G.quota,10),w=Math.max(9,G.target.r*0.13);
+  for(var i=0;i<n;i++){
+    var x=VW/2-(n-1)*9+i*18;
+    ctx.fillStyle='#e6eefc';
+    ctx.fillRect(x-2,y+G.target.r*0.34,4,12);
+    ctx.fillStyle='#f2d98a';
+    ctx.fillRect(x-4,y+G.target.r*0.34+11,8,2.5);
+  }
+}
+function draw(){
+  var t=G.target;
+  ctx.save();
+  if(G.shake>0)ctx.translate((frnd()-.5)*10*G.shake*3,(frnd()-.5)*10*G.shake*3);
+  // 背景
+  var g=ctx.createLinearGradient(0,0,0,VH);
+  g.addColorStop(0,'#3a1544');g.addColorStop(.5,'#2a1030');g.addColorStop(1,'#150819');
+  ctx.fillStyle=g;ctx.fillRect(-14,-14,VW+28,VH+28);
+  // 背后光晕
+  var gl=ctx.createRadialGradient(t.x,t.y,t.r*.4,t.x,t.y,t.r*2.5);
+  gl.addColorStop(0,'rgba(255,140,230,.22)');gl.addColorStop(1,'rgba(255,140,230,0)');
+  ctx.fillStyle=gl;ctx.beginPath();ctx.arc(t.x,t.y,t.r*2.5,0,TAU);ctx.fill();
+
+  if(G.phase==='die'||G.phase==='clear'){
+    var total=G.phase==='die'?1.05:0.85;
+    var p=clamp(G.phaseT/total,0,1);
+    drawTargetSplit(p*p*t.r*1.9+(G.phase==='die'?0:p*6));
+  }else{
+    drawTargetWhole();
+  }
+  drawBottom();
+
+  // 飞行中的刀
+  if(G.fly){
+    var tt=clamp(G.fly.t/FLY_T,0,1);
+    var y=G.startY-(G.startY-(t.y+t.r))*tt;
+    ctx.save();ctx.translate(VW/2,y+t.r*0.52);ctx.rotate(Math.PI/2);
+    knifeShape();ctx.restore();
+    ctx.strokeStyle='rgba(255,255,255,.16)';ctx.lineWidth=2;
+    ctx.setLineDash([6,10]);
+    ctx.beginPath();ctx.moveTo(VW/2,y+t.r*0.2);ctx.lineTo(VW/2,VH);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // 粒子
+  for(var q=0;q<G.parts.length;q++){
+    var pt=G.parts[q];
+    ctx.globalAlpha=clamp(pt.life*1.8,0,1);
+    ctx.fillStyle=pt.col;ctx.fillRect(pt.x,pt.y,pt.s,pt.s);
+  }
+  ctx.globalAlpha=1;
+
+  // 飘字
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(var f=0;f<G.floats.length;f++){
+    var fl=G.floats[f];
+    ctx.globalAlpha=clamp(fl.life,0,1);
+    ctx.font='900 16px system-ui';ctx.fillStyle=fl.c;
+    ctx.strokeStyle='rgba(0,0,0,.55)';ctx.lineWidth=3.5;
+    ctx.strokeText(fl.t,fl.x,fl.y);ctx.fillText(fl.t,fl.x,fl.y);
+  }
+  ctx.globalAlpha=1;
+
+  // 关卡大字
+  if(G.state==='play'&&G.lvT>0){
+    ctx.globalAlpha=clamp(G.lvT,0,1);
+    ctx.font='900 30px system-ui';ctx.fillStyle='rgba(255,255,255,.92)';
+    ctx.fillText((G.isBoss?'👹 BOSS 第 '+G.level+' 关':'第 '+G.level+' 关'),VW/2,t.y-t.r-24);
+    ctx.font='700 13px system-ui';ctx.fillStyle='rgba(255,212,92,.9)';
+    ctx.fillText('扎满 '+G.req+' 刀过关',VW/2,t.y-t.r-4);
+    ctx.globalAlpha=1;
+  }
+  if(G.flash>0){ctx.fillStyle='rgba(255,60,90,'+(G.flash*.5)+')';ctx.fillRect(-14,-14,VW+28,VH+28)}
+  ctx.restore();
+}
+
+/* --- 输入 --- */
+cv.addEventListener('pointerdown',function(e){
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  tryThrow();
+},{passive:true});
+window.addEventListener('keydown',function(e){
+  if(G.state!=='play'){if(e.key===' '||e.key==='Enter')startGame();return}
+  if(e.key===' '||e.key==='ArrowUp'||e.key==='Enter')tryThrow();else return;
+  e.preventDefault();
+});
+
+/* --- 皮肤条 --- */
+function buildSkins(){
+  var box=$('skins');box.innerHTML='';
+  for(var i=0;i<SKINS.length;i++){
+    (function(i){
+      var s=SKINS[i],ok=unlocked(i);
+      var b=document.createElement('button');
+      b.setAttribute('type','button');
+      b.className='skinbtn'+(ok?'':' lock')+(i===skinIdx?' on':'');
+      b.innerHTML=s.n+'<i>'+(ok?'已解锁':'🍎'+s.need)+'</i>';
+      b.style.borderBottom='3px solid '+s.b;
+      b.onclick=function(){
+        if(!unlocked(i)){alert('再扎 '+(s.need-appleTotal)+' 个苹果就能解锁「'+s.n+'」🍎');return}
+        skinIdx=i;lsSet('knif_skin',i);buildSkins();tone(880,.07,'triangle',.05,1180);
+      };
+      box.appendChild(b);
+    })(i);
+  }
+}
+function refreshMini(){
+  $('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 最高 <b>第 '+(G.clearHigh||1)+'</b> 关 · 苹果 <b>'+appleTotal+'</b> 个'+
+    (KIT.streakNow()>1?' · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥':'');
+}
+
+/* --- 启动 --- */
+$('startbtn').addEventListener('click',startGame);
+$('againbtn').addEventListener('click',startGame);
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+$('sharebtn').addEventListener('click',function(){
+  share('我在「飞刀挑战」扎到第 '+G.level+' 关、'+G.score+' 分,扎爆 '+G.applesHit+' 个苹果!你能超过我吗? https://yaoaibing.github.io/knife/');
+});
+G.clearHigh=(+lsGet('knif_lv','0'))||0;
+resize();onResize();setupLevel();
+buildSkins();refreshMini();syncHUD();draw();run();
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='knife'});
+  r.unshift({k:'knife',n:'飞刀挑战',e:'🗡️'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+}catch(e){}
+</script>
+
+</body>
+</html>
