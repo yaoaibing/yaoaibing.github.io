@@ -315,8 +315,8 @@ function byId(n){
 function onResize(){
   var olw=TB.lw,olh=TB.lh;
   var pad=8;
-  var top=clamp(Math.round(VH*0.13),82,100);
-  var bot=VH-clamp(Math.round(VH*0.1),52,88);
+  var top=clamp(Math.round(VH*0.13),84,104);
+  var bot=VH-clamp(Math.round(VH*0.12),76,100);   // 底部留出力度条 + 轨迹按钮
   var availW=VW-pad*2,availH=bot-top;
   var ratio=1.72;
   TB.portrait=availH>availW;
@@ -835,7 +835,7 @@ function drawFlash(){
   ctx.globalAlpha=1;
 }
 function drawPowerBar(){
-  var w=VW-44,h=9,y=VH-62;
+  var w=VW-44,h=9,y=VH-58;
   ctx.fillStyle='rgba(255,255,255,.12)';
   roundRect(22,y,w,h,h/2);ctx.fill();
   var g=ctx.createLinearGradient(22,0,22+w,0);

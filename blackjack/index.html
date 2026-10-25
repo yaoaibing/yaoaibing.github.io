@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>21点 · 童年牌桌</title>
+<meta name="description" content="21点(Blackjack):6 副牌靴,要牌停牌加倍分牌,Blackjack 赔 1.5 倍,内置基本策略提示,赢光庄家筹码!">
+<meta property="og:title" content="21点 · 童年牌桌">
+<meta property="og:description" content="6 副牌靴,加倍分牌,21 点赔 1.5 倍,看你能赢多少筹码!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#12301c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%83%8F%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#12301c;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:#ffd45c;margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(8,26,16,.9);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:#7ff0b4;text-shadow:0 3px 0 #0d5c34,0 8px 26px rgba(70,220,150,.4);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:#ffd45c;margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#d8f5e4;background:rgba(255,255,255,.06);border:1px solid rgba(110,230,160,.25);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:#ffd45c}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;color:#08251a;cursor:pointer;
+  background:linear-gradient(180deg,#a8f5cf,#4fd894);box-shadow:0 5px 0 #15754a,0 10px 30px rgba(80,220,150,.3)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #15754a}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:#ffd45c}
+#ostats{font-size:14px;line-height:2;color:#d8f5e4;background:rgba(255,255,255,.06);border:1px solid rgba(110,230,160,.25);
+  border-radius:16px;padding:14px 30px;margin-bottom:18px;min-width:250px}
+#ostats b{color:#ffd45c;font-size:21px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+
+/* ===== 主题 · 21点 ===== */
+#hintbtn,#cashbtn{position:fixed;right:10px;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#hintbtn{top:calc(54px + env(safe-area-inset-top,0px))}
+#cashbtn{top:calc(98px + env(safe-area-inset-top,0px))}
+#hintbtn.on{background:rgba(255,213,92,.9);color:#3a2a00;border-color:#ffd45c}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:6px 8px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:7px;align-items:center}
+.brow{display:flex;gap:6px;justify-content:center;width:100%;max-width:430px}
+.cbtn{flex:1;border:0;border-radius:14px;height:52px;font-size:16px;font-weight:900;letter-spacing:1px;color:#08251a;
+  background:linear-gradient(180deg,#ffe9a8,#e8c357);box-shadow:0 4px 0 #93701a;cursor:pointer;
+  border:1px solid rgba(255,255,255,.25)}
+.cbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #93701a}
+.cbtn.ghost{background:rgba(255,255,255,.12);color:#dff5e8;box-shadow:0 4px 0 rgba(0,0,0,.35);border-color:rgba(255,255,255,.2)}
+.abtn{flex:1;border:0;border-radius:16px;height:56px;font-size:17px;font-weight:900;letter-spacing:2px;color:#08251a;
+  background:linear-gradient(180deg,#a8f5cf,#4fd894);box-shadow:0 5px 0 #15754a;cursor:pointer}
+.abtn:active{transform:translateY(3px);box-shadow:0 2px 0 #15754a}
+.abtn.warn{background:linear-gradient(180deg,#ffd0a8,#ff9b4f);box-shadow:0 5px 0 #a3561a}
+.abtn:disabled{opacity:.32;box-shadow:0 5px 0 rgba(0,0,0,.3)}
+#debtn{max-width:300px}
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud">
+  <span class="chip">筹码<b id="hchips">1000</b></span>
+  <span class="chip">下注<b id="hbet">0</b></span>
+  <span class="chip">连胜<b id="hstreak">0</b></span>
+</div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+<button id="hintbtn" type="button">💡</button>
+<button id="cashbtn" type="button">🧾</button>
+
+<div id="bar">
+  <div class="brow" id="betrow">
+    <button class="cbtn" id="c10" type="button">10</button>
+    <button class="cbtn" id="c50" type="button">50</button>
+    <button class="cbtn" id="c100" type="button">100</button>
+    <button class="cbtn" id="call" type="button">全下</button>
+    <button class="cbtn ghost" id="cclr" type="button">清空</button>
+  </div>
+  <div class="brow" id="dealrow">
+    <button class="abtn" id="debtn" type="button">发 牌</button>
+  </div>
+  <div class="brow" id="actrow" style="display:none">
+    <button class="abtn" id="hitbtn" type="button">要牌</button>
+    <button class="abtn" id="standbtn" type="button">停牌</button>
+    <button class="abtn warn" id="dblbtn" type="button">加倍</button>
+    <button class="abtn warn" id="splitbtn" type="button">分牌</button>
+  </div>
+</div>
+
+<div id="start" class="screen">
+  <div class="title">21 点<small>· 童 年 牌 桌 ·</small></div>
+  <div class="howto">
+    🃏 目标是让手牌点数<b>尽量接近 21 点且不超过</b>;J/Q/K 算 10,A 算 1 或 11<br>
+    💰 先点筹码<b>下注</b>(10 / 50 / 100 / 全下),再点「发牌」<br>
+    🎯 <b>要牌</b>再来一张 · <b>停牌</b>交给庄家 · <b>加倍</b>加注只发一张 · <b>分牌</b>拆成两手<br>
+    👑 首两张就是 21 点叫 <b>Blackjack</b>,赔 <b>1.5 倍</b>;庄家 17 点必须停<br>
+    💡 右上角灯泡可开<b>基本策略提示</b>,筹码输光会送 100 补偿
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">坐 下 开 局</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title" id="otitle">本场结算</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 场</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='bj_best',PLAY='bj_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* ================== GAME · 21点 ================== */
+var SUITS=['♠','♥','♦','♣'];
+var RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+var DECKS=6;
+
+var B={
+  shoe:[],            /* 牌靴 */
+  chips:1000, bet:0,
+  hands:[], act:0, dealer:[], dealerHide:true,
+  phase:'bet',        /* bet|play|dealer|settle|over */
+  wait:0, after:null,
+  banner:null, msg:'', msgCol:'#d8f5e4',
+  hint:lsGet('bj_hint','1')==='1',
+  startChips:1000, roundNet:0, sessionNet:0,
+  streak:0
+};
+
+/* --- 牌靴 --- */
+function freshShoe(){
+  var s=[],d,r;
+  for(d=0;d<DECKS;d++)for(r=1;r<=13;r++)
+    for(var su=0;su<4;su++)s.push({r:r,s:su,t:0});
+  for(var i=s.length-1;i>0;i--){
+    var j=rnd(i+1),tmp=s[i];s[i]=s[j];s[j]=tmp;
+  }
+  return s;
+}
+function ensureShoe(){
+  if(!B.shoe.length)B.shoe=freshShoe();
+}
+function drawCard(owner){
+  ensureShoe();
+  if(B.shoe.length<DECKS*52*0.25)B.shoe=freshShoe();      /* 剩不到 1/4 重洗 */
+  B.dealSeq=(B.dealSeq||0)+1;
+  var c=B.shoe.pop();
+  c.t=-((B.dealSeq%3)*0.07);
+  c.owner=owner;
+  return c;
+}
+B.dealSeq=0;
+
+/* --- 点数(A 记 1 或 11,自动取不爆的最大值) --- */
+function handValue(cards){
+  var t=0,aces=0,i,v;
+  for(i=0;i<cards.length;i++){
+    v=cards[i].r;
+    if(v===1){aces++;t+=11}
+    else if(v>10)t+=10;
+    else t+=v;
+  }
+  while(t>21&&aces>0){t-=10;aces--}
+  return {t:t,soft:aces>0,aces:aces};
+}
+function isBJ(h){return h.cards.length===2&&handValue(h.cards).t===21&&!h.split}
+
+/* --- 开局 --- */
+function newSession(){
+  B.chips=+lsGet('bj_chips','1000');
+  if(isNaN(B.chips)||B.chips<0)B.chips=1000;
+  B.startChips=B.chips;
+  B.sessionNet=0;B.bet=0;
+  B.hands=[];B.dealer=[];B.dealerHide=true;B.phase='bet';
+  B.banner=null;B.wait=0;B.after=null;B.roundNet=0;
+  B.streak=+lsGet('bj_streak','0');
+  ensureShoe();
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  B.msg='先下注,再发牌';
+  KIT.addPlay();KIT.streak();
+  sync();
+  run();
+}
+function sync(){
+  $('hchips').textContent=B.chips;
+  $('hbet').textContent=B.bet;
+  $('hstreak').textContent=B.streak;
+  lsSet('bj_chips',B.chips);
+  var betP=B.phase==='bet';
+  var playP=B.phase==='play';
+  $('betrow').style.display=betP?'flex':'none';
+  $('dealrow').style.display=betP?'flex':'none';
+  $('actrow').style.display=playP?'flex':'none';
+  if(betP){
+    $('debtn').disabled=!(B.bet>=10&&B.bet<=B.chips);
+    $('c10').disabled=B.chips<10;$('c50').disabled=B.chips<50;
+    $('c100').disabled=B.chips<100;$('call').disabled=B.chips<10;
+  }
+  if(playP){
+    var h=B.hands[B.act];
+    var two=h&&h.cards.length===2;
+    $('dblbtn').disabled=!(two&&B.chips>=h.bet);
+    $('splitbtn').disabled=!canSplit();
+    $('hitbtn').disabled=!h||h.done;
+    $('standbtn').disabled=!h||h.done;
+  }
+  $('hintbtn').className=B.hint?'on':'';
+  draw();
+}
+function canSplit(){
+  var h=B.hands[B.act];
+  if(!h||B.phase!=='play')return false;
+  if(h.cards.length!==2)return false;
+  if(B.hands.length>=4)return false;
+  var a=h.cards[0].r,b=h.cards[1].r;
+  var va=a>10?10:a,vb=b>10?10:b;
+  return va===vb&&B.chips>=h.bet;
+}
+
+/* --- 下注 --- */
+function addBet(v){
+  if(B.phase!=='bet')return;
+  var room=B.chips-B.bet;
+  B.bet+=Math.min(v,room);
+  if(B.bet>B.chips)B.bet=B.chips;
+  tone(680,.05,'triangle',.04,820);
+  sync();
+}
+function clearBet(){if(B.phase!=='bet')return;B.bet=0;tone(300,.05,'square',.03);sync()}
+
+/* --- 发牌 --- */
+function startRound(){
+  if(B.bet<10||B.bet>B.chips)return false;
+  if(B.chips<10)return false;
+  B.wait=0;B.after=null;
+  B.chips-=B.bet;
+  B.roundNet=0;
+  B.hands=[{cards:[],bet:B.bet,done:false,split:false}];
+  B.act=0;B.dealer=[];B.dealerHide=true;B.banner=null;
+  B.hands[0].cards.push(drawCard(0));
+  B.dealer.push(drawCard(-1));
+  B.hands[0].cards.push(drawCard(0));
+  B.dealer.push(drawCard(-1));
+  B.dealer[1].hide=true;                     /* 庄家第二张是暗牌 */
+  B.phase='play';
+  B.msg='要牌 / 停牌?';
+  tone(520,.06,'square',.04,700);
+  /* 天生 21 点直接结算 */
+  if(isBJ(B.hands[0])||handValue(B.dealer).t===21){
+    B.dealerHide=false;
+    if(B.dealer[1]){B.dealer[1].hide=false;B.dealer[1].t=0.34}
+    dealerTurn(true);
+    return true;
+  }
+  sync();
+  return true;
+}
+function hit(){
+  if(B.phase!=='play')return false;
+  var h=B.hands[B.act];
+  if(!h||h.done)return false;
+  h.cards.push(drawCard(B.act));
+  var v=handValue(h.cards).t;
+  tone(600,.05,'square',.035,760);
+  if(v>21){
+    h.done=true;B.banner={txt:'爆牌!',col:'#ff6a6a'};
+    addFx();noise(.2,.07);
+    nextHand();
+  }else if(v===21){
+    h.done=true;B.banner={txt:'21 点!',col:'#7ff0b4'};
+    nextHand();
+  }else{
+    B.msg='当前 '+v+' 点';
+  }
+  sync();
+  return true;
+}
+function stand(){
+  if(B.phase!=='play')return false;
+  var h=B.hands[B.act];
+  if(!h||h.done)return false;
+  h.done=true;
+  tone(420,.06,'triangle',.04,320);
+  nextHand();
+  sync();
+  return true;
+}
+function doubleDown(){
+  if(B.phase!=='play')return false;
+  var h=B.hands[B.act];
+  if(!h||h.done||h.cards.length!==2||B.chips<h.bet)return false;
+  B.chips-=h.bet;h.bet*=2;h.doubled=true;
+  h.cards.push(drawCard(B.act));
+  h.done=true;
+  var v=handValue(h.cards).t;
+  if(v>21)B.banner={txt:'加倍爆牌!',col:'#ff6a6a'};
+  tone(760,.08,'square',.05,980);
+  nextHand();
+  sync();
+  return true;
+}
+function doSplit(){
+  if(!canSplit())return false;
+  var h=B.hands[B.act];
+  var moved=h.cards.pop();
+  B.chips-=h.bet;
+  h.split=true;
+  var nh={cards:[moved],bet:h.bet,done:false,split:true};
+  h.cards.push(drawCard(B.act));
+  nh.cards.push(drawCard(B.act+1));
+  var isAces=moved.r===1;
+  if(isAces){h.done=true;nh.done=true}
+  B.hands.splice(B.act+1,0,nh);
+  B.banner={txt:'分牌!'+(isAces?'(A 各一张)':''),col:'#ffd45c'};
+  tone(880,.09,'triangle',.05,1120);
+  if(h.done)nextHand();else B.msg='第 '+(B.act+1)+' 手';
+  sync();
+  return true;
+}
+function nextHand(){
+  for(var i=0;i<B.hands.length;i++){
+    if(!B.hands[i].done){B.act=i;sync();return}
+  }
+  dealerTurn();
+}
+function dealerTurn(skipDraw){
+  B.phase='dealer';
+  B.dealerHide=false;
+  if(B.dealer[1]){B.dealer[1].hide=false;if(B.dealer[1].t<0.34)B.dealer[1].t=0.34}
+  var safety=0;
+  if(!skipDraw){
+    while(handValue(B.dealer).t<17&&safety++<12){
+      B.dealer.push(drawCard(-2));
+    }
+  }
+  /* 手牌全爆时庄家不用补牌(但已按规则补到 17,简化处理) */
+  settle();
+}
+function settle(){
+  var d=handValue(B.dealer).t;
+  var dBJ=B.dealer.length===2&&d===21;
+  var ret=0,stake=0,wins=0,losses=0,pushes=0,i,h;
+  for(i=0;i<B.hands.length;i++){
+    h=B.hands[i];
+    stake+=h.bet;
+    var v=handValue(h.cards).t;
+    var pBJ=isBJ(h);
+    if(v>21){losses++;continue}
+    if(pBJ&&!dBJ){ret+=h.bet*2.5;wins++;continue}
+    if(dBJ&&!pBJ){losses++;continue}
+    if(pBJ&&dBJ){pushes++;ret+=h.bet;continue}
+    if(d>21||v>d){ret+=h.bet*2;wins++;continue}
+    if(v===d){pushes++;ret+=h.bet;continue}
+    losses++;
+  }
+  B.chips+=ret;
+  B.roundNet=ret-stake;
+  var net=B.roundNet;
+  B.sessionNet+=net;
+  lsSet('bj_chips',B.chips);
+  lsSet('bj_chips',B.chips);
+  /* 战绩 */
+  var tot=+lsGet('bj_total','0')+1;
+  lsSet('bj_total',tot);
+  lsSet('bj_win',+lsGet('bj_win','0')+wins);
+  lsSet('bj_loss',+lsGet('bj_loss','0')+losses);
+  lsSet('bj_push',+lsGet('bj_push','0')+pushes);
+  var mw=+lsGet('bj_maxwin','0');
+  if(net>mw){mw=net;lsSet('bj_maxwin',mw)}
+  if(wins>0&&losses===0){
+    B.streak++;
+    if(B.streak>+lsGet('bj_streak','0'))lsSet('bj_streak',B.streak);
+  }else if(losses>0){B.streak=0;lsSet('bj_streak',0)}
+  /* 最近 10 局 */
+  var hist=[];
+  try{hist=JSON.parse(lsGet('bj_hist','[]'))}catch(e){hist=[]}
+  if(!hist||hist.length===undefined)hist=[];
+  var tag=net>0?('胜 +'+Math.round(net)):(net<0?('负 '+Math.round(net)):'平');
+  hist.push(tag);
+  while(hist.length>10)hist.shift();
+  lsSet('bj_hist',JSON.stringify(hist));
+  /* 结果条 */
+  if(net>0){B.banner={txt:'你赢了 +'+Math.round(net),col:'#7ff0b4'};tone(700,.1,'sine',.06);setTimeout(function(){tone(950,.16,'sine',.05)},110)}
+  else if(net<0){B.banner={txt:'你输了 '+Math.round(net),col:'#ff8080'};tone(300,.16,'sine',.05,200)}
+  else {B.banner={txt:'平局,退回本注',col:'#ffd45c'};tone(500,.12,'sine',.04)}
+  B.phase='settle';
+  B.msg='本局 '+(net>0?'+':'')+Math.round(net)+' 筹码';
+  sync();
+  waitTo(.1+0.16*Math.min(6,B.dealer.length),afterSettle);
+}
+function afterSettle(){
+  if(B.chips<10){
+    B.chips+=100;B.sessionNet+=100;
+    lsSet('bj_chips',B.chips);
+    B.banner={txt:'筹码输光,送你 100 补偿',col:'#ffd45c'};
+    tone(600,.12,'triangle',.05,800);
+  }
+  B.phase='bet';B.bet=0;B.roundNet=0;
+  B.msg='下注,再来一局';
+  sync();
+}
+function waitTo(sec,fn){B.wait=sec;B.after=fn}
+
+/* --- 基本策略提示 --- */
+function hintAction(){
+  var h=B.hands[B.act];
+  if(!h||B.phase!=='play')return null;
+  var up=B.dealer[0]?(B.dealer[0].r===1?11:(B.dealer[0].r>10?10:B.dealer[0].r)):10;
+  var v=handValue(h.cards);
+  if(h.cards.length===2){
+    var a=h.cards[0].r,b=h.cards[1].r;
+    var va=a>10?10:a,vb=b>10?10:b;
+    if(va===vb){
+      if(va===1||va===8)return {a:'P',txt:'建议分牌'};
+      if(va===9&&up!==7)return {a:'P',txt:'建议分牌'};
+      if(va===7&&up<=7)return {a:'P',txt:'建议分牌'};
+      if(va===6&&up<=6)return {a:'P',txt:'建议分牌'};
+      if(va===4&&(up===5||up===6))return {a:'P',txt:'建议分牌'};
+      if(va===3&&up<=7)return {a:'P',txt:'建议分牌'};
+      if(va===2&&up<=7)return {a:'P',txt:'建议分牌'};
+    }
+    if((va===1&&vb===11)||(vb===1&&va===11))return {a:'S',txt:'21 点,停牌'};
+  }
+  if(v.soft){
+    if(v.t>=19)return {a:'S',txt:'软 '+v.t+' 点,停牌'};
+    if(v.t===18){
+      if(up>=9)return {a:'H',txt:'软 18 对 '+up+',要牌'};
+      if(h.cards.length===2&&up>=3&&up<=6&&B.chips>=h.bet)return {a:'D',txt:'软 18,加倍'};
+      return {a:'S',txt:'软 18,停牌'};
+    }
+    if(v.t===17&&up>=3&&up<=6&&h.cards.length===2&&B.chips>=h.bet)return {a:'D',txt:'软 17,加倍'};
+    return {a:'H',txt:'软 '+v.t+' 点,要牌'};
+  }
+  if(v.t>=17)return {a:'S',txt:'硬 '+v.t+' 点,停牌'};
+  if(v.t>=13)return up<=6?{a:'S',txt:'硬 '+v.t+' 对 '+up+',停牌'}:{a:'H',txt:'硬 '+v.t+' 对 '+up+',要牌'};
+  if(v.t===12)return (up>=4&&up<=6)?{a:'S',txt:'12 对 '+up+',停牌'}:{a:'H',txt:'12 对 '+up+',要牌'};
+  if(v.t===11&&h.cards.length===2&&B.chips>=h.bet)return {a:'D',txt:'11 点,加倍'};
+  if(v.t===10&&h.cards.length===2&&up<=9&&B.chips>=h.bet)return {a:'D',txt:'10 点,加倍'};
+  if(v.t===9&&h.cards.length===2&&up>=3&&up<=6&&B.chips>=h.bet)return {a:'D',txt:'9 点,加倍'};
+  return {a:'H',txt:'硬 '+v.t+' 点,要牌'};
+}
+
+/* --- 布局 --- */
+var LAY={dw:0,dh:0,dy:0,py:0,shoe:{x:0,y:0},base:70};
+function onResize(){
+  var top=Math.max(56,Math.round(VH*.085));
+  var bottom=Math.min(134,Math.round(VH*.3));
+  var usable=VH-top-bottom;
+  var base=Math.min(Math.round(VW*0.17),Math.round(usable*0.26),76);
+  var need=base*1.42*2+104;                  /* 两组牌 + 文字的最小高度 */
+  if(need>usable)base=Math.max(34,Math.round((usable-104)/2.84));
+  LAY.base=base;
+  LAY.dw=base;LAY.dh=base*1.42;
+  LAY.dy=top+20;
+  LAY.py=Math.max(LAY.dy+LAY.dh+54,VH-bottom-36-LAY.dh);
+  LAY.shoe.x=VW-26;LAY.shoe.y=top+16;
+}
+
+/* --- 特效 --- */
+var FX=[];
+function addFx(){
+  for(var i=0;i<16;i++)FX.push({x:VW/2+(frnd()-.5)*80,y:VH*.55,vx:(frnd()-.5)*260,
+    vy:-80-frnd()*160,life:.5+frnd()*.4,col:frnd()<.5?'#ff8080':'#ffd45c',s:2+frnd()*3});
+}
+function update(dt){
+  var i,c;
+  B.wait-=dt;
+  if(B.wait<=0&&B.after){var f=B.after;B.after=null;B.wait=0;f()}
+  if(B.banner){B.banner.t=(B.banner.t||0)+dt;if(B.banner.t>2.4)B.banner=null}
+  var all=B.dealer.slice(),i,c;
+  for(i=0;i<B.hands.length;i++)all=all.concat(B.hands[i].cards);
+  for(i=0;i<all.length;i++){
+    c=all[i];
+    if(c.t<1)c.t+=dt/0.28;
+  }
+  for(i=FX.length-1;i>=0;i--){
+    var p=FX[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=460*dt;
+    if(p.life<=0)FX.splice(i,1);
+  }
+}
+
+/* --- 绘制 --- */
+function rr(x,y,w,h,r){
+  var m=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+m,y);ctx.lineTo(x+w-m,y);ctx.quadraticCurveTo(x+w,y,x+w,y+m);
+  ctx.lineTo(x+w,y+h-m);ctx.quadraticCurveTo(x+w,y+h,x+w-m,y+h);
+  ctx.lineTo(x+m,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-m);
+  ctx.lineTo(x,y+m);ctx.quadraticCurveTo(x,y,x+m,y);ctx.closePath();
+}
+function drawOne(x,y,w,h,card,faceUp,alpha){
+  var hh=h,ww=w;
+  ctx.save();
+  ctx.globalAlpha=alpha==null?1:alpha;
+  ctx.translate(x+ww/2,y+hh/2);
+  ctx.scale(Math.max(.06,Math.abs(Math.cos((1-Math.min(1,Math.max(0,card.t)))*Math.PI/2))*0.9+0.1),1);
+  ctx.translate(-ww/2,-hh/2);
+  ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=10;ctx.shadowOffsetY=4;
+  rr(0,0,ww,hh,ww*.12);
+  if(faceUp){
+    ctx.fillStyle='#fdfaf1';ctx.fill();
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+    ctx.strokeStyle='rgba(0,0,0,.22)';ctx.lineWidth=1;ctx.stroke();
+    var red=(card.s===1||card.s===2);
+    ctx.fillStyle=red?'#d2293b':'#20202a';
+    ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.font='900 '+Math.round(ww*.36)+'px system-ui';
+    ctx.fillText(RANKS[card.r-1],ww*.09,hh*.055);
+    ctx.font=''+Math.round(ww*.3)+'px system-ui';
+    ctx.fillText(SUITS[card.s],ww*.1,hh*.33);
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.globalAlpha=(alpha==null?1:alpha)*.92;
+    ctx.font=''+Math.round(ww*.5)+'px system-ui';
+    ctx.fillText(SUITS[card.s],ww*.62,hh*.72);
+    ctx.globalAlpha=alpha==null?1:alpha;
+    ctx.save();
+    ctx.translate(ww*.88,hh*.94);ctx.rotate(Math.PI);
+    ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.font='900 '+Math.round(ww*.3)+'px system-ui';
+    ctx.fillText(RANKS[card.r-1],0,0);
+    ctx.restore();
+  }else{
+    var g=ctx.createLinearGradient(0,0,ww,hh);
+    g.addColorStop(0,'#1d5470');g.addColorStop(.5,'#123244');g.addColorStop(1,'#0b2130');
+    ctx.fillStyle=g;ctx.fill();
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+    ctx.strokeStyle='rgba(255,255,255,.32)';ctx.lineWidth=1.4;ctx.stroke();
+    ctx.save();
+    rr(ww*.1,hh*.07,ww*.8,hh*.86,ww*.08);ctx.clip();
+    ctx.strokeStyle='rgba(255,255,255,.13)';ctx.lineWidth=1;
+    for(var i=-hh;i<ww+hh;i+=7){
+      ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+hh,hh);ctx.stroke();
+    }
+    ctx.restore();
+    ctx.beginPath();ctx.arc(ww/2,hh/2,ww*.19,0,6.2832);
+    ctx.strokeStyle='rgba(255,212,120,.55)';ctx.lineWidth=1.6;ctx.stroke();
+    ctx.fillStyle='rgba(255,212,120,.75)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font='900 '+Math.round(ww*.26)+'px system-ui';
+    ctx.fillText('21',ww/2,hh/2+1);
+  }
+  ctx.restore();
+}
+/* 一手牌:自动缩牌宽 + 飞入动画 */
+function drawHand(cards,cx,cy,maxW){
+  var n=cards.length;
+  if(!n)return;
+  var w=Math.min(LAY.base,maxW/((n-1)*0.82+1));
+  var gap=w*.82;
+  var total=w+(n-1)*gap;
+  var x0=cx-total/2;
+  var h=w*1.42;
+  for(var i=0;i<n;i++){
+    var c=cards[i],t=clamp(c.t,0,1);
+    var ex=x0+i*gap,ey=cy;
+    var sx=LAY.shoe.x-w/2,sy=LAY.shoe.y-h/2;
+    var k=t*t*(3-2*t);
+    var px=sx+(ex-sx)*k,py=sy+(ey-sy)*k;
+    var sc=.62+.38*t;
+    var ww=w*sc,hh=h*sc;
+    drawOne(px+(w-ww)/2,py+(h-hh)/2,ww,hh,c,!c.hide&&t>=0.42);
+  }
+}
+function draw(){
+  var g=ctx.createLinearGradient(0,0,0,VH);
+  g.addColorStop(0,'#1a4530');g.addColorStop(.5,'#12301c');g.addColorStop(1,'#0a1d11');
+  ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+  /* 桌布纹 */
+  ctx.strokeStyle='rgba(255,255,255,.035)';ctx.lineWidth=1;
+  for(var i=0;i<VW+VH;i+=22){
+    ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i-VH,VH);ctx.stroke();
+  }
+  /* 桌沿弧 */
+  ctx.beginPath();
+  ctx.ellipse(VW/2,VH*.5,VW*.62,VH*.42,0,0,6.2832);
+  ctx.strokeStyle='rgba(255,212,120,.10)';ctx.lineWidth=2;ctx.stroke();
+
+  /* 牌靴 */
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.35)';
+  rr(LAY.shoe.x-34,LAY.shoe.y-26,58,52,6);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#0f2a38';
+  rr(LAY.shoe.x-30,LAY.shoe.y-22,50,44,5);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('牌靴',LAY.shoe.x-5,LAY.shoe.y+16);
+  ctx.fillStyle='#ffd45c';
+  ctx.font='900 13px system-ui';
+  ctx.fillText('×'+B.shoe.length,LAY.shoe.x-5,LAY.shoe.y+2);
+  ctx.restore();
+
+  /* 庄家 */
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='800 13px system-ui';ctx.fillStyle='rgba(255,255,255,.55)';
+  ctx.fillText('庄 家',VW/2,LAY.dy-16);
+  if(B.dealer.length){
+    drawHand(B.dealer,VW/2,LAY.dy,VW*.78);
+    var shown=B.dealerHide?[B.dealer[0]]:B.dealer;
+    var hv=handValue(shown);
+    ctx.font='900 17px system-ui';
+    ctx.fillStyle=B.dealerHide?'#cfe8d8':'#ffd45c';
+    ctx.fillText(B.dealerHide?('明牌 '+hv.t):(''+handValue(B.dealer).t),VW/2,LAY.dy+LAY.dh+18);
+    if(!B.dealerHide&&handValue(B.dealer).t>21){
+      ctx.fillStyle='#ff8080';ctx.font='900 13px system-ui';
+      ctx.fillText('庄家爆牌',VW/2,LAY.dy+LAY.dh+38);
+    }
+  }else{
+    ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=2;
+    ctx.setLineDash([6,6]);
+    rr(VW/2-LAY.dw*.7,LAY.dy-LAY.dh*.5,LAY.dw*1.4,LAY.dh,8);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  /* 玩家手牌(分牌时并排) */
+  var hs=B.hands.length?B.hands:[];
+  var n=hs.length||1;
+  var slotW=Math.min(VW*.92,VW/Math.max(1,n)*0.98);
+  for(var k=0;k<hs.length;k++){
+    var h=hs[k];
+    var cx=VW/2+(k-(n-1)/2)*slotW;
+    var active=(B.phase==='play'&&k===B.act);
+    if(active){
+      ctx.save();
+      var pulse=.5+.5*Math.sin(Date.now()/220);
+      ctx.strokeStyle='rgba(255,214,110,'+(.4+.45*pulse)+')';
+      ctx.lineWidth=2.5;
+      rr(cx-slotW*.46,LAY.py-LAY.dh*.62,slotW*.92,LAY.dh*1.28,12);
+      ctx.stroke();
+      ctx.restore();
+    }
+    drawHand(h.cards,cx,LAY.py,slotW*.9);
+    var vv=handValue(h.cards);
+    ctx.font='900 15px system-ui';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=vv.t>21?'#ff8080':(vv.t===21?'#7ff0b4':'#ffd45c');
+    ctx.fillText(''+vv.t,cx,LAY.py+LAY.dh+18);
+    if(h.bet){
+      ctx.font='700 11px system-ui';ctx.fillStyle='rgba(255,255,255,.55)';
+      ctx.fillText('注 '+h.bet+(h.doubled?' ×2':''),cx,LAY.py+LAY.dh+37);
+    }
+  }
+
+  /* 提示 */
+  if(B.hint&&B.phase==='play'){
+    var hint=hintAction();
+    if(hint){
+      ctx.font='800 12.5px system-ui';
+      ctx.fillStyle='rgba(255,212,120,.9)';
+      ctx.textAlign='center';
+      ctx.fillText('💡 '+hint.txt,VW/2,LAY.py-LAY.dh*.78);
+    }
+  }
+
+  /* 文案 */
+  if(B.phase!=='play'){
+    ctx.font='800 14px system-ui';
+    ctx.fillStyle='rgba(220,245,232,.85)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(B.msg,VW/2,VH*.5);
+  }
+
+  /* 结果横幅 */
+  if(B.banner){
+    var a=Math.min(1,B.banner.t*3);
+    ctx.save();
+    ctx.globalAlpha=a;
+    var bw=Math.min(VW*.8,340),bh=48;
+    ctx.fillStyle='rgba(0,0,0,.55)';
+    rr(VW/2-bw/2,VH*.5-bh/2,bw,bh,14);ctx.fill();
+    ctx.strokeStyle=B.banner.col;ctx.lineWidth=2;
+    rr(VW/2-bw/2,VH*.5-bh/2,bw,bh,14);ctx.stroke();
+    ctx.fillStyle=B.banner.col;
+    ctx.font='900 20px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(B.banner.txt,VW/2,VH*.5+1);
+    ctx.restore();
+  }
+
+  /* 粒子 */
+  for(var q=0;q<FX.length;q++){
+    var p=FX[q];
+    ctx.globalAlpha=clamp(p.life*1.8,0,1);
+    ctx.fillStyle=p.col;ctx.fillRect(p.x,p.y,p.s,p.s);
+  }
+  ctx.globalAlpha=1;
+
+  /* 筹码堆 */
+  if(B.bet>0&&B.phase==='bet'){
+    var cyc=LAY.py+LAY.dh*.3;
+    for(var s2=0;s2<Math.min(6,Math.ceil(B.bet/50));s2++){
+      ctx.beginPath();
+      ctx.ellipse(VW/2,cyc-s2*7,34,12,0,0,6.2832);
+      ctx.fillStyle=s2%2?'#e8c357':'#ffd97a';ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;ctx.stroke();
+    }
+    ctx.fillStyle='#0a1d11';ctx.font='900 13px system-ui';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(''+B.bet,VW/2,cyc-8);
+  }
+}
+
+/* --- 收工结算 --- */
+function cashOut(){
+  if(B.phase==='over')return;
+  B.phase='over';stop();
+  var net=B.sessionNet;
+  var tot=+lsGet('bj_total','0'),w=+lsGet('bj_win','0'),l=+lsGet('bj_loss','0'),pp=+lsGet('bj_push','0');
+  var mw=+lsGet('bj_maxwin','0'),bs=+lsGet('bj_streak','0');
+  var hist=[];
+  try{hist=JSON.parse(lsGet('bj_hist','[]'))}catch(e){hist=[]}
+  var isNew=KIT.setBest(net>0?net:0);
+  $('otitle').textContent=net>0?'🎉 赢 了 '+Math.round(net):(net<0?'😢 输 了 '+Math.round(-net):'不 赚 不 赔');
+  $('onewrec').style.display=(net>0&&isNew)?'block':'none';
+  $('ostats').innerHTML=
+    '本场盈亏 <b>'+(net>0?'+':'')+Math.round(net)+'</b><br>'+
+    '剩余筹码 <b>'+B.chips+'</b><br>'+
+    '总局数 '+tot+' · <b>'+w+' 胜 '+l+' 负 '+pp+' 平</b><br>'+
+    '最大单局 <b>+'+mw+'</b> · 最长连胜 <b>'+bs+'</b>'+
+    (hist.length?'<br><span style="font-size:12px;opacity:.75">最近:'+hist.join(' · ')+'</span>':'');
+  $('mini2').innerHTML='已玩 <b>'+KIT.plays()+'</b> 局 · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥';
+  $('over').classList.remove('hide');
+}
+
+/* --- 绑定 --- */
+$('startbtn').addEventListener('click',newSession);
+$('againbtn').addEventListener('click',newSession);
+$('c10').addEventListener('click',function(){addBet(10)});
+$('c50').addEventListener('click',function(){addBet(50)});
+$('c100').addEventListener('click',function(){addBet(100)});
+$('call').addEventListener('click',function(){addBet(B.chips-B.bet)});
+$('cclr').addEventListener('click',clearBet);
+$('debtn').addEventListener('click',function(){startRound()});
+$('hitbtn').addEventListener('click',hit);
+$('standbtn').addEventListener('click',stand);
+$('dblbtn').addEventListener('click',doubleDown);
+$('splitbtn').addEventListener('click',doSplit);
+$('hintbtn').addEventListener('click',function(){
+  B.hint=!B.hint;lsSet('bj_hint',B.hint?'1':'0');sync();
+  if(B.hint)tone(760,.06,'triangle',.04,980);
+});
+$('cashbtn').addEventListener('click',function(){
+  if(B.phase==='bet'||B.phase==='settle')cashOut();
+  else{alert('先把这一局打完再收工吧~')}
+});
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+$('sharebtn').addEventListener('click',function(){
+  share('我在「21点」赢到 '+B.chips+' 筹码(本场 '+(B.sessionNet>0?'+':'')+Math.round(B.sessionNet)+
+    '),最长连胜 '+lsGet('bj_streak','0')+' 局!来试试手气? https://yaoaibing.github.io/blackjack/');
+});
+$('mini').innerHTML='筹码 <b>'+lsGet('bj_chips','1000')+'</b> · 已玩 <b>'+(+lsGet('bj_total','0'))+'</b> 局'+
+  ' · 最长连胜 <b>'+(+lsGet('bj_streak','0'))+'</b>';
+
+ensureShoe();
+resize();
+sync();
+
+/* 调试钩子:供离线脚本验证规则(不影响游戏) */
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='blackjack'});
+  r.unshift({k:'blackjack',n:'21点',e:'🃏'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:定期把本游戏自己的最高分同步进共享的 __best
+     (不用劫持 localStorage.setItem —— 那在部分环境下属性不可写会静默失败) */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['bj_best','bj_hi','bj_max','bj_score'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['blackjack']||0)){
+            B['blackjack']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>

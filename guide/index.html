@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>游戏总攻略 · 童年游戏路口(全游戏唯一攻略站)</title>
-<meta name="description" content="童年游戏总攻略:FC游戏厅31合1全31款详细攻略+守岁大作战/跳一跳/蛇蛇争霸/糖果消消乐/喵喵食堂/摸鱼乐园,操作说明+高分技巧,一站看全!">
+<title>游戏总攻略 · 童年游戏路口(42款独立游戏 + FC 33合1 全收录)</title>
+<meta name="description" content="童年游戏总攻略:42 款独立游戏 + FC游戏厅33合1,共 70+ 篇操作说明与高分技巧。弹弓小鸟/钓鱼/停车场/冰面滑行/七巧板/飞行棋/国际跳棋/21点/炸弹人/台球/飞镖/连线不交叉…一站看全!">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
 <style>
 :root{--ink:#2b2320;--paper:#faf3e3;--card:#fffaf0;--red:#c0392b;--gold:#d4a017;--line:#e8dcc0;--purple:#241548}
@@ -41,6 +41,21 @@ kbd{display:inline-block;background:var(--purple);color:#fff;border-radius:6px;p
 .bigbar:active{transform:translateY(2px)}
 footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-spacing:1px}
 @media (max-width:600px){header h1{font-size:20px}table{font-size:13px}th,td{padding:5px 7px}}
+
+/* ===== GUIDE_OPT_V1 · 搜索与回到顶部 ===== */
+.gsearch{position:sticky;top:0;z-index:30;background:rgba(250,243,227,.97);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:10px 0}
+.gsearch .in{max-width:860px;margin:0 auto;padding:0 16px;display:flex;gap:10px;align-items:center}
+#gq{flex:1;min-width:0;border:2px solid var(--line);border-radius:999px;padding:9px 16px;font-size:14px;
+  font-family:inherit;outline:none;background:#fff;color:var(--ink)}
+#gq:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,160,23,.15)}
+#gcount{font-size:12.5px;color:#9a8a6a;white-space:nowrap}
+.gempty{display:none;text-align:center;color:#9a8a6a;font-size:14px;padding:40px 0}
+#gotop{position:fixed;right:16px;bottom:22px;z-index:40;border:0;border-radius:999px;padding:10px 17px;
+  background:var(--purple);color:#ffe9c2;font-size:13px;font-weight:700;font-family:inherit;
+  box-shadow:0 5px 16px rgba(0,0,0,.25);display:none;cursor:pointer}
+#gotop:active{transform:translateY(2px)}
+mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
 </style>
 </head>
 <body>
@@ -58,7 +73,16 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
   <a href="/match/">🍬 消消乐</a><a href="/snake/">🐍 蛇蛇</a>
   <a href="/shousui/">🧨 守岁</a><a href="/jump/">🐸 跳一跳</a>
   <a href="/diner/">🐱 喵喵食堂</a><a href="/moyu/">🐟 摸鱼乐园</a><a href="/knife/">🗡️ 飞刀</a><a href="/tower/">🏰 塔防</a><a href="/stairs/">🪜 下一百层</a><a href="/fifteen/">🧩 华容道</a><a href="/nono/">🔢 数织</a><a href="/mahjong/">🀄 麻将</a><a href="/connect/">🔴 四子棋</a><a href="/hexa/">🧱 六边形</a><a href="/brick/">🏐 打砖块</a><a href="/plane/">🚀 雷霆战机</a><a href="/mine/">💣 扫雷</a><a href="/box/">📦 推箱子</a><a href="/gomoku/">⚫ 五子棋</a><a href="/jungle/">🦁 斗兽棋</a><a href="/water/">🧪 倒水</a><a href="/bubble/">🫧 捏泡泡</a>
-<a href="/bomb/">💣 炸弹人</a><a href="/billiards/">🎱 台球</a><a href="/darts/">🎯 飞镖</a><a href="/flow/">🚇 连线</a><a href="/euler/">🎨 一笔画</a><a href="/mind/">🔐 密码</a><a href="/piano/">🎹 钢琴块</a><a href="/solitaire/">🃏 接龙</a></nav>
+<a href="/bomb/">💣 炸弹人</a><a href="/billiards/">🎱 台球</a><a href="/darts/">🎯 飞镖</a><a href="/flow/">🚇 连线</a><a href="/euler/">🎨 一笔画</a><a href="/mind/">🔐 密码</a><a href="/piano/">🎹 钢琴块</a><a href="/solitaire/">🃏 接龙</a><a href="/slingshot/">🐦 弹弓</a><a href="/fish/">🎣 钓鱼</a><a href="/parking/">🚗 停车场</a><a href="/ice/">🧊 冰面</a><a href="/tangram/">🧩 七巧板</a><a href="/ludo/">🎲 飞行棋</a><a href="/checkers/">♟️ 跳棋</a><a href="/blackjack/">🃏 21点</a></nav>
+
+<div class="gsearch" id="gsbar">
+  <div class="in">
+    <input id="gq" type="search" placeholder="搜攻略:飞行棋 / 停车 / 扫雷 / 五子棋…" autocomplete="off">
+    <span id="gcount">共 0 篇</span>
+  </div>
+</div>
+<div class="gempty" id="gempty">没找到这游戏的攻略,换个词试试</div>
+
 <div class="fcnav">
   <b>🕹️ FC游戏厅 31合1 · 攻略快速跳转:</b><br>
   <a href="#fc">通用</a><a href="#melon">🍉大西瓜</a><a href="#tetris">🧱方块</a><a href="#snake">🐍贪吃蛇</a><a href="#breakout">🏓砖块</a>
@@ -605,14 +629,155 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
 </div>
 
 
-<h2>🐱 喵喵食堂 / 🐟 摸鱼乐园</h2>
+<!-- NEW8D_GUIDE -->
+
+<h3 id="slingshot">🐦 弹弓小鸟</h3>
 <div class="card">
-  <p><b>喵喵食堂:</b>铃响接单→烹饪→及时上菜;收入升级设施解锁菜谱,口碑冲五星。<b>思路:先升烹饪速度→解锁贵价菜→贵宾猫优先伺候。</b></p>
-  <p><b>摸鱼乐园:</b>7 个解压玩具:今天吃什么/指尖烟花/每日三件套/人生进度条/许愿池/渐变生成器/梗图生成器——打开就玩两下。</p>
-  <p style="margin-top:8px">
-    <a class="play" href="/diner/">▶ 喵喵食堂</a>
-    <a class="play" href="/moyu/">▶ 摸鱼乐园</a>
-  </p>
+  <p><b>目标:</b>用弹弓把小鸟射出去,砸塌木箱石块搭的结构,打掉上面或后面的目标。小鸟用完还没打完就失败。</p>
+  <table><tr><th>操作</th><th>键位</th></tr>
+    <tr><td>拉弓</td><td>按住弹弓<b>向后拖</b>,拖得越远力度越大,松手发射</td></tr>
+    <tr><td>瞄准</td><td>拉弓时显示<b>抛物线预测线</b>,线和实际飞行轨迹一致</td></tr></table>
+  <p><b>关卡:</b>12 关递进,越往后结构越高、石块越多、每关给 4~5 只小鸟。</p>
+  <div class="tip"><b>拆楼技巧:</b>① 别瞄目标本身,<b>瞄结构最脆的那根承重</b>——打断支点整片就塌了;② 平射打底部比高抛打顶部有效;③ 木箱比石块脆,优先砸木箱;④ 一次塌方砸掉多个目标有连击加成,比一发一个划算;⑤ 每关小鸟数固定,前两只用来试探结构,最后一只留给残局。</div>
+  <p style="margin-top:8px"><a class="play" href="/slingshot/">▶ 弹弓小鸟</a></p>
+</div>
+
+<h3 id="fish">🎣 钓鱼达人</h3>
+<div class="card">
+  <p><b>目标:</b>90 秒里尽量钓到更多、更重的鱼。</p>
+  <table><tr><th>阶段</th><th>怎么做</th></tr>
+    <tr><td>① 抛竿</td><td>点一下(或按住蓄力)抛线,<b>抛得越远水越深</b></td></tr>
+    <tr><td>② 咬钩</td><td>浮标猛沉时,<b>0.7 秒内</b>点一下提竿,超时鱼就跑了</td></tr>
+    <tr><td>③ 收线</td><td>按住收线,把<b>张力条</b>控制在合适区间,撑到进度 100%</td></tr></table>
+  <p><b>鱼种:</b>按深度分层共 8 种——浅水小鲫鱼,深水才有鲶鱼、鳗鱼,传说级的"锦鲤王"只在水最深的地方。钓到过的鱼会记进<b>图鉴</b>。</p>
+  <p><b>金币与鱼竿:</b>卖鱼得金币,可以升级鱼竿到 3 级——抛得更远 / 咬钩窗口更长 / 张力条更宽容。</p>
+  <div class="tip"><b>上鱼要点:</b>① <b>张力太高会断线,太低会脱钩</b>——鱼挣扎时松一点手,鱼停下再压满;② 咬钩那 0.7 秒别犹豫,手指提前悬在屏幕上;③ 想刷传说鱼就把线抛到底,但深水鱼挣扎更猛;④ 鱼竿优先升"咬钩窗口",它直接减少"鱼跑了"的挫败感;⑤ 90 秒很短,别在浅水区磨蹭。</div>
+  <p style="margin-top:8px"><a class="play" href="/fish/">▶ 钓鱼达人</a></p>
+</div>
+
+<h3 id="parking">🚗 停车场华容道</h3>
+<div class="card">
+  <p><b>目标:</b>6×6 的停车场里车挤成一团,把<b>红车从右侧出口开出去</b>。车只能沿自己的朝向滑动,横车只能左右、竖车只能上下。</p>
+  <table><tr><th>操作</th><th>键位</th></tr>
+    <tr><td>挪车</td><td><b>按住车身朝可动方向拖</b>,松手吸附到最近格</td></tr>
+    <tr><td>选车</td><td>也可以点一下车选中,再点目标格</td></tr>
+    <tr><td>辅助</td><td>无限撤销、重置本关、跳关</td></tr></table>
+  <p><b>共 48 关</b>,每关都标了<b>参考最少步数</b>(是 BFS 真算出来的,不是估的),从 4 步一路到 26 步。</p>
+  <div class="tip"><b>解法思路:</b>① 先看<b>红车正前方那几格被谁占着</b>,那就是必须挪开的车;② 一辆车挪开往往要给另一辆让路,<b>倒着想</b>比正着想快;③ 别做无效往返,每一格移动都该让某辆车离目标更近;④ 卡住就撤销几步换个顺序,这游戏几乎都是"顺序问题"不是"空间问题";⑤ 步数超参考值太多就重来,说明思路跑偏了。</div>
+  <p style="margin-top:8px"><a class="play" href="/parking/">▶ 停车场华容道</a></p>
+</div>
+
+<h3 id="ice">🧊 冰面滑行</h3>
+<div class="card">
+  <p><b>目标:</b>在冰面上收集<b>全部宝石</b>,再滑到出口。冰面很滑——<b>一滑到底,中途停不下来</b>,撞到石块或墙才会停。</p>
+  <table><tr><th>元素</th><th>作用</th></tr>
+    <tr><td>🧱 石块</td><td>挡路,也是你唯一能用来"刹车"的东西</td></tr>
+    <tr><td>💎 宝石</td><td>必须全部收集才能开门</td></tr>
+    <tr><td>⚠️ 冰洞</td><td>滑进去直接失败</td></tr></table>
+  <p><b>操作:</b>朝四个方向<b>滑动屏幕</b>,或用底部方向键 / 键盘方向键。</p>
+  <div class="tip"><b>滑行技巧:</b>① 每次移动前先在心里画一遍<b>滑到底会停在哪</b>——这是这游戏唯一的技术;② 石块是你的"刹车",路线设计就是把石块串起来;③ 别急着吃近处的宝石,先想"吃完它我还能不能动";④ 宝石吃完前出口是不开的,顺序错了会把自己困住;⑤ 卡住用撤销,30 关每关都验过有解。</div>
+  <p style="margin-top:8px"><a class="play" href="/ice/">▶ 冰面滑行</a></p>
+</div>
+
+<h3 id="tangram">🧩 七巧板</h3>
+<div class="card">
+  <p><b>目标:</b>把 7 块标准七巧板(2 大三角 + 1 中三角 + 2 小三角 + 1 正方形 + 1 平行四边形)全部拼进给出的<b>深色剪影</b>里。</p>
+  <table><tr><th>操作</th><th>键位</th></tr>
+    <tr><td>移动</td><td>按住块拖动,靠近目标顶点会<b>自动吸附对齐</b></td></tr>
+    <tr><td>旋转</td><td>选中块后点 <b>↺ / ↻</b> 转 45°(也支持双指旋转)</td></tr>
+    <tr><td>翻面</td><td>平行四边形需要翻面,点 <b>⇄</b></td></tr></table>
+  <p><b>共 12 关</b>:正方形、大三角、小鸟、小船、小屋、帆影、高塔、山坡、台阶、烛台、小树、山峦。七块必须全部用上,一块不能剩。</p>
+  <div class="tip"><b>拼图思路:</b>① 先找剪影里<b>最尖的角</b>,那一定是某个三角形的锐角;② 大三角形占了总面积一半以上,<b>先把两个大三角摆进去</b>,剩下的空间才好判断;③ 平行四边形是最麻烦的,它常出现在斜边上;④ 正方形那块经常藏在"身体的中间";⑤ 卡住点提示,会帮你自动放好一块。</div>
+  <p style="margin-top:8px"><a class="play" href="/tangram/">▶ 七巧板</a></p>
+</div>
+
+<h3 id="ludo">🎲 飞行棋</h3>
+<div class="card">
+  <p><b>目标:</b>把 4 架飞机全部送进终点。你执橙方,对手是 3 个电脑。</p>
+  <table><tr><th>规则</th><th>说明</th></tr>
+    <tr><td>起飞</td><td>掷出 <b>6</b> 才能让一架飞机出机场,而且掷出 6 可以<b>再掷一次</b></td></tr>
+    <tr><td>跳跃</td><td>停在与自己<b>同色</b>的格子上,可以往前跳 4 格</td></tr>
+    <tr><td>撞子</td><td>停在有对方飞机的格子上,<b>把它送回家</b>(同格多架的话<b>整叠全送回去</b>)</td></tr>
+    <tr><td>叠子</td><td>自己两架可以停同一格,但被撞时是一起回去的</td></tr>
+    <tr><td>终点</td><td>必须<b>精确点数</b>进终点,点多了进不去</td></tr></table>
+  <div class="tip"><b>赢棋要点:</b>① 前中期<b>先把飞机都放出去</b>,数量优势比推进单架重要;② 看到同色格就跳,4 格是白送的,但<b>只跳一次</b>;③ 撞子优先撞<b>已经快到终点</b>的那架,收益最大;④ <b>起飞那一步不触发同色跳跃</b>,别以为刚出机场就能跳 4 格;⑤ 快到终点的飞机最怕被撞,最后一架要卡准点数——点多了这架直接不动,等于白掷一次。</div>
+  <p style="margin-top:8px"><a class="play" href="/ludo/">▶ 飞行棋</a></p>
+</div>
+
+<h3 id="checkers">♟️ 国际跳棋</h3>
+<div class="card">
+  <p><b>目标:</b>把对方的子吃光,或者让对方无子可动。8×8 棋盘,双方各 12 枚,只有深色格能走。</p>
+  <table><tr><th>动作</th><th>规则</th></tr>
+    <tr><td>走子</td><td>兵只能<b>斜向前</b>走一格到空格</td></tr>
+    <tr><td>吃子</td><td>跳过相邻敌子落到其后的空格,<b>只能斜向前</b>吃</td></tr>
+    <tr><td>连吃</td><td>吃完还能继续吃就<b>必须继续</b>,一回合内连跳到底</td></tr>
+    <tr><td>升王</td><td>兵走到对方底线变<b>王</b>,王可以斜向四个方向走和吃</td></tr></table>
+  <p><b>强制吃子:</b>只要存在能吃子的走法,你就<b>必须吃</b>,不能走别的——这是国际跳棋的核心规则,也是新手最容易忽略的一条。</p>
+  <div class="tip"><b>下法要点:</b>① 吃子前先数<b>"吃完会不会被反吃"</b>,送子比不吃更亏;② 连吃路线要算到底,有时候吃三颗不如吃一颗保住阵型;③ 尽量把子<b>成对贴着走</b>,单子容易被连吃;④ 早升王基本等于赢,底线要守住;⑤ 被强制吃子逼着走的时候,选那条吃最少但位置最好的。</div>
+  <p style="margin-top:8px"><a class="play" href="/checkers/">▶ 国际跳棋</a></p>
+</div>
+
+<h3 id="blackjack">🃏 21点</h3>
+<div class="card">
+  <p><b>目标:</b>手里的牌点数尽量接近 <b>21</b> 但不超过,并且比庄家大。超过 21 就是"爆牌",直接输。</p>
+  <table><tr><th>点数</th><th>算法</th></tr>
+    <tr><td>2 ~ 10</td><td>按牌面</td></tr>
+    <tr><td>J / Q / K</td><td>都算 <b>10</b></td></tr>
+    <tr><td>A</td><td>算 1 或 11,<b>自动取不爆的最大值</b></td></tr></table>
+  <p><b>操作:</b>要牌(再发一张)· 停牌(不发了)· 加倍(筹码翻倍只发一张)。<b>庄家 17 点必须停</b>,16 点以下必须要牌。开局两张凑齐 21 点叫 Blackjack,赔 <b>1.5 倍</b>。</p>
+  <p><b>筹码:</b>初始 1000,输光会补 100 让你能继续玩;筹码和战绩都保存在本地。</p>
+  <div class="tip"><b>基本策略(记这几条就够赢多输少):</b>① 手上 <b>17 点以上一律停牌</b>;② 12~16 点看庄家明牌——庄家 7 以上就要牌,6 以下就停;③ <b>11 点必加倍</b>,10 点对庄家弱牌也加倍;④ A+8(软 18)别硬拼,停;⑤ 别追输,爆牌是概率不是运气,按策略走长期一定正收益。</div>
+  <p style="margin-top:8px"><a class="play" href="/blackjack/">▶ 21点</a></p>
+</div>
+<h3 id="shousui">🧨 守岁大作战</h3>
+<div class="card">
+  <p><b>目标:</b>除夕夜被年兽围城,守住自己,看能撑到<b>几点钟</b>。越到深夜怪越多越猛。</p>
+  <table><tr><th>操作</th><th>键位</th></tr>
+    <tr><td>走位</td><td><b>拖动屏幕</b> / <kbd>WASD</kbd> / 方向键</td></tr>
+    <tr><td>攻击</td><td><b>全自动</b>,不用点——你只管躲</td></tr>
+    <tr><td>升级</td><td>捡 🧧 升级,<b>三选一</b>强化:鞭炮 · 烟花 · 风火轮 · 棉袄布鞋…</td></tr></table>
+  <p><b>Boss:</b>每 <b>75 秒</b>来一只年兽龙王 🐲,打掉掉宝箱。</p>
+  <div class="tip"><b>守岁要点:</b>① <b>绕圈跑</b>别直线后退——直线跑会被追上,绕圈能一直把怪拖在身后;② 升级优先拿<b>范围伤害</b>(烟花),人堆里收益最高;③ 风火轮/棉袄布鞋这类保命项至少拿一个,后期全靠它;④ 龙王出来先绕场清小怪,别一边挨打一边打 Boss;⑤ 别贪 🧧,血少的时候先保命再捡。</div>
+  <p style="margin-top:8px"><a class="play" href="/shousui/">▶ 守岁大作战</a></p>
+</div>
+
+<h3 id="jump">🐸 跳一跳 · 摘星</h3>
+<div class="card">
+  <p><b>目标:</b>按住蓄力、松手起跳,一路跳到更远更小的方块上。落空就掉下去。</p>
+  <table><tr><th>判定</th><th>奖励</th></tr>
+    <tr><td>踩中<b>正中心</b></td><td>连击翻倍:<b>+2 → +4 → +8 …</b></td></tr>
+    <tr><td>🎵 音符块</td><td>踩正有彩蛋加分</td></tr>
+    <tr><td>🏪 小卖部</td><td>踩正有彩蛋加分</td></tr>
+    <tr><td>🎁 礼盒</td><td>踩正有彩蛋加分</td></tr></table>
+  <div class="tip"><b>跳法:</b>① 蓄力时<b>盯着方块中心</b>而不是方块边缘,松手时机才准;② <b>连击比距离值钱</b>:一次正中 +8 顶上好几次普通落地;③ 有彩蛋块时,宁可少跳一点也要踩正;④ 方块越跳越小,后期靠节奏不靠蛮力——长按到"感觉够了"就放,别死盯着力度条。</div>
+  <p style="margin-top:8px"><a class="play" href="/jump/">▶ 跳一跳·摘星</a></p>
+</div>
+
+<h3 id="match">🍬 糖果消消乐</h3>
+<div class="card">
+  <p><b>目标:</b>在<b>限定步数</b>内达到目标分,拿三星过关。</p>
+  <table><tr><th>连线</th><th>效果</th></tr>
+    <tr><td>三连</td><td>消除同色</td></tr>
+    <tr><td><b>四连</b></td><td>生成<b>炸弹</b></td></tr>
+    <tr><td><b>五连</b></td><td>生成<b>彩虹</b>(清掉全场同色)</td></tr></table>
+  <p><b>操作:</b>点两个相邻糖果交换(或直接拖动)。卡住点 <b>💡提示</b>;没有可消组合时会自动洗牌。</p>
+  <div class="tip"><b>三星思路:</b>① <b>从下面消</b>——上方掉落更容易触发连锁,连锁有连击加成;② 优先造<b>四连/五连</b>,一个炸弹顶十次三消;③ 别为了顺手的三消浪费步数,步数是硬限制;④ 差一点分时,找能引发大崩塌的位置下手;⑤ 彩虹留着救场,专清场上最难消的那种颜色。</div>
+  <p style="margin-top:8px"><a class="play" href="/match/">▶ 糖果消消乐</a></p>
+</div>
+
+
+<h3 id="diner">🍜 喵喵食堂</h3>
+<div class="card">
+  <p><b>目标:</b>铃响接单 → 烹饪 → 及时上菜,收入升级设施、解锁菜谱,口碑冲五星。</p>
+  <div class="tip"><b>经营思路:</b>① 先升<b>烹饪速度</b>,翻台率比单价重要;② 再解锁<b>贵价菜</b>,后期一单顶前期三单;③ 贵宾猫优先伺候,差评扣口碑最难补;④ 上菜别拖到进度条见底,超时会跑单。</div>
+  <p style="margin-top:8px"><a class="play" href="/diner/">▶ 喵喵食堂</a></p>
+</div>
+
+<h3 id="moyu">🐟 摸鱼乐园</h3>
+<div class="card">
+  <p><b>是什么:</b>不是一局定胜负的游戏,而是<b>7 个小玩具</b>的合集——今天吃什么 / 指尖烟花 / 每日三件套 / 人生进度条 / 许愿池 / 渐变生成器 / 梗图生成器。</p>
+  <div class="tip"><b>怎么玩:</b>没有分数也没有失败,打开点两下就走。上班摸鱼、等车、睡不着的时候最合适——<b>「今天吃什么」</b>专治选择困难,<b>「人生进度条」</b>看完会有点上头。</div>
+  <p style="margin-top:8px"><a class="play" href="/moyu/">▶ 摸鱼乐园</a></p>
 </div>
 
 <div style="text-align:center;margin-top:34px">
@@ -620,5 +785,65 @@ footer{text-align:center;color:#a89878;font-size:12.5px;margin-top:28px;letter-s
 </div>
 <footer>全游戏唯一攻略站 · 收藏本页: yaoaibing.github.io/guide/<br>把游戏路口转发给好友一起玩 · 各游戏最高分保存在自己手机上</footer>
 </div>
+<button id="gotop" type="button">↑ 顶部</button>
+
+<script>
+(function(){
+'use strict';
+var MARK='GUIDE_OPT_V1';
+var q=document.getElementById('gq');
+var cnt=document.getElementById('gcount');
+var empty=document.getElementById('gempty');
+var all=document.querySelectorAll('.wrap');
+var wrap=all[all.length-1];
+for(var wi=0;wi<all.length;wi++){if(all[wi].querySelector('h3[id]')){wrap=all[wi];break}}
+
+/* 把「h3 标题 + 紧跟的内容」切成一个个单元 */
+var kids=[].slice.call(wrap.children);
+var units=[];
+for(var i=0;i<kids.length;i++){
+  if(kids[i].tagName==='H3'&&kids[i].id){
+    var u=[kids[i]],j=i+1;
+    while(j<kids.length&&kids[j].tagName!=='H3'&&kids[j].tagName!=='H2'&&!kids[j].classList.contains('bigbar')){
+      u.push(kids[j]);j++;
+    }
+    units.push({el:u,txt:(u[0].textContent+' '+u.map(function(e){return e.textContent}).join(' ')).toLowerCase()});
+  }
+}
+
+function apply(){
+  var v=(q.value||'').trim().toLowerCase(),hit=0;
+  for(var i=0;i<units.length;i++){
+    var ok=!v||units[i].txt.indexOf(v)>=0;
+    for(var k=0;k<units[i].el.length;k++)units[i].el[k].style.display=ok?'':'none';
+    if(ok)hit++;
+  }
+  cnt.textContent=v?('匹配 '+hit+' 篇'):('共 '+units.length+' 篇攻略');
+  empty.style.display=(v&&!hit)?'block':'none';
+}
+var tmr=0;
+q.addEventListener('input',function(){clearTimeout(tmr);tmr=setTimeout(apply,80)});
+q.addEventListener('keydown',function(e){if(e.key==='Escape'){q.value='';apply()}});
+apply();
+
+/* 回到顶部 */
+var gt=document.getElementById('gotop');
+function onScroll(){gt.style.display=(window.pageYOffset>420)?'block':'none'}
+window.addEventListener('scroll',onScroll,{passive:true});
+gt.addEventListener('click',function(){
+  /* 手写缓动,不用 window.scrollTo(部分环境未实现) */
+  var start=window.pageYOffset||document.documentElement.scrollTop||0,t0=(new Date()).getTime();
+  function step(){
+    var k=((new Date()).getTime()-t0)/320;if(k>1)k=1;
+    var y=Math.round(start*(1-k)*(1-k));
+    document.documentElement.scrollTop=y;
+    if(document.body)document.body.scrollTop=y;
+    if(k<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+});
+onScroll();
+})();
+</script>
 </body>
 </html>

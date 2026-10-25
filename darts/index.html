@@ -226,6 +226,7 @@ function onResize(){
   BY=HEAD+BR*1.14;
 }
 function maxPull(){return clamp(VH*0.18,110,190)}
+function scatterR(){return BR*(0.014+0.060*G.power)}   // 力度越大手越抖
 
 /* --- 靶面判定:半径 + 角度 → 分值 --- */
 function scoreAt(px,py){
@@ -435,7 +436,7 @@ cv.addEventListener('pointerup',function(e){
   if(dist<10){G.power=0;G.hasAim=false;return}
   aimFromDrag(e);
   var aim=G.aim||{x:BX,y:BY};
-  var sc=BR*(0.045+0.135*G.power);
+  var sc=scatterR();
   var ang=frnd()*6.2832,rad=Math.sqrt(frnd())*sc;
   G.power=0;G.hasAim=false;
   throwDart(aim.x+Math.cos(ang)*rad,aim.y+Math.sin(ang)*rad);
@@ -555,7 +556,7 @@ function drawAim(){
   if(G.state!=='play'||G.turn!==0||G.dartsLeft<=0)return;
   var a=G.aim||{x:BX,y:BY};
   var live=G.hasAim&&G.power>0;
-  var sc=BR*(0.045+0.135*G.power);
+  var sc=scatterR();
   ctx.save();
   /* 散布圈 */
   ctx.setLineDash&&ctx.setLineDash([6,5]);

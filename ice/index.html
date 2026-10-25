@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>冰面滑行 · 童年益智</title>
+<meta name="description" content="冰面滑行:一滑到底停不下来!收集全部宝石再滑到出口,30 关每关都验过有解。方向键或滑动操作,无限撤销。">
+<meta property="og:title" content="冰面滑行 · 童年益智">
+<meta property="og:description" content="冰面太滑一滑到底,收齐宝石才能开门,30 关烧脑挑战!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0d2230">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A7%8A%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0d2230;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:#ffd45c;margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(6,18,26,.88);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:#9ee8ff;text-shadow:0 3px 0 #16506e,0 8px 26px rgba(120,220,255,.4);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:#ffd45c;margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#dce8ff;background:rgba(255,255,255,.06);border:1px solid rgba(120,210,255,.25);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:#ffd45c}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;color:#062030;cursor:pointer;background:linear-gradient(180deg,#c8f2ff,#62c8ee);box-shadow:0 5px 0 #1e6a8a,0 10px 30px rgba(98,200,238,.35)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #1e6a8a}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:#ffd45c}
+#ostats{font-size:15px;line-height:2.1;color:#dce8ff;background:rgba(255,255,255,.06);border:1px solid rgba(120,210,255,.25);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:#ffd45c;font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+
+.chip b{font-size:18px}</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud">
+  <span class="chip">关<b id="hlevel">1</b></span>
+  <span class="chip">步<b id="hmove">0</b></span>
+  <span class="chip">宝石<b id="hgem">0/2</b></span>
+</div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">冰 面 滑 行<small>· 童 年 益 智 ·</small></div>
+  <div class="howto">
+    🧊 冰面很滑:<b>一滑到底,中途停不下来</b>,撞到石块或墙才会停<br>
+    💎 必须<b>收集全部宝石</b>,出口才会打开<br>
+    ⚠️ 滑进冰洞直接失败,用<b>撤销</b>退回<br>
+    👉 朝四个方向<b>滑动屏幕</b>,或用底部方向键 / 键盘方向键<br>
+    🏁 共 30 关,每关都验过有解,最少滑几步会标出来
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 滑 行</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">全 部 通 关</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='ice_best',PLAY='ice_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+
+
+/* ================== GAME · 冰面滑行 ================== */
+
+var LEVELS_TOTAL = 30;
+var N = 7;
+var L = null;            // 当前关数据
+var P = { x: 0, y: 0 };  // 玩家格坐标
+var MASK = 0;            // 已收集宝石位掩码
+var MOVES = 0;
+var LV = 0;              // 关序号 0..29
+var HIST = [];           // 撤销栈
+var ANIM = null;         // {path, t, dur, i}
+var DEAD = 0;            // 死亡动画计时
+var WIN = 0;             // 过关动画计时
+var state = 'start';     // start | play | win | over
+var buttons = [];        // 画布按钮热区
+var FLAKE = [];          // 飘雪
+
+/* --- 可复现随机 --- */
+function mkRand(seed) {
+  var s = seed | 0;
+  return function () { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+}
+
+function cellKey(x, y) { return x + ',' + y; }
+
+/* --- 滑行:一直滑到撞墙;途中收集宝石;踩到冰洞即死 ---
+   显式传入关卡与掩码,生成阶段(还没 L)也能复用 */
+function slideOn(lv, from, mask, dx, dy) {
+  var x = from.x, y = from.y, m = mask, path = [{ x: x, y: y }], dead = false, i;
+  for (;;) {
+    var nx = x + dx, ny = y + dy;
+    if (nx < 0 || ny < 0 || nx >= lv.n || ny >= lv.n) break;
+    if (lv.wall[cellKey(nx, ny)]) break;
+    x = nx; y = ny;
+    path.push({ x: x, y: y });
+    if (lv.hole[cellKey(x, y)]) { dead = true; break; }
+    for (i = 0; i < lv.gems.length; i++) {
+      if (lv.gems[i][0] === x && lv.gems[i][1] === y) m |= (1 << i);
+    }
+  }
+  return { x: x, y: y, m: m, mask: m, dead: dead, path: path };
+}
+
+function slide(from, dx, dy) { return slideOn(L, from, MASK, dx, dy); }
+
+/* --- 可达停靠点:不考虑宝石,只问「能停在哪」 --- */
+function reachSet(lv) {
+  var DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  var seen = {}, out = [[lv.start[0], lv.start[1]]], q = [{ x: lv.start[0], y: lv.start[1] }];
+  seen[cellKey(lv.start[0], lv.start[1])] = 1;
+  var head = 0;
+  while (head < q.length) {
+    var cur = q[head++];
+    for (var i = 0; i < 4; i++) {
+      var dx = DIR[i][0], dy = DIR[i][1], x = cur.x, y = cur.y, dead = false;
+      for (;;) {
+        var tx = x + dx, ty = y + dy;
+        if (tx < 0 || ty < 0 || tx >= lv.n || ty >= lv.n) break;
+        if (lv.wall[cellKey(tx, ty)]) break;
+        if (lv.hole[cellKey(tx, ty)]) { dead = true; break; }
+        x = tx; y = ty;
+      }
+      if (dead) continue;
+      if (x === cur.x && y === cur.y) continue;
+      var k = cellKey(x, y);
+      if (seen[k]) continue;
+      seen[k] = 1; out.push([x, y]); q.push({ x: x, y: y });
+    }
+  }
+  return out;
+}
+
+/* --- 全状态 BFS:返回所有「集齐宝石」的落点及其最短步数 --- */
+function solveInfo(lv) {
+  var full = (1 << lv.gems.length) - 1;
+  var DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  var q = [{ x: lv.start[0], y: lv.start[1], m: 0, d: 0 }];
+  var seen = {}; seen[cellKey(lv.start[0], lv.start[1]) + '#' + 0] = 1;
+  var goals = [], ges = {}, head = 0, limit = 200000;
+  while (head < q.length && head < limit) {
+    var cur = q[head++];
+    for (var i = 0; i < 4; i++) {
+      var r = slideOn(lv, cur, cur.m, DIR[i][0], DIR[i][1]);
+      if (r.dead) continue;
+      if (r.x === cur.x && r.y === cur.y) continue;
+      var k = cellKey(r.x, r.y) + '#' + r.m;
+      if (seen[k]) continue;
+      seen[k] = 1;
+      var nd = cur.d + 1;
+      q.push({ x: r.x, y: r.y, m: r.m, d: nd });
+      if (r.m === full) {
+        var gk = cellKey(r.x, r.y);
+        if (ges[gk] === undefined || nd < ges[gk]) { ges[gk] = nd; goals.push({ x: r.x, y: r.y, d: nd }); }
+      }
+    }
+  }
+  // 同一格可能被多次记录,取最短
+  var best = {}, out = [];
+  for (var j = 0; j < goals.length; j++) {
+    var g = goals[j], kk = cellKey(g.x, g.y);
+    if (best[kk] === undefined || g.d < best[kk]) best[kk] = g.d;
+  }
+  for (var kk2 in best) { var p = kk2.split(','); out.push({ x: +p[0], y: +p[1], d: best[kk2] }); }
+  return { goals: out };
+}
+
+/* --- 求解:到指定出口的最少步数(0 = 无解) --- */
+function solve(lv) {
+  var info = solveInfo(lv), i;
+  for (i = 0; i < info.goals.length; i++) {
+    if (info.goals[i].x === lv.exit[0] && info.goals[i].y === lv.exit[1]) return info.goals[i].d;
+  }
+  return 0;
+}
+
+/* --- 造关:先布石块 → 找可达停靠点 → 宝石只放在能停的格 → 出口只放在「集齐后能到」的格
+       这样天生有解,不需要瞎试 --- */
+function makeLevel(idx) {
+  var n = idx < 10 ? 7 : 8;
+  var gemN = idx < 8 ? 2 : (idx < 18 ? 3 : 4);
+  var density = idx < 10 ? 0.16 : (idx < 20 ? 0.20 : 0.24);
+  var wantHole = idx < 6 ? 0 : (idx < 14 ? 1 : 2);
+  var att, i, j, t;
+
+  for (att = 0; att < 400; att++) {
+    var R = mkRand(idx * 7919 + att * 104729 + 17);
+    var wall = {}, hole = {}, cells = [];
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) cells.push([x, y]);
+    for (i = cells.length - 1; i > 0; i--) { j = Math.floor(R() * (i + 1)); t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
+
+    var start = cells[0];
+    var wN = Math.floor(n * n * density), placed = 0;
+    for (i = 1; i < cells.length && placed < wN; i++) {
+      var c = cells[i];
+      if (Math.abs(c[0] - start[0]) + Math.abs(c[1] - start[1]) < 2) continue;
+      wall[cellKey(c[0], c[1])] = 1; placed++;
+    }
+
+    var lv = { n: n, wall: wall, hole: {}, gems: [], start: start, exit: [start[0], start[1]] };
+
+    // 1) 可达停靠点
+    var reach = reachSet(lv);
+    if (reach.length < gemN + 8) continue;
+
+    // 2) 宝石只从可达点里选(排除起点)
+    var pool = [];
+    for (i = 0; i < reach.length; i++) {
+      if (reach[i][0] === start[0] && reach[i][1] === start[1]) continue;
+      pool.push(reach[i]);
+    }
+    if (pool.length < gemN) continue;
+    for (i = pool.length - 1; i > 0; i--) { j = Math.floor(R() * (i + 1)); t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+    var gems = pool.slice(0, gemN);
+    lv.gems = gems;
+
+    // 3) 出口只从「集齐宝石后能停住」的格里选,天然有解
+    var info = solveInfo(lv);
+    if (!info.goals.length) continue;
+    var far = [];
+    for (i = 0; i < info.goals.length; i++) if (info.goals[i].d >= 4) far.push(info.goals[i]);
+    if (!far.length) far = info.goals;
+    far.sort(function (a, b) { return b.d - a.d; });
+    var pick = far[Math.floor(R() * Math.min(far.length, 4))];
+    lv.exit = [pick.x, pick.y];
+
+    // 4) 加冰洞:每加一个都复验,破了可解性就撤掉
+    for (var h = 0; h < wantHole; h++) {
+      var cand = [];
+      for (i = 0; i < n * n; i++) {
+        var cx = i % n, cy = (i / n) | 0, ck = cellKey(cx, cy);
+        if (wall[ck] || hole[ck]) continue;
+        if (cx === start[0] && cy === start[1]) continue;
+        if (cx === lv.exit[0] && cy === lv.exit[1]) continue;
+        var isGem = false;
+        for (j = 0; j < gems.length; j++) if (gems[j][0] === cx && gems[j][1] === cy) isGem = true;
+        if (isGem) continue;
+        cand.push([cx, cy]);
+      }
+      if (!cand.length) break;
+      var hc = cand[Math.floor(R() * cand.length)];
+      hole[cellKey(hc[0], hc[1])] = 1;
+      lv.hole = hole;
+      var chk = solve(lv);
+      if (!chk || chk < 4) { delete hole[cellKey(hc[0], hc[1])]; lv.hole = hole; }
+    }
+
+    var finalMin = solve(lv);
+    if (!finalMin || finalMin < 4) continue;
+
+    return { n: n, wall: wall, hole: hole, gems: gems, start: start, exit: lv.exit, min: finalMin };
+  }
+
+  // 兜底:一个确定能玩的最简关
+  var fj = [], fs = [0, 0], fexe = [n - 1, 0];
+  // 沿第一行放两块挡墙,让 (n-2,0) 成为停靠点;宝石放边上
+  var fw = {}; fw[cellKey(n - 1, 1)] = 1;
+  fj.push([n - 1, 0]);
+  var flv = { n: n, wall: fw, hole: {}, gems: fj, start: fs, exit: fexe };
+  var fm = solve(flv) || 4;
+  return { n: n, wall: fw, hole: {}, gems: fj, start: fs, exit: fexe, min: fm };
+}
+
+/* --- 布局 --- */
+var BX = 0, BY = 0, CS = 40;   // 棋盘左上角与格子尺寸
+function layout() {
+  N = L ? L.n : 7;
+  var top = 74, bottom = 130;
+  var availW = VW - 28, availH = VH - top - bottom;
+  CS = Math.floor(Math.min(availW / N, availH / N));
+  CS = Math.max(28, Math.min(CS, 76));
+  BX = Math.round((VW - CS * N) / 2);
+  BY = Math.round(top + (availH - CS * N) / 2);
+  if (BY < top) BY = top;
+}
+
+function onResize() { layout(); }
+
+/* --- 关卡 --- */
+function loadLevel(idx) {
+  LV = idx;
+  L = makeLevel(idx);
+  N = L.n;
+  P.x = L.start[0]; P.y = L.start[1];
+  MASK = 0; MOVES = 0; HIST = []; ANIM = null; DEAD = 0; WIN = 0;
+  layout();
+  updateHud();
+  $('hlevel').textContent = (idx + 1);
+}
+
+function updateHud() {
+  $('hmove').textContent = MOVES;
+  var got = 0, i;
+  for (i = 0; i < L.gems.length; i++) if (MASK & (1 << i)) got++;
+  $('hgem').textContent = got + '/' + L.gems.length;
+}
+
+function fullMask() { return (1 << L.gems.length) - 1; }
+
+/* --- 移动 --- */
+function tryMove(dx, dy) {
+  if (state !== 'play' || ANIM || DEAD || WIN) return;
+  var r = slide(P, dx, dy);
+  if (r.path.length < 2) { tone(180, .05, 'square', .03, 140); return; }
+  HIST.push({ x: P.x, y: P.y, m: MASK });
+  tone(520, .06, 'sine', .04, 700);
+  ANIM = { path: r.path, t: 0, dur: Math.max(90, 42 * (r.path.length - 1)), mask: r.mask, dead: r.dead };
+}
+
+function undo() {
+  if (state !== 'play' || ANIM || DEAD || WIN) return;
+  if (!HIST.length) { tone(160, .06, 'square', .03, 120); return; }
+  var h = HIST.pop();
+  P.x = h.x; P.y = h.y; MASK = h.m;
+  MOVES = Math.max(0, MOVES - 1);
+  updateHud();
+  tone(320, .05, 'triangle', .03, 260);
+}
+
+function restart() {
+  if (state !== 'play') return;
+  P.x = L.start[0]; P.y = L.start[1];
+  MASK = 0; MOVES = 0; HIST = []; ANIM = null; DEAD = 0; WIN = 0;
+  updateHud();
+  tone(300, .08, 'sine', .035, 420);
+}
+
+/* --- 主更新 --- */
+function update(dt) {
+  var i;
+  for (i = 0; i < FLAKE.length; i++) {
+    var f = FLAKE[i];
+    f.y += f.vy * dt; f.x += Math.sin((f.y + f.p) * .02) * 8 * dt;
+    if (f.y > VH) { f.y = -8; f.x = Math.random() * VW; }
+  }
+
+  if (ANIM) {
+    ANIM.t += dt * 1000;
+    if (ANIM.t >= ANIM.dur) {
+      var last = ANIM.path[ANIM.path.length - 1];
+      P.x = last.x; P.y = last.y; MASK = ANIM.mask;
+      MOVES++; updateHud();
+      var dead = ANIM.dead;
+      ANIM = null;
+      if (dead) {
+        DEAD = 1; tone(120, .3, 'sawtooth', .06, 50); noise(.25, .06);
+      } else {
+        var full = fullMask();
+        if (P.x === L.exit[0] && P.y === L.exit[1] && MASK === full) {
+          WIN = 1;
+          [660, 880, 1100].forEach(function (f, k) { setTimeout(function () { tone(f, .16, 'sine', .06); }, k * 90); });
+          setTimeout(nextLevel, 760);
+        } else if (MASK !== 0 && (MASK & ~0) === full) {
+          tone(880, .1, 'sine', .05);
+        } else {
+          tone(300, .05, 'triangle', .03, 240);
+        }
+      }
+    }
+  }
+
+  if (DEAD) {
+    DEAD += dt * 1.6;
+    if (DEAD > 1.4) {
+      DEAD = 0;
+      if (HIST.length) { var h = HIST.pop(); P.x = h.x; P.y = h.y; MASK = h.m; MOVES = Math.max(0, MOVES - 1); updateHud(); }
+      else { P.x = L.start[0]; P.y = L.start[1]; MASK = 0; MOVES = 0; updateHud(); }
+    }
+  }
+
+  if (WIN) WIN += dt;
+}
+
+function nextLevel() {
+  WIN = 0;
+  if (LV + 1 >= LEVELS_TOTAL) {
+    state = 'over';
+    showOver();
+    return;
+  }
+  KIT.setBest(LV + 1);
+  loadLevel(LV + 1);
+}
+
+/* --- 绘制 --- */
+function roundRect(c, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  c.beginPath();
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+}
+
+function draw() {
+  var i, j, x, y, px, py;
+
+  // 背景
+  var g = ctx.createLinearGradient(0, 0, 0, VH);
+  g.addColorStop(0, '#0a1e2c');
+  g.addColorStop(.55, '#0d2a3a');
+  g.addColorStop(1, '#07161f');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+
+  // 飘雪
+  ctx.fillStyle = 'rgba(200,240,255,.35)';
+  for (i = 0; i < FLAKE.length; i++) {
+    ctx.globalAlpha = FLAKE[i].a;
+    ctx.beginPath(); ctx.arc(FLAKE[i].x, FLAKE[i].y, FLAKE[i].r, 0, 6.2832); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  if (!L) { drawButtons(); return; }
+
+  var BW = CS * N;
+  // 棋盘底
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+  roundRect(ctx, BX - 6, BY - 6, BW + 12, BW + 12, 16); ctx.fillStyle = '#0a1c28'; ctx.fill();
+  ctx.restore();
+
+  // 冰面
+  for (y = 0; y < N; y++) {
+    for (x = 0; x < N; x++) {
+      var cxx = BX + x * CS, cyy = BY + y * CS;
+      var shade = ((x + y) % 2) ? '#bfe9f7' : '#a9dcee';
+      ctx.fillStyle = shade;
+      ctx.fillRect(cxx, cyy, CS, CS);
+      // 反光
+      ctx.fillStyle = 'rgba(255,255,255,.30)';
+      ctx.fillRect(cxx + 2, cyy + 2, CS - 4, Math.max(2, CS * .12));
+    }
+  }
+
+  // 冰纹
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1;
+  for (y = 0; y <= N; y++) {
+    ctx.beginPath(); ctx.moveTo(BX, BY + y * CS); ctx.lineTo(BX + BW, BY + y * CS); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(BX + y * CS, BY); ctx.lineTo(BX + y * CS, BY + BW); ctx.stroke();
+  }
+
+  // 冰洞
+  for (var k in L.hole) {
+    var hp = k.split(','); x = +hp[0]; y = +hp[1];
+    var hx = BX + x * CS + CS / 2, hy = BY + y * CS + CS / 2;
+    ctx.beginPath(); ctx.arc(hx, hy, CS * .34, 0, 6.2832);
+    ctx.fillStyle = '#04121a'; ctx.fill();
+    ctx.strokeStyle = 'rgba(120,200,240,.55)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(hx, hy - CS * .05, CS * .16, 3.34, 5.9);
+    ctx.strokeStyle = 'rgba(90,170,210,.6)'; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+
+  // 石块
+  for (var kk in L.wall) {
+    var wp = kk.split(','); x = +wp[0]; y = +wp[1];
+    var wx = BX + x * CS, wy = BY + y * CS;
+    roundRect(ctx, wx + 1.5, wy + 1.5, CS - 3, CS - 3, 8);
+    var wg = ctx.createLinearGradient(wx, wy, wx, wy + CS);
+    wg.addColorStop(0, '#5f7a8c'); wg.addColorStop(1, '#3a4f5e');
+    ctx.fillStyle = wg; ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.22)';
+    roundRect(ctx, wx + 4, wy + 4, CS - 8, CS * .22, 5); ctx.fill();
+  }
+
+  // 出口
+  var ex = BX + L.exit[0] * CS, ey = BY + L.exit[1] * CS;
+  var open = (MASK === fullMask());
+  roundRect(ctx, ex + 3, ey + 3, CS - 6, CS - 6, 10);
+  if (open) {
+    var og = ctx.createLinearGradient(ex, ey, ex, ey + CS);
+    og.addColorStop(0, '#7cffb0'); og.addColorStop(1, '#22c55e');
+    ctx.fillStyle = og;
+    ctx.shadowColor = 'rgba(60,255,150,.6)'; ctx.shadowBlur = 16;
+  } else {
+    ctx.fillStyle = '#2a4457';
+  }
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold ' + Math.round(CS * .5) + 'px system-ui';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = open ? '#06301c' : 'rgba(160,200,225,.5)';
+  ctx.fillText('🚪', ex + CS / 2, ey + CS / 2 + 1);
+
+  // 宝石
+  for (i = 0; i < L.gems.length; i++) {
+    if (MASK & (1 << i)) continue;
+    var gx = BX + L.gems[i][0] * CS + CS / 2, gy = BY + L.gems[i][1] * CS + CS / 2;
+    var rr = CS * .26;
+    ctx.save();
+    ctx.translate(gx, gy);
+    ctx.beginPath();
+    ctx.moveTo(0, -rr); ctx.lineTo(rr * .78, 0); ctx.lineTo(0, rr); ctx.lineTo(-rr * .78, 0);
+    ctx.closePath();
+    var gg = ctx.createLinearGradient(-rr, -rr, rr, rr);
+    gg.addColorStop(0, '#9ff2ff'); gg.addColorStop(1, '#2aa8d8');
+    ctx.fillStyle = gg; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.4; ctx.stroke();
+    ctx.restore();
+  }
+
+  // 玩家
+  if (ANIM) {
+    var idx2 = Math.min(ANIM.path.length - 1, Math.floor(ANIM.t / (ANIM.dur / (ANIM.path.length - 1 || 1))));
+    var t0 = idx2 > 0 ? ANIM.path[idx2 - 1] : ANIM.path[0];
+    var t1 = ANIM.path[idx2];
+    var fr = (ANIM.dur / (ANIM.path.length - 1 || 1));
+    var local = Math.max(0, Math.min(1, (ANIM.t - fr * (idx2 - 1)) / fr));
+    if (idx2 === 0) local = 0;
+    px = BX + (t0.x + (t1.x - t0.x) * local) * CS + CS / 2;
+    py = BY + (t0.y + (t1.y - t0.y) * local) * CS + CS / 2;
+  } else {
+    px = BX + P.x * CS + CS / 2;
+    py = BY + P.y * CS + CS / 2;
+  }
+  drawPlayer(px, py, DEAD);
+
+  // 最小步数提示
+  ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(180,225,245,.7)';
+  ctx.fillText('第 ' + (LV + 1) + ' 关 · 参考最少 ' + L.min + ' 步', VW / 2, BY + BW + 22);
+
+  drawButtons();
+}
+
+function drawPlayer(px, py, dead) {
+  var s = CS * .68;
+  ctx.save();
+  if (dead > 0) {
+    ctx.globalAlpha = Math.max(0, 1 - dead / 1.4);
+    ctx.translate(px, py); ctx.scale(1 + dead * .6, 1 - dead * .5); ctx.translate(-px, -py);
+  } else if (WIN) {
+    ctx.globalAlpha = .85 + Math.sin(WIN * 14) * .15;
+  }
+  roundRect(ctx, px - s / 2, py - s / 2, s, s, s * .3);
+  var pg = ctx.createLinearGradient(px, py - s / 2, px, py + s / 2);
+  pg.addColorStop(0, '#ffd45c'); pg.addColorStop(1, '#f09a2a');
+  ctx.fillStyle = pg; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+  // 眼睛
+  ctx.fillStyle = '#2a1a06';
+  ctx.beginPath(); ctx.arc(px - s * .16, py - s * .08, s * .09, 0, 6.2832); ctx.fill();
+  ctx.beginPath(); ctx.arc(px + s * .16, py - s * .08, s * .09, 0, 6.2832); ctx.fill();
+  ctx.restore();
+}
+
+/* --- 画布按钮 --- */
+function drawButtons() {
+  buttons = [];
+  if (!L) return;
+  var bw = Math.min(112, (VW - 40) / 3), bh = 42, gap = 10;
+  var totalW = bw * 3 + gap * 2;
+  var sx = (VW - totalW) / 2, sy = VH - 58 - (VW < 360 ? 0 : 4);
+  var defs = [['↩ 撤销', 'undo'], ['⟳ 重开', 'reset'], ['🏠 大厅', 'hub']];
+  for (var i = 0; i < defs.length; i++) {
+    var x = sx + i * (bw + gap), y = sy;
+    roundRect(ctx, x, y, bw, bh, 12);
+    ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(140,210,255,.3)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#dceeff'; ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(defs[i][0], x + bw / 2, y + bh / 2);
+    buttons.push({ x: x, y: y, w: bw, h: bh, act: defs[i][1] });
+  }
+}
+
+/* --- 输入 --- */
+var downPt = null;
+cv.addEventListener('pointerdown', function (e) {
+  if (state !== 'play') return;
+  var r = cv.getBoundingClientRect();
+  var mx = e.clientX - r.left, my = e.clientY - r.top;
+  for (var i = 0; i < buttons.length; i++) {
+    var b = buttons[i];
+    if (mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h) {
+      if (b.act === 'undo') undo();
+      else if (b.act === 'reset') restart();
+      else location.href = '/';
+      downPt = null; return;
+    }
+  }
+  downPt = { x: mx, y: my };
+});
+
+cv.addEventListener('pointerup', function (e) {
+  if (!downPt || state !== 'play') { downPt = null; return; }
+  var r = cv.getBoundingClientRect();
+  var mx = e.clientX - r.left, my = e.clientY - r.top;
+  var dx = mx - downPt.x, dy = my - downPt.y;
+  downPt = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+  if (Math.abs(dx) > Math.abs(dy)) tryMove(dx > 0 ? 1 : -1, 0);
+  else tryMove(0, dy > 0 ? 1 : -1);
+});
+cv.addEventListener('pointercancel', function () { downPt = null; });
+
+document.addEventListener('keydown', function (e) {
+  if (state !== 'play') return;
+  var k = e.key;
+  if (k === 'ArrowUp' || k === 'w') { tryMove(0, -1); e.preventDefault(); }
+  else if (k === 'ArrowDown' || k === 's') { tryMove(0, 1); e.preventDefault(); }
+  else if (k === 'ArrowLeft' || k === 'a') { tryMove(-1, 0); e.preventDefault(); }
+  else if (k === 'ArrowRight' || k === 'd') { tryMove(1, 0); e.preventDefault(); }
+  else if (k === 'z' || k === 'Z') undo();
+  else if (k === 'r' || k === 'R') restart();
+});
+
+/* --- 结算 --- */
+function showOver() {
+  var best = KIT.best();
+  var isNew = KIT.setBest(LEVELS_TOTAL);
+  if (isNew) $('onewrec').style.display = 'block';
+  $('ostats').innerHTML = '全部 ' + LEVELS_TOTAL + ' 关通关!<br>历史最高 <b>' + Math.max(best, LEVELS_TOTAL) + '</b> 关';
+  $('mini2').innerHTML = '每关都做过 BFS 验证,保证有解';
+  $('over').classList.remove('hide');
+  [660, 880, 1100, 1320].forEach(function (f, k) { setTimeout(function () { tone(f, .18, 'sine', .06); }, k * 110); });
+}
+
+$('startbtn').addEventListener('click', function () {
+  $('start').classList.add('hide');
+  state = 'play';
+  KIT.addPlay();
+  loadLevel(0);
+  run();
+});
+
+$('againbtn').addEventListener('click', function () {
+  $('over').classList.add('hide');
+  $('onewrec').style.display = 'none';
+  state = 'play';
+  loadLevel(0);
+});
+
+$('sharebtn').addEventListener('click', function () {
+  share('我在「童年游戏路口」玩冰面滑行,通关 ' + LEVELS_TOTAL + ' 关,一滑到底收齐宝石!你也来试试 ' +
+    'https://yaoaibing.github.io/ice/');
+});
+
+$('hubbtn').addEventListener('click', function () {
+  location.href = '/';
+});
+
+/* --- 初始化 --- */
+(function init() {
+  for (var i = 0; i < 46; i++) {
+    FLAKE.push({
+      x: Math.random() * 400, y: Math.random() * 800,
+      r: .8 + Math.random() * 1.8,
+      vy: 12 + Math.random() * 26,
+      a: .18 + Math.random() * .32,
+      p: Math.random() * 100
+    });
+  }
+  $('mini').innerHTML = '最高通关 <b>' + KIT.best() + '</b> / ' + LEVELS_TOTAL + ' 关' +
+    (KIT.streakNow() ? ' · 连续打卡 <b>' + KIT.streakNow() + '</b> 天' : '');
+  N = 7; layout();
+})();
+
+
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='ice'});
+  r.unshift({k:'ice',n:'冰面滑行',e:'🧊'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:定期把本游戏自己的最高分同步进共享的 __best
+     (不用劫持 localStorage.setItem —— 那在部分环境下属性不可写会静默失败) */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['ice_best','ice_hi','ice_max','ice_score'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['ice']||0)){
+            B['ice']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
