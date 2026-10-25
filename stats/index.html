@@ -60,6 +60,21 @@ h2 small{font-size:11px;color:#8a7aa8;letter-spacing:1px;font-weight:400}
 .row2 .sc.dash{color:#5a4a78;font-size:14px}
 .empty{text-align:center;color:#8a7aa8;font-size:13px;padding:26px 0;line-height:1.9}
 
+/* 成就墙 */
+.achs{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ach{display:flex;gap:9px;align-items:center;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:10px 11px;position:relative;overflow:hidden}
+.ach.on{border-color:rgba(255,212,92,.5);background:linear-gradient(135deg,rgba(255,212,92,.13),rgba(255,157,74,.06))}
+.ach.on:after{content:'';position:absolute;right:-14px;top:-14px;width:38px;height:38px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,212,92,.35),transparent 70%)}
+.ach.lock{opacity:.42}
+.ach .ae{font-size:21px;line-height:1;flex:none;filter:grayscale(1);opacity:.75}
+.ach.on .ae{filter:none;opacity:1}
+.ach .an{display:block;font-size:12.5px;font-weight:800;letter-spacing:.3px}
+.ach .ad{display:block;font-size:10.5px;color:#9a8ab8;margin-top:3px;line-height:1.4}
+.ach.on .ad{color:#c8b8e0}
+@media (max-width:360px){.achs{grid-template-columns:1fr}}
+
 .btnrow{display:flex;gap:9px;margin-top:24px}
 .btn{flex:1;border:0;border-radius:999px;padding:13px 10px;font-size:14.5px;font-weight:800;letter-spacing:1px;
   font-family:inherit;cursor:pointer;text-align:center;text-decoration:none;display:block;color:#102040;
@@ -94,6 +109,9 @@ footer{text-align:center;color:#7a6a98;font-size:11.5px;margin-top:24px;line-hei
   <div class="empty" id="empty" style="display:none">
     还没有战绩记录～<br>去玩一局,回来就有数据了
   </div>
+
+  <h2>🏅 成就 <small id="achinfo"></small></h2>
+  <div class="achs" id="achs"></div>
 
   <div class="btnrow">
     <a class="btn" href="/">🎮 去玩</a>
@@ -185,6 +203,30 @@ $('list').innerHTML=rows.map(function(r,i){
 }).join('');
 
 if(!scored&&!plays)$('empty').style.display='block';
+
+/* 成就 */
+var playedCount=Object.keys(playedSet).length;
+var maxBest=0;
+Object.keys(best).forEach(function(k){var v=+best[k]||0;if(v>maxBest)maxBest=v});
+var ACHS=[
+  {e:'🎮',n:'初次上路',d:'玩过 1 款游戏',ok:playedCount>=1},
+  {e:'🗺️',n:'半程旅人',d:'玩过 13 款游戏',ok:playedCount>=13},
+  {e:'👑',n:'全能王',d:'26 款全部玩过',ok:playedCount>=TOTAL},
+  {e:'🔥',n:'火苗三天',d:'连续打卡 3 天',ok:streak>=3},
+  {e:'🏅',n:'一周不断',d:'连续打卡 7 天',ok:streak>=7},
+  {e:'💯',n:'小有所成',d:'任意一款破 100 分',ok:maxBest>=100},
+  {e:'🚀',n:'千分王者',d:'任意一款破 1000 分',ok:maxBest>=1000},
+  {e:'🎯',n:'百局老兵',d:'累计游玩 100 次',ok:plays>=100},
+  {e:'📅',n:'打卡达人',d:'累计打卡 30 天',ok:onCount>=30}
+];
+var unlocked=ACHS.filter(function(a){return a.ok}).length;
+$('achinfo').textContent=unlocked+'/'+ACHS.length+' 已解锁';
+$('achs').innerHTML=ACHS.map(function(a){
+  return '<div class="ach '+(a.ok?'on':'lock')+'">'+
+    '<span class="ae">'+a.e+'</span>'+
+    '<div><span class="an">'+a.n+'</span><span class="ad">'+a.d+'</span></div></div>';
+}).join('');
+$('s3').textContent=playedCount+'/'+TOTAL;
 
 /* 分享 */
 $('share').addEventListener('click',function(){
