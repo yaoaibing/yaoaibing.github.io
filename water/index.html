@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>倒水大师 · 试管排序</title>
+<meta name="description" content="倒水大师:超上头的试管排序益智!把同色液体倒进同一根试管,20关颜色从3色递增到8色,撤销/加管/礼花特效,越玩越烧脑!">
+<meta property="og:title" content="倒水大师 · 试管排序">
+<meta property="og:description" content="20关试管倒水,颜色递增,保证有解,越玩越烧脑!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#12263a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#12263a;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:#ffd45c;margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(8,20,38,.88);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:#7fd8ff;text-shadow:0 3px 0 #14486e,0 8px 26px rgba(80,190,255,.35);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:#ffd45c;margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#d6ecff;background:rgba(255,255,255,.06);border:1px solid rgba(120,200,255,.25);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:#ffd45c}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;color:#08243c;cursor:pointer;
+  background:linear-gradient(180deg,#a9ecff,#4fb6ee);box-shadow:0 5px 0 #1d6a99,0 10px 30px rgba(79,182,238,.35)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #1d6a99}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:#ffd45c}
+#ostats{font-size:15px;line-height:2.1;color:#d6ecff;background:rgba(255,255,255,.06);border:1px solid rgba(120,200,255,.25);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:#ffd45c;font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud">
+  <span class="chip">关<b id="hlevel">1</b></span>
+  <span class="chip">倒<b id="hmove">0</b></span>
+  <span class="chip">加管<b id="hextra">2</b></span>
+</div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">倒水大师<small>· 试 管 排 序 ·</small></div>
+  <div class="howto">
+    👆 <b>点一根试管</b>抬起选中,再点<b>另一根</b>就倒过去<br>
+    🧪 只能倒进<b>空管</b>,或顶部<b>同色</b>且还有余量的管<br>
+    💧 一次会倒到<b>目标管满</b>或<b>源管倒空</b>为止<br>
+    🏆 每种颜色全部集中到<b>同一根管</b>里即可过关<br>
+    ↩ 倒错了<b>撤销</b>多步,➕ 每关还能<b>加 2 次空管</b><br>
+    🎯 20 关颜色从 <b>3 色</b>一路涨到 <b>8 色</b>,关关都有解
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 倒</button>
+  <div class="row" style="margin-top:12px">
+    <button class="bigbtn ghost" id="newbtn" type="button">🔄 从第 1 关开始</button>
+  </div>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">全部通关</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='wate_best',PLAY='wate_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* ================== GAME · 倒水大师 ================== */
+/*---- GEN-START ----*/
+/* 关卡生成:从"已解状态"出发随机倒合法步,倒推洗牌,天生保证有解 */
+var CAP=4;
+function irand(n){return Math.floor(Math.random()*n)}
+function topRun(t){if(!t.length)return 0;var c=t[t.length-1],k=0;for(var i=t.length-1;i>=0&&t[i]===c;i--)k++;return k}
+function uniform(t){if(!t.length)return true;for(var i=1;i<t.length;i++)if(t[i]!==t[0])return false;return true}
+function canPour(tubes,a,b){
+  if(a===b)return false;
+  var A=tubes[a],B=tubes[b];
+  if(!A.length||B.length>=CAP)return false;
+  if(!B.length)return true;
+  return B[B.length-1]===A[A.length-1];
+}
+function doPour(tubes,a,b){
+  var A=tubes[a],B=tubes[b],c=A[A.length-1];
+  var k=Math.min(topRun(A),CAP-B.length);
+  for(var i=0;i<k;i++){A.pop();B.push(c)}
+  return k;
+}
+function isSolved(tubes){
+  var seen={},i;
+  for(i=0;i<tubes.length;i++){
+    var t=tubes[i];if(!t.length)continue;
+    if(!uniform(t))return false;
+    if(seen[t[0]])return false;
+    seen[t[0]]=1;
+  }
+  return true;
+}
+/* 关卡生成:从"已解状态"出发反着走(逆倒水),天生保证有解
+   逆操作 A<-B:把 B 顶部 k 个同色液体搬到 A 顶部。
+   合法条件是「正向 A→B 恰好会倒出 k 个」:
+   topRun(A)=k+r、余量=CAP-len(B)+k,min 要等于 k,即 r==0 或 B 原本是满管 */
+function revMoves(tubes){
+  var out=[],a,b,k;
+  for(b=0;b<tubes.length;b++){
+    var B=tubes[b];if(!B.length)continue;
+    var c=B[B.length-1],run=topRun(B);
+    for(a=0;a<tubes.length;a++){
+      if(a===b)continue;
+      var A=tubes[a];
+      if(A.length>=CAP)continue;
+      var r=(A.length&&A[A.length-1]===c)?topRun(A):0;
+      if(!(r===0||B.length===CAP))continue;
+      var maxk=Math.min(run,CAP-A.length);
+      for(k=1;k<=maxk;k++)out.push([a,b,k]);
+    }
+  }
+  return out;
+}
+function colorsOf(n){return n<=3?3:n<=6?4:n<=9?5:n<=12?6:n<=15?7:8}
+function genLevel(n){
+  var C=colorsOf(n),E=2,tubes=[],i,j;
+  for(var tries=0;tries<30;tries++){
+    tubes=[];
+    for(i=0;i<C;i++){var t=[];for(j=0;j<CAP;j++)t.push(i);tubes.push(t)}
+    for(i=0;i<E;i++)tubes.push([]);
+    var la=-1,lb=-1,steps=28+C*10;
+    for(var s=0;s<steps;s++){
+      var all=revMoves(tubes),f=[],x;
+      for(x=0;x<all.length;x++){if(all[x][0]===lb&&all[x][1]===la)continue;f.push(all[x])}
+      if(!f.length)break;
+      var p=f[irand(f.length)];
+      for(var k=0;k<p[2];k++)tubes[p[0]].push(tubes[p[1]].pop());
+      la=p[0];lb=p[1];
+    }
+    for(i=tubes.length-1;i>0;i--){var q=irand(i+1),tmp=tubes[i];tubes[i]=tubes[q];tubes[q]=tmp}
+    if(!isSolved(tubes))return tubes;
+  }
+  return tubes;
+}
+/*---- GEN-END ----*/
+
+var PAL=['#ff5d73','#ffb03a','#ffe14d','#5ad88a','#3fc7ff','#5a7dff','#b06bff','#ff6fc0','#7fe0c8','#ff8a4a'];
+var MAXLV=20;
+var G={
+  state:'start',lvl:1,unlocked:1,
+  tubes:[],sel:-1,lift:[],hist:[],extra:2,moves:0,total:0,
+  pour:null,parts:[],done:[],winT:0,toast:'',toastT:0,
+  box:[],tw:0,th:0
+};
+var HITS=[];
+
+/* --- 布局:管子最多两行,按屏幕宽度自适应 --- */
+function layout(){
+  var n=G.tubes.length;if(!n)return;
+  var rows=n>5?2:1;
+  var first=rows===2?Math.ceil(n/2):n;
+  var second=n-first;
+  var top=Math.max(66,Math.round(VH*0.10));
+  var bot=VH-82;
+  var gapX=Math.max(5,Math.min(13,Math.round(VW*0.028)));
+  var tw=Math.min(64,Math.floor((VW-18-gapX*(first-1))/first));
+  tw=Math.max(26,tw);
+  var maxH=Math.floor((bot-top-18-(rows-1)*14)/rows);
+  var th=Math.min(Math.round(tw*2.85),maxH);
+  th=Math.max(78,th);
+  G.tw=tw;G.th=th;G.box=[];
+  var totalH=rows*th+(rows-1)*14;
+  var y0=top+Math.max(0,Math.floor((bot-top-totalH)/2));
+  var i,x;
+  for(i=0;i<first;i++){
+    var w1=first*tw+(first-1)*gapX,x1=Math.floor((VW-w1)/2);
+    G.box.push({x:x1+i*(tw+gapX),y:y0,w:tw,h:th});
+  }
+  if(rows===2)for(i=0;i<second;i++){
+    var w2=second*tw+(second-1)*gapX,x2=Math.floor((VW-w2)/2);
+    G.box.push({x:x2+i*(tw+gapX),y:y0+th+14,w:tw,h:th});
+  }
+}
+function layoutUI(){
+  HITS=[];
+  var bw=Math.floor((VW-40-16)/3),y=VH-66,h=46;
+  HITS.push({x:12,y:y,w:bw,h:h,act:'undo',k:'↩ 撤销'});
+  HITS.push({x:12+bw+8,y:y,w:bw,h:h,act:'reset',k:'⟲ 重开'});
+  HITS.push({x:12+(bw+8)*2,y:y,w:bw,h:h,act:'add',k:'➕ 加管'});
+}
+function onResize(){layoutUI();layout()}
+
+/* --- 关卡 --- */
+function loadLevel(n){
+  G.lvl=n;G.tubes=genLevel(n);G.sel=-1;G.hist=[];G.extra=2;G.moves=0;
+  G.pour=null;G.parts=[];G.winT=0;
+  G.lift=[];for(var i=0;i<G.tubes.length;i++)G.lift.push(0);
+  G.done=[];for(i=0;i<G.tubes.length;i++)G.done.push(false);
+  layout();
+  updHUD();
+}
+function updHUD(){
+  $('hlevel').textContent=G.lvl+'/'+MAXLV;
+  $('hmove').textContent=G.moves;
+  $('hextra').textContent=G.extra;
+}
+function snapshot(){
+  var t=[],i;
+  for(i=0;i<G.tubes.length;i++)t.push(G.tubes[i].slice());
+  return {t:t,extra:G.extra,moves:G.moves,done:G.done.slice()};
+}
+function restore(s){
+  G.tubes=s.t;G.extra=s.extra;G.moves=s.moves;G.done=s.done.slice();
+  G.lift=[];for(var i=0;i<G.tubes.length;i++)G.lift.push(0);
+  G.sel=-1;G.pour=null;layout();updHUD();
+}
+
+/* --- 倒水 --- */
+function tapTube(i){
+  if(G.state!=='play'||G.pour)return;
+  if(G.sel<0){
+    if(!G.tubes[i].length){toast('这管是空的');tone(200,.06,'square',.03);return}
+    G.sel=i;tone(680,.06,'triangle',.045,900);
+    return;
+  }
+  if(G.sel===i){G.sel=-1;tone(420,.05,'triangle',.035);return}
+  if(!canPour(G.tubes,G.sel,i)){
+    toast(!G.tubes[i].length?'点空管才能倒':'颜色不一样,倒不进去');
+    tone(190,.09,'square',.04,120);
+    if(G.tubes[i].length)G.sel=i;
+    return;
+  }
+  var amt=Math.min(topRun(G.tubes[G.sel]),CAP-G.tubes[i].length);
+  G.hist.push(snapshot());
+  G.pour={a:G.sel,b:i,amt:amt,col:G.tubes[G.sel][G.tubes[G.sel].length-1],t:0,dur:.14+amt*.07};
+  G.sel=-1;G.moves++;G.total++;updHUD();
+  tone(430,.09,'sine',.05,760);
+}
+function finishPour(){
+  var p=G.pour;G.pour=null;
+  doPour(G.tubes,p.a,p.b);
+  tone(760,.1,'sine',.05,1040);
+  checkDone();
+  if(isSolved(G.tubes)){
+    G.state='win';G.winT=0;
+    if(G.lvl+1>G.unlocked){G.unlocked=G.lvl+1;lsSet('wate_lvl',G.unlocked)}
+    for(var i=0;i<G.tubes.length;i++)if(G.tubes[i].length)burst(i,PAL[G.tubes[i][0]],10);
+    tone(523,.1,'sine',.06);setTimeout(function(){tone(659,.1,'sine',.06)},100);
+    setTimeout(function(){tone(880,.18,'sine',.06)},200);
+  }
+}
+function checkDone(){
+  for(var i=0;i<G.tubes.length;i++){
+    var full=G.tubes[i].length===CAP&&uniform(G.tubes[i]);
+    if(full&&!G.done[i]){G.done[i]=true;burst(i,PAL[G.tubes[i][0]],14);tone(980,.12,'sine',.05,1400)}
+    if(!full)G.done[i]=false;
+  }
+}
+function burst(i,col,n){
+  if(G.parts.length>150)return;
+  var b=G.box[i];if(!b)return;
+  for(var k=0;k<n;k++)G.parts.push({x:b.x+b.w/2,y:b.y+b.h*.5,
+    vx:(frnd()-.5)*300,vy:-frnd()*260-60,life:.6+frnd()*.5,col:col,s:2+frnd()*3});
+}
+function toast(t){G.toast=t;G.toastT=1.3}
+function undo(){
+  if(G.state!=='play'||G.pour)return;
+  if(!G.hist.length){toast('没有可撤销的步数');return}
+  restore(G.hist.pop());tone(280,.08,'triangle',.04,180);
+}
+function addTube(){
+  if(G.state!=='play')return;
+  if(G.extra<=0){toast('加管次数用完了');tone(200,.06,'square',.03);return}
+  G.hist.push(snapshot());
+  G.tubes.push([]);G.lift.push(0);G.done.push(false);G.extra--;
+  layout();updHUD();tone(620,.1,'triangle',.05,820);
+}
+function nextLevel(){
+  if(G.lvl>=MAXLV){allClear();return}
+  loadLevel(G.lvl+1);G.state='play';
+}
+function allClear(){
+  G.state='over';stop();
+  var isNew=KIT.setBest(MAXLV);
+  $('onewrec').style.display=isNew?'block':'none';
+  $('ostats').innerHTML=
+    '通关关卡 <b>'+MAXLV+'/'+MAXLV+'</b><br>'+
+    '本局倒水 <b>'+G.total+'</b> 次<br>'+
+    '已解锁 <b>第 '+Math.min(G.unlocked,MAXLV)+' 关</b><br>'+
+    '历史最高 <b>'+KIT.best()+'</b>';
+  $('mini2').innerHTML='已玩 <b>'+KIT.plays()+'</b> 局 · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥';
+  $('over').classList.remove('hide');
+  tone(440,.14,'sine',.06);setTimeout(function(){tone(350,.14,'sine',.06)},140);
+  setTimeout(function(){tone(262,.34,'sine',.06)},280);
+}
+
+/* --- 输入 --- */
+function hitTube(x,y){
+  for(var i=0;i<G.box.length;i++){
+    var b=G.box[i];
+    if(x>=b.x-6&&x<=b.x+b.w+6&&y>=b.y-14&&y<=b.y+b.h+10)return i;
+  }
+  return -1;
+}
+cv.addEventListener('pointerdown',function(e){
+  if(G.state!=='play')return;
+  var i;
+  for(i=0;i<HITS.length;i++){
+    var h=HITS[i];
+    if(e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h){
+      if(h.act==='undo')undo();else if(h.act==='reset'){loadLevel(G.lvl);G.state='play';tone(300,.08,'triangle',.04)}
+      else addTube();
+      return;
+    }
+  }
+  var t=hitTube(e.clientX,e.clientY);
+  if(t>=0)tapTube(t);
+},{passive:true});
+
+/* --- 更新 --- */
+function update(dt){
+  var i;
+  var k=Math.min(1,dt*16);
+  for(i=0;i<G.lift.length;i++){
+    var tg=(G.sel===i&&!G.pour)?-13:0;
+    G.lift[i]+=(tg-G.lift[i])*k;
+  }
+  if(G.pour){
+    G.pour.t+=dt;
+    if(G.pour.t>=G.pour.dur)finishPour();
+  }
+  if(G.state==='win'){
+    G.winT+=dt;
+    if(G.winT>1.15)nextLevel();
+  }
+  for(i=G.parts.length-1;i>=0;i--){
+    var p=G.parts[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=620*dt;
+    if(p.life<=0)G.parts.splice(i,1);
+  }
+  if(G.toastT>0)G.toastT-=dt;
+}
+
+/* --- 绘制 --- */
+function rrect(x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);
+  ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
+function segsOf(t){
+  var s=[],i=0;
+  while(i<t.length){var c=t[i],j=i;while(j<t.length&&t[j]===c)j++;s.push({c:c,h:j-i});i=j}
+  return s;
+}
+function drawTubeAt(x,y,w,h,segs,hl){
+  var r=w*0.42;
+  ctx.fillStyle='rgba(255,255,255,.055)';rrect(x,y,w,h,r);ctx.fill();
+  ctx.save();rrect(x+w*.09,y+w*.09,w-w*.18,h-w*.14,r);ctx.clip();
+  var by=y+h-w*.11,unit=(h-w*.2)/CAP,i;
+  var yy=by;
+  for(i=0;i<segs.length;i++){
+    var s=segs[i],hh=s.h*unit;yy-=hh;
+    ctx.fillStyle=PAL[s.c];
+    ctx.fillRect(x+w*.09,yy-.4,w-w*.18,hh+.8);
+    ctx.fillStyle='rgba(255,255,255,.14)';
+    ctx.fillRect(x+w*.09,yy-.4,w-w*.18,Math.min(3,hh*.3));
+  }
+  ctx.restore();
+  // 玻璃高光 + 边框
+  var g=ctx.createLinearGradient(x,0,x+w,0);
+  g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(.35,'rgba(255,255,255,.02)');
+  g.addColorStop(1,'rgba(255,255,255,.09)');
+  ctx.fillStyle=g;rrect(x,y,w,h,r);ctx.fill();
+  ctx.lineWidth=hl?2.6:1.6;
+  ctx.strokeStyle=hl?'#ffe14d':'rgba(190,235,255,.5)';
+  rrect(x,y,w,h,r);ctx.stroke();
+  ctx.fillStyle='rgba(190,235,255,.28)';
+  ctx.fillRect(x+w*.16,y+2,w*.2,h-4);
+}
+function draw(){
+  var lg=ctx.createLinearGradient(0,0,0,VH);
+  lg.addColorStop(0,'#1c3b58');lg.addColorStop(.55,'#12263a');lg.addColorStop(1,'#081420');
+  ctx.fillStyle=lg;ctx.fillRect(0,0,VW,VH);
+
+  // 试管
+  var i,p=G.pour,pa=-1,pb=-1,frac=0;
+  if(p){pa=p.a;pb=p.b;frac=clamp(p.t/p.dur,0,1)}
+  for(i=0;i<G.tubes.length&&i<G.box.length;i++){
+    var b=G.box[i],y=b.y+G.lift[i],segs=segsOf(G.tubes[i]);
+    if(i===pa){
+      var cut=p.amt,c=G.pour.col;
+      var base=G.tubes[i].slice(0,Math.max(0,G.tubes[i].length-cut));
+      segs=segsOf(base);
+      var left=cut*(1-frac);
+      if(left>0.02){
+        if(segs.length&&segs[segs.length-1].c===c)segs[segs.length-1].h+=left;
+        else segs.push({c:c,h:left});
+      }
+    }
+    if(i===pb){
+      var add=p.amt*frac;
+      if(add>0.02){
+        if(segs.length&&segs[segs.length-1].c===G.pour.col)segs[segs.length-1].h+=add;
+        else segs.push({c:G.pour.col,h:add});
+      }
+    }
+    drawTubeAt(b.x,y,b.w,b.h,segs,G.sel===i);
+  }
+
+  // 倒液水流
+  if(p){
+    var A=G.box[pa],B=G.box[pb];
+    if(A&&B){
+      var sx=A.x+A.w/2,sy=A.y+G.lift[pa]-2,dx=B.x+B.w/2,dy=B.y+G.lift[pb]-2;
+      ctx.strokeStyle=PAL[p.col];ctx.lineWidth=Math.max(3,G.tw*.13);ctx.lineCap='round';
+      ctx.globalAlpha=.9;
+      ctx.beginPath();ctx.moveTo(sx,sy);
+      ctx.quadraticCurveTo((sx+dx)/2,Math.min(sy,dy)+Math.abs(dx-sx)*.18+18,dx,dy+4);
+      ctx.stroke();ctx.globalAlpha=1;
+    }
+  }
+
+  // 粒子
+  for(i=0;i<G.parts.length;i++){
+    var q=G.parts[i];ctx.globalAlpha=clamp(q.life*1.8,0,1);
+    ctx.fillStyle=q.col;ctx.fillRect(q.x,q.y,q.s,q.s);
+  }
+  ctx.globalAlpha=1;
+
+  // 底栏按钮
+  for(i=0;i<HITS.length;i++){
+    var h=HITS[i];
+    var dis=(h.act==='add'&&G.extra<=0);
+    ctx.fillStyle=dis?'rgba(255,255,255,.05)':'rgba(255,255,255,.13)';
+    rrect(h.x,h.y,h.w,h.h,14);ctx.fill();
+    ctx.strokeStyle='rgba(160,220,255,.22)';ctx.lineWidth=1;
+    rrect(h.x,h.y,h.w,h.h,14);ctx.stroke();
+    ctx.fillStyle=dis?'rgba(255,255,255,.3)':'#dff1ff';
+    ctx.font='900 15px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(h.k,h.x+h.w/2,h.y+h.h/2+1);
+  }
+
+  if(G.toastT>0){
+    ctx.globalAlpha=clamp(G.toastT,0,1);
+    ctx.font='900 14px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#ffd45c';ctx.fillText(G.toast,VW/2,VH-88);
+    ctx.globalAlpha=1;
+  }
+}
+
+/* --- 启动 --- */
+function startGame(from){
+  G.unlocked=clamp(+lsGet('wate_lvl',1),1,MAXLV);
+  G.total=0;
+  loadLevel(from?1:clamp(G.unlocked,1,MAXLV));
+  G.state='play';
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  KIT.addPlay();KIT.streak();
+  run();
+}
+function upMini(){
+  G.unlocked=clamp(+lsGet('wate_lvl',1),1,MAXLV);
+  $('mini').innerHTML='已解锁 <b>第 '+G.unlocked+'/'+MAXLV+' 关</b> · 已玩 <b>'+KIT.plays()+'</b> 局'+
+    (KIT.streakNow()>1?' · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥':'');
+}
+$('startbtn').addEventListener('click',function(){startGame(0)});
+$('newbtn').addEventListener('click',function(){startGame(1)});
+$('againbtn').addEventListener('click',function(){startGame(0)});
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+$('sharebtn').addEventListener('click',function(){
+  share('我在「倒水大师」闯到第 '+Math.min(G.unlocked,MAXLV)+' 关,一共倒了 '+G.total+' 次水!来比比谁更会倒? https://yaoaibing.github.io/water/');
+});
+upMini();
+resize();
+onResize();
+loadLevel(clamp(+lsGet('wate_lvl',1),1,MAXLV));
+draw();
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='water'});
+  r.unshift({k:'water',n:'倒水大师',e:'🧪'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+}catch(e){}
+</script>
+
+</body>
+</html>

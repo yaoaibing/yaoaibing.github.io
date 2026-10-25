@@ -3,39 +3,75 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>童年游戏路口 · 游戏总入口</title>
-<meta name="description" content="童年游戏路口:免费在线小游戏总入口!FC游戏厅31合1(街机18款+益智13款)、守岁大作战、跳一跳、蛇蛇争霸、糖果消消乐、喵喵食堂、摸鱼乐园…手机即点即玩,含全游戏攻略!">
-<meta property="og:title" content="童年游戏路口 · 游戏总入口">
-<meta property="og:description" content="FC游戏厅31合1+多款独立游戏+全攻略,点开就玩,转发好友一起嗨!">
+<title>童年游戏路口 · 18款免费小游戏</title>
+<meta name="description" content="童年游戏路口:18款免费在线小游戏总入口!FC游戏厅31合1、星夜跑酷、弹球打砖块、雷霆战机、扫雷英雄、推箱子、五子棋人机、斗兽棋、倒水大师、捏泡泡纸、糖果消消乐、蛇蛇争霸、守岁大作战、跳一跳、喵喵食堂、摸鱼乐园…手机即点即玩,含全游戏攻略!">
+<meta property="og:title" content="童年游戏路口 · 18款免费小游戏">
+<meta property="og:description" content="18款经典小游戏一网打尽,点开就玩,不用下载!转发好友一起嗨!">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#181030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-  background:linear-gradient(180deg,#241548 0%,#181030 45%,#100a20 100%);color:#fff;min-height:100vh;padding-bottom:50px}
+  background:linear-gradient(180deg,#241548 0%,#181030 45%,#100a20 100%);color:#fff;min-height:100vh;padding-bottom:46px;
+  overscroll-behavior-y:none}
 .wrap{max-width:680px;margin:0 auto;padding:0 14px}
-header{text-align:center;padding:34px 14px 10px}
-.lan{font-size:22px;letter-spacing:12px;margin-bottom:10px}
+header{text-align:center;padding:32px 14px 8px}
+.lan{font-size:21px;letter-spacing:12px;margin-bottom:9px}
 h1{font-size:34px;letter-spacing:5px;font-weight:900;
   background:linear-gradient(92deg,#ffd45c,#ff7db8,#7db8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
 header p{font-size:13px;color:#b8a8d8;margin-top:8px;letter-spacing:2px}
-.guidebar{display:block;margin:18px auto 6px;max-width:480px;text-decoration:none;text-align:center;
+
+/* 攻略条 */
+.guidebar{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0;max-width:480px;text-decoration:none;
   background:linear-gradient(95deg,#ffd45c,#ff9d4a);color:#4a2808;font-weight:900;font-size:16px;letter-spacing:3px;
-  padding:14px;border-radius:999px;box-shadow:0 5px 0 #9a5a10,0 10px 26px rgba(255,180,60,.3)}
+  padding:13px;border-radius:999px;box-shadow:0 5px 0 #9a5a10,0 10px 26px rgba(255,180,60,.3)}
 .guidebar:active{transform:translateY(3px);box-shadow:0 2px 0 #9a5a10}
-h2{font-size:15px;color:#ffd45c;letter-spacing:3px;margin:26px 4px 12px;display:flex;align-items:center;gap:8px}
+
+/* 搜索 */
+.searchbox{position:relative;margin:16px 0 0}
+.searchbox input{width:100%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;
+  border-radius:14px;padding:11px 14px 11px 38px;font-size:14px;font-family:inherit;outline:none}
+.searchbox input::placeholder{color:rgba(255,255,255,.42)}
+.searchbox:before{content:'🔍';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.6}
+
+/* 分类 */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#d8ccee;
+  border-radius:999px;padding:7px 15px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tab.on{background:linear-gradient(95deg,#ffd45c,#ff9d4a);color:#4a2808;border-color:transparent;box-shadow:0 3px 12px rgba(255,170,60,.3)}
+
+/* 最近玩过 */
+h2{font-size:15px;color:#ffd45c;letter-spacing:3px;margin:24px 4px 12px;display:flex;align-items:center;gap:8px}
 h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,212,92,.4),transparent)}
+.recent{display:flex;gap:9px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+.recent::-webkit-scrollbar{display:none}
+.recent a{flex:none;display:flex;align-items:center;gap:7px;text-decoration:none;color:#fff;font-size:12.5px;font-weight:700;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:7px 14px 7px 9px}
+.recent a:active{transform:scale(.96)}
+.recent a i{font-style:normal;font-size:17px}
+
+/* 卡片 */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{display:block;text-decoration:none;color:#fff;border-radius:18px;padding:18px 14px 15px;position:relative;overflow:hidden;
-  border:1px solid rgba(255,255,255,.12);transition:transform .12s}
+.card{display:block;text-decoration:none;color:#fff;border-radius:18px;padding:16px 14px 14px;position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);transition:transform .12s;animation:pop .28s both}
+.card.hide{display:none}
 .card:active{transform:scale(.97)}
-.card .em{font-size:38px;line-height:1;display:block;margin-bottom:10px}
-.card b{font-size:16.5px;display:block;letter-spacing:1px}
-.card span{font-size:11px;opacity:.85;display:block;margin-top:5px;line-height:1.55}
-.card .tag{position:absolute;top:12px;right:12px;font-size:10px;font-weight:800;letter-spacing:1px;
-  background:rgba(0,0,0,.28);padding:3px 8px;border-radius:99px}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.card .em{font-size:36px;line-height:1;display:block;margin-bottom:9px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+.card b{font-size:16px;display:block;letter-spacing:1px}
+.card span.d{font-size:11px;opacity:.88;display:block;margin-top:5px;line-height:1.55}
+.card .tag{position:absolute;top:11px;right:11px;font-size:10px;font-weight:800;letter-spacing:1px;
+  background:rgba(0,0,0,.3);padding:3px 8px;border-radius:99px}
 .card .hot{background:#ff5a5a}
+.card .new{background:#22c55e}
+.big{grid-column:1/-1;display:flex;align-items:center;gap:15px}
+.big .em{font-size:50px;margin:0}
+.big span.d{font-size:12.5px}
 .g1{background:linear-gradient(150deg,#3a2a8e,#6a3adf)}
 .g2{background:linear-gradient(150deg,#8e2a4e,#df3a6a)}
 .g3{background:linear-gradient(150deg,#1d5c3a,#2aa868)}
@@ -47,57 +83,194 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .g9{background:linear-gradient(150deg,#8e6a1d,#c8a02a)}
 .g10{background:linear-gradient(150deg,#1d6e6a,#2ac8a8)}
 .g11{background:linear-gradient(150deg,#8e2a1d,#df5a3a)}
-.big{grid-column:1/-1;display:flex;align-items:center;gap:16px}
-.big .em{font-size:52px;margin:0}
-.big span{font-size:12.5px}
-#share{display:block;margin:30px auto 0;border:0;border-radius:999px;padding:13px 40px;font-size:15px;font-weight:800;letter-spacing:2px;
-  color:#eafff2;background:linear-gradient(95deg,#22c55e,#15803d);box-shadow:0 4px 0 #0d5c2c;cursor:pointer}
+.g12{background:linear-gradient(150deg,#123a5e,#1e7fc8)}
+.g13{background:linear-gradient(150deg,#3d2a12,#8a6a2a)}
+.g14{background:linear-gradient(150deg,#5e1230,#c81e6a)}
+.g15{background:linear-gradient(150deg,#12422e,#1e8a5e)}
+.g16{background:linear-gradient(150deg,#2a1242,#7a2ac8)}
+.empty{text-align:center;color:#8a7aa8;font-size:13px;padding:30px 0}
+
+/* 分享 */
+#share{display:block;margin:28px auto 0;border:0;border-radius:999px;padding:13px 38px;font-size:15px;font-weight:800;letter-spacing:2px;
+  color:#eafff2;background:linear-gradient(95deg,#22c55e,#15803d);box-shadow:0 4px 0 #0d5c2c;cursor:pointer;font-family:inherit}
 #share:active{transform:translateY(2px);box-shadow:0 2px 0 #0d5c2c}
-footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:26px;line-height:1.9;letter-spacing:1px}
-@media (max-width:400px){.grid{gap:10px}.card .em{font-size:32px}h1{font-size:29px}}
+footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-height:1.9;letter-spacing:1px}
+@media (max-width:400px){.grid{gap:10px}.card .em{font-size:30px}h1{font-size:28px}.card b{font-size:15px}}
 </style>
 </head>
 <body>
 <header class="wrap">
   <div class="lan">🏮 🏮 🏮</div>
-  <h1>童年游戏路口</h1>  <p>12 个站点 · 免费在线 · 手机即点即玩</p>
+  <h1>童年游戏路口</h1>
+  <p><b id="cnt">18</b> 款游戏 · 免费在线 · 手机即点即玩</p>
 </header>
+
 <div class="wrap">
   <a class="guidebar" href="./guide/">📖 全游戏攻略 · 一册在手高分我有</a>
 
-  <h2>🔥 新游热推</h2>
-  <div class="grid">
-    <a class="card g11" href="/run/"><span class="tag hot">NEW</span><span class="em">🏃</span><b>星夜跑酷</b><span>二段跳+滑铲,金币蓄能无敌冲刺,狐狸能跑多远?</span></a>
-    <a class="card g4" href="/balloon/"><span class="tag hot">NEW</span><span class="em">🎈</span><b>气球大作战</b><span>飞镖扎气球,连击×3,60秒爆分,黑炸弹别扎!</span></a>
-    <a class="card g3" href="/link/"><span class="tag hot">NEW</span><span class="em">🐱</span><b>宠物连连看</b><span>同宠连线转弯≤2次,倒计时全消,提示+洗牌</span></a>
-    <a class="card g9" href="/match/"><span class="em">🍬</span><b>糖果消消乐</b><span>三消连锁,四连炸弹五连彩虹,三星过关</span></a>
-    <a class="card g5" href="/snake/"><span class="em">🐍</span><b>蛇蛇争霸</b><span>吃光点变长,加速堵截,阴翻大蛇捡光蛋</span></a>
-    <a class="card g2" href="/shousui/"><span class="em">🧨</span><b>守岁大作战</b><span>年兽围城!走位+自动攻击,升级三选一</span></a>
-    <a class="card g6" href="/jump/"><span class="em">🐸</span><b>跳一跳·摘星</b><span>按住蓄力松手跳,踩正中心连击翻倍</span></a>
+  <div class="searchbox"><input id="q" type="search" placeholder="搜游戏:跑酷 / 扫雷 / 五子棋…" autocomplete="off"></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-cat="all" type="button">全部</button>
+    <button class="tab" data-cat="action" type="button">⚡ 街机动作</button>
+    <button class="tab" data-cat="puzzle" type="button">🧠 烧脑益智</button>
+    <button class="tab" data-cat="board" type="button">♟️ 对战棋牌</button>
+    <button class="tab" data-cat="casual" type="button">🫧 解压休闲</button>
   </div>
 
-  <h2>🕹️ 合集与休闲</h2>
-  <div class="grid">
-    <a class="card g1 big" href="/fc/"><span class="em">🕹️</span><div><b>FC游戏厅 · 31合1</b><span>大西瓜/俄罗斯方块/2048/数独/华容道/跑酷/切水果/坦克/连连看…街机益智全收录,📁分类筛选+🎲随机+⛶大屏</span></div></a>
-    <a class="card g10" href="/diner/"><span class="em">🐱</span><b>喵喵食堂</b><span>猫咪餐厅经营:接单烹饪上菜,升五星名店</span></a>
-    <a class="card g7" href="/moyu/"><span class="em">🐟</span><b>摸鱼乐园</b><span>今天吃什么/指尖烟花/人生进度条…7个解压玩具</span></a>
+  <div id="recwrap" style="display:none">
+    <h2>🎲 今日推荐</h2>
+    <div class="grid" id="rec"></div>
   </div>
+
+  <div id="recentwrap" style="display:none">
+    <h2>🕐 接着玩</h2>
+    <div class="recent" id="recent"></div>
+  </div>
+
+  <h2 id="listtitle">🎮 全部游戏</h2>
+  <div class="grid" id="list">
+
+    <a class="card g4" data-cat="action" data-key="brick" data-name="弹球打砖块" href="/brick/"><span class="tag new">NEW</span><span class="em">🏐</span><b>弹球打砖块</b><span class="d">拖动挡板接球,道具爆分,关卡无限</span></a>
+    <a class="card g12" data-cat="action" data-key="plane" data-name="雷霆战机" href="/plane/"><span class="tag new">NEW</span><span class="em">🚀</span><b>雷霆战机</b><span class="d">拖动躲弹幕,自动开火,Boss 车轮战</span></a>
+    <a class="card g13" data-cat="puzzle" data-key="mine" data-name="扫雷英雄" href="/mine/"><span class="tag new">NEW</span><span class="em">💣</span><b>扫雷英雄</b><span class="d">经典扫雷,长按插旗,首点必安全</span></a>
+    <a class="card g13" data-cat="puzzle" data-key="box" data-name="推箱子" href="/box/"><span class="tag new">NEW</span><span class="em">📦</span><b>仓库番·推箱子</b><span class="d">12 关经典,滑动或点方向键,可撤销</span></a>
+    <a class="card g15" data-cat="board" data-key="gomoku" data-name="五子棋" href="/gomoku/"><span class="tag new">NEW</span><span class="em">⚫</span><b>五子棋 · 人机</b><span class="d">三档 AI,悔棋认输,连五高亮</span></a>
+    <a class="card g15" data-cat="board" data-key="jungle" data-name="斗兽棋" href="/jungle/"><span class="tag new">NEW</span><span class="em">🦁</span><b>斗兽棋</b><span class="d">鼠吃象·狮虎跳河·陷阱兽穴,全规则</span></a>
+    <a class="card g14" data-cat="casual" data-key="water" data-name="倒水大师" href="/water/"><span class="tag new">NEW</span><span class="em">🧪</span><b>倒水大师</b><span class="d">同色倒一瓶,20 关烧脑排序,必可解</span></a>
+    <a class="card g14" data-cat="casual" data-key="bubble" data-name="捏泡泡纸" href="/bubble/"><span class="tag new">NEW</span><span class="em">🫧</span><b>捏泡泡纸</b><span class="d">无限捏爆,啵啵音效,解压神器</span></a>
+
+    <a class="card g11" data-cat="action" data-key="run" data-name="星夜跑酷" href="/run/"><span class="em">🏃</span><b>星夜跑酷</b><span class="d">二段跳+滑铲,金币蓄能无敌冲刺</span></a>
+    <a class="card g4" data-cat="action" data-key="balloon" data-name="气球大作战" href="/balloon/"><span class="em">🎈</span><b>气球大作战</b><span class="d">飞镖扎气球,连击×3,60秒爆分</span></a>
+    <a class="card g2" data-cat="action" data-key="shousui" data-name="守岁大作战" href="/shousui/"><span class="em">🧨</span><b>守岁大作战</b><span class="d">年兽围城!走位+自动攻击,升级三选一</span></a>
+    <a class="card g6" data-cat="action" data-key="jump" data-name="跳一跳" href="/jump/"><span class="em">🐸</span><b>跳一跳·摘星</b><span class="d">按住蓄力松手跳,踩正中心连击翻倍</span></a>
+
+    <a class="card g9" data-cat="puzzle" data-key="match" data-name="糖果消消乐" href="/match/"><span class="em">🍬</span><b>糖果消消乐</b><span class="d">三消连锁,四连炸弹五连彩虹,三星过关</span></a>
+    <a class="card g5" data-cat="puzzle" data-key="snake" data-name="蛇蛇争霸" href="/snake/"><span class="em">🐍</span><b>蛇蛇争霸</b><span class="d">吃光点变长,加速堵截,阴翻大蛇</span></a>
+    <a class="card g3" data-cat="puzzle" data-key="link" data-name="宠物连连看" href="/link/"><span class="em">🐱</span><b>宠物连连看</b><span class="d">同宠连线转弯≤2次,提示+洗牌</span></a>
+    <a class="card g1 big" data-cat="puzzle" data-key="fc" data-name="FC游戏厅" href="/fc/"><span class="em">🕹️</span><div><b>FC游戏厅 · 31合1</b><span class="d">大西瓜/俄罗斯方块/2048/数独/华容道/切水果/坦克/连连看…街机益智全收录,📁分类筛选+🎲随机+⛶大屏</span></div></a>
+
+    <a class="card g10" data-cat="casual" data-key="diner" data-name="喵喵食堂" href="/diner/"><span class="em">🍜</span><b>喵喵食堂</b><span class="d">猫咪餐厅经营:接单烹饪上菜,升五星名店</span></a>
+    <a class="card g7" data-cat="casual" data-key="moyu" data-name="摸鱼乐园" href="/moyu/"><span class="em">🐟</span><b>摸鱼乐园</b><span class="d">今天吃什么/指尖烟花/人生进度条…7个解压玩具</span></a>
+  </div>
+
+  <div class="empty" id="empty" style="display:none">没找到,换个词试试～</div>
 
   <button id="share" type="button">📤 复制链接 · 发给微信好友</button>
   <footer>全部游戏免费畅玩 · 无需安装 · 最高分本地保存<br>© 2026 童年游戏路口</footer>
 </div>
+
 <script>
-document.getElementById('share').addEventListener('click',function(){
+(function(){
+'use strict';
+function $(id){return document.getElementById(id)}
+var cards=[].slice.call(document.querySelectorAll('#list .card'));
+
+/* 数量统计 */
+$('cnt').textContent=cards.length;
+
+/* 分类 + 搜索 过滤 */
+var cat='all',kw='';
+function apply(){
+  var hit=0;
+  cards.forEach(function(c){
+    var okCat=(cat==='all'||c.getAttribute('data-cat')===cat);
+    var txt=(c.getAttribute('data-name')||'')+c.textContent;
+    var okKw=!kw||txt.toLowerCase().indexOf(kw)>=0;
+    var show=okCat&&okKw;
+    c.classList.toggle('hide',!show);
+    if(show)hit++;
+  });
+  $('empty').style.display=hit?'none':'block';
+  $('listtitle').textContent=cat==='all'?'🎮 全部游戏':
+    {action:'⚡ 街机动作',puzzle:'🧠 烧脑益智',board:'♟️ 对战棋牌',casual:'🫧 解压休闲'}[cat];
+}
+document.getElementById('tabs').addEventListener('click',function(e){
+  var b=e.target.closest('.tab');if(!b)return;
+  [].slice.call(this.children).forEach(function(x){x.classList.toggle('on',x===b)});
+  cat=b.getAttribute('data-cat');apply();
+});
+var tmr=0;
+$('q').addEventListener('input',function(){
+  var v=this.value.trim().toLowerCase();
+  clearTimeout(tmr);tmr=setTimeout(function(){kw=v;apply()},90);
+});
+
+/* 最近玩过:本地记录点击(跨子域无法共享存档,故在大厅侧记录入口) */
+var RKEY='hub_recent';
+function getRecent(){
+  // 统一域名后,游戏自己会写 __recent(真实玩过);本地预览时退回点击记录
+  var a=[];
+  try{a=JSON.parse(localStorage.getItem('__recent')||'[]')}catch(e){a=[]}
+  if(!a.length)try{a=JSON.parse(localStorage.getItem(RKEY)||'[]')}catch(e){a=[]}
+  return a.filter(function(x){return x&&x.k});
+}
+function pushRecent(k,name,em){
+  var r=getRecent().filter(function(x){return x.k!==k});
+  r.unshift({k:k,n:name,e:em});
+  if(r.length>6)r.length=6;
+  try{localStorage.setItem(RKEY,JSON.stringify(r))}catch(e){}
+  renderRecent();
+}
+function urlOf(k){
+  for(var i=0;i<cards.length;i++)if(cards[i].getAttribute('data-key')===k)return cards[i].getAttribute('href');
+  return './';
+}
+function renderRecent(){
+  var r=getRecent();
+  if(!r.length){$('recentwrap').style.display='none';return}
+  $('recentwrap').style.display='block';
+  $('recent').innerHTML=r.map(function(x){
+    return '<a href="'+urlOf(x.k)+'"><i>'+x.e+'</i>'+x.n+'</a>';
+  }).join('');
+}
+
+/* 今日推荐:按日期取当天固定的 3 款 */
+function renderRec(){
+  var pool=cards.filter(function(c){return !c.classList.contains('big')});
+  if(pool.length<3)return;
+  var d=new Date(),seed=d.getFullYear()*372+d.getMonth()*31+d.getDate();
+  var idx=[],i=0;
+  while(idx.length<3&&i<200){
+    seed=(seed*1103515245+12345)&0x7fffffff;
+    var k=seed%pool.length;
+    if(idx.indexOf(k)<0)idx.push(k);
+    i++;
+  }
+  $('rec').innerHTML=idx.map(function(k){
+    var c=pool[k];
+    var cl=c.cloneNode(true);
+    cl.style.animation='none';
+    return cl.outerHTML;
+  }).join('');
+  $('recwrap').style.display='block';
+}
+
+/* 点击任意游戏卡片 → 记录 + 埋点视觉反馈 */
+document.addEventListener('click',function(e){
+  var c=e.target.closest('.card');if(!c)return;
+  var k=c.getAttribute('data-key');if(!k)return;
+  var em=c.querySelector('.em');
+  pushRecent(k,c.getAttribute('data-name')||'',em?em.textContent:'🎮');
+});
+
+/* 分享 */
+$('share').addEventListener('click',function(){
   var isWX=/micromessenger/i.test(navigator.userAgent);
   var url=location.href.split('#')[0];
-  var txt='童年游戏路口:FC游戏厅31合1+独立游戏+全攻略,点开就玩! '+url;
+  var txt='童年游戏路口:'+cards.length+'款小游戏免费玩(FC31合1/跑酷/打砖块/扫雷/五子棋/斗兽棋/倒水/捏泡泡…),点开就玩! '+url;
   if(isWX){alert('点右上角「···」→ 发送给朋友,即可分享游戏路口');return}
   function done(ok){alert(ok?'链接已复制,去微信粘贴给好友吧!':'复制失败,请手动复制地址栏链接')}
-  try{navigator.clipboard.writeText(txt).then(function(){done(true)},function(){fb()})}catch(e){fb()}
   function fb(){try{
     var ta=document.createElement('textarea');ta.value=txt;
     ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
-    var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}});
+    var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+});
+
+renderRecent();
+renderRec();
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>捏泡泡纸 · 解压神器</title>
+<meta name="description" content="捏泡泡纸:一秒上头的解压神器!点一下「啵」一个,支持疯狂连点,60秒挑战比手速,还有金色泡泡彩蛋,累计捏破数跨局保存!">
+<meta property="og:title" content="捏泡泡纸 · 解压神器">
+<meta property="og:description" content="点一下啵一个,疯狂连点超解压,60秒挑战比手速!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#2a1524">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%AB%A7%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#2a1524;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:#ffd45c;margin-left:4px}
+#mutebtn,#homebtn,#endbtn{position:fixed;z-index:8;border:0;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px;width:36px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px;width:36px}
+#endbtn{bottom:calc(14px + env(safe-area-inset-bottom,0px));right:10px;padding:0 14px;font-size:13px;display:none}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(34,14,28,.88);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:#ff9ec8;text-shadow:0 3px 0 #7a2b50,0 8px 26px rgba(255,120,180,.35);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:#ffd45c;margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#ffdcec;background:rgba(255,255,255,.06);border:1px solid rgba(255,150,200,.25);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:#ffd45c}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;color:#3d0f28;cursor:pointer;
+  background:linear-gradient(180deg,#ffc0dd,#ff7fb4);box-shadow:0 5px 0 #96305e,0 10px 30px rgba(255,127,180,.35)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #96305e}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:#ffd45c}
+#ostats{font-size:15px;line-height:2.1;color:#ffdcec;background:rgba(255,255,255,.06);border:1px solid rgba(255,150,200,.25);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:#ffd45c;font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud">
+  <span class="chip" id="c1">个<b>0</b></span>
+  <span class="chip" id="c2">连击<b>0</b></span>
+  <span class="chip" id="c3">张<b>1</b></span>
+</div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+<button id="endbtn" type="button">✋ 收工</button>
+
+<div id="start" class="screen">
+  <div class="title">捏泡泡纸<small>· 一 秒 解 压 ·</small></div>
+  <div class="howto">
+    👆 <b>点一下</b>捏破一个泡泡,"啵"的一声超解压<br>
+    🔥 按住<b>手指划过去</b>可以一路连捏,疯狂连点不掉帧<br>
+    ⚡ 连续快捏攒<b>连击</b>,连击越高每个泡泡加分越多<br>
+    🌟 偶尔会出现<b>金色泡泡</b>:+50 分还放小礼花<br>
+    📄 一张捏完自动<b>换新纸</b>,自由模式随时可以收工<br>
+    ⏱ <b>60 秒挑战</b>:限时内比谁捏得多
+  </div>
+  <div class="row">
+    <button class="bigbtn" id="freebtn" type="button">🫧 自由模式</button>
+    <button class="bigbtn ghost" id="chbtn" type="button">⏱ 60 秒挑战</button>
+  </div>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title" id="ovtitle">时间到</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='bubb_best',PLAY='bubb_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* ================== GAME · 捏泡泡纸 ================== */
+var G={
+  state:'start',mode:0,          // 0 自由 / 1 挑战
+  bubbles:[],spr:null,sprG:null,r:20,
+  count:0,combo:0,maxCombo:0,comboT:0,score:0,
+  sheets:1,time:60,elapsed:0,total:0,
+  parts:[],floats:[],flip:1,clearT:0,saveT:0,lastSnd:0,lastVib:0
+};
+var PC=['#ffd45c','#ff8fc0','#8fe3ff','#a8ff9e','#c79bff','#ffb26b'];
+
+/* --- 泡泡贴图:预渲染成离屏 canvas,连点也不掉帧 --- */
+function makeSpr(gold){
+  var r=G.r,d=Math.ceil(2*r*1.16),s=document.createElement('canvas');
+  s.width=Math.ceil(d*DPR);s.height=Math.ceil(d*DPR);
+  var c=s.getContext('2d');
+  c.setTransform(DPR,0,0,DPR,0,0);
+  var cx=d/2,cy=d/2;
+  // 底部阴影
+  c.fillStyle='rgba(0,0,0,.28)';
+  c.beginPath();c.ellipse(cx,cy+r*.14,r*.94,r*.9,0,0,6.2832);c.fill();
+  // 泡泡本体
+  var g=c.createRadialGradient(cx-r*.32,cy-r*.36,r*.08,cx,cy,r);
+  if(gold){
+    g.addColorStop(0,'#fffbe6');g.addColorStop(.28,'#ffe27a');
+    g.addColorStop(.72,'#f5b731');g.addColorStop(1,'#a86f10');
+  }else{
+    g.addColorStop(0,'rgba(255,255,255,.96)');g.addColorStop(.26,'#ffc3df');
+    g.addColorStop(.74,'#f283b4');g.addColorStop(1,'#b23f74');
+  }
+  c.fillStyle=g;c.beginPath();c.arc(cx,cy,r,0,6.2832);c.fill();
+  // 边缘反光
+  c.strokeStyle=gold?'rgba(255,240,170,.85)':'rgba(255,255,255,.55)';
+  c.lineWidth=Math.max(1,r*.09);
+  c.beginPath();c.arc(cx,cy,r*.94,0,6.2832);c.stroke();
+  // 高光
+  c.fillStyle='rgba(255,255,255,.9)';
+  c.beginPath();c.ellipse(cx-r*.32,cy-r*.36,r*.24,r*.16,-0.6,0,6.2832);c.fill();
+  c.fillStyle='rgba(255,255,255,.45)';
+  c.beginPath();c.ellipse(cx+r*.3,cy+r*.33,r*.14,r*.09,0.5,0,6.2832);c.fill();
+  return {cv:s,d:d};
+}
+
+/* --- 生成一张新泡泡纸:气泡数控制在 60~120 --- */
+function buildSheet(){
+  var top=Math.max(66,Math.round(VH*0.095));
+  var bot=VH-Math.max(20,Math.round(VH*0.035));
+  var aw=VW-14,ah=Math.max(180,bot-top);
+  var cols=clamp(Math.round(Math.sqrt(92*aw/ah)),5,11);
+  var rows=clamp(Math.round(92/cols),5,20);
+  while(cols*rows>120&&rows>5)rows--;
+  while(cols*rows<60&&rows<22)rows++;
+  var cell=Math.min(aw/cols,ah/rows);
+  G.r=Math.max(11,cell*0.40);
+  var gw=cols*cell,gh=rows*cell;
+  var ox=(VW-gw)/2+cell/2,oy=top+(ah-gh)/2+cell/2;
+  G.bubbles=[];
+  for(var y=0;y<rows;y++)for(var x=0;x<cols;x++){
+    G.bubbles.push({x:ox+x*cell,y:oy+y*cell,st:0,pop:0,gold:false,ph:frnd()*6.28});
+  }
+  // 金色彩蛋:1~2 个
+  var ng=frnd()<.72?1:(frnd()<.5?2:0);
+  for(var k=0;k<ng;k++)G.bubbles[rnd(G.bubbles.length)].gold=true;
+  G.clearT=0;
+  G.spr=makeSpr(false);G.sprG=makeSpr(true);
+}
+
+/* --- 捏破 --- */
+function pop(b){
+  if(b.st!==0)return false;
+  b.st=1;b.pop=1;
+  G.count++;G.combo++;G.comboT=1.1;
+  if(G.combo>G.maxCombo)G.maxCombo=G.combo;
+  G.total++;
+  if(b.gold){
+    G.score+=50;
+    confetti(b.x,b.y);
+    G.floats.push({x:b.x,y:b.y,t:'+50',c:'#ffd45c',life:1});
+    tone(880,.08,'triangle',.06);setTimeout(function(){tone(1320,.1,'sine',.05)},55);
+    setTimeout(function(){tone(1760,.12,'sine',.05)},115);
+  }else{
+    G.score+=1+Math.min(9,Math.floor((G.combo-1)/5));
+    var p=Math.min(4,G.parts.length>120?1:3);
+    for(var i=0;i<p;i++)G.parts.push({x:b.x,y:b.y,vx:(frnd()-.5)*180,vy:-frnd()*160-30,
+      life:.3+frnd()*.25,col:'#ffd7ea',s:1.5+frnd()*2});
+    sfxPop();
+  }
+  return true;
+}
+function sfxPop(){
+  var now=Date.now();
+  if(now-G.lastSnd<26)return;
+  G.lastSnd=now;
+  tone(430+frnd()*170,.05,'sine',.05,900+frnd()*320);
+  if(now-G.lastVib>45){G.lastVib=now;try{if(navigator.vibrate)navigator.vibrate(9)}catch(e){}}
+}
+function confetti(x,y){
+  if(G.parts.length>150)return;
+  for(var i=0;i<28;i++)G.parts.push({x:x,y:y,vx:(frnd()-.5)*420,vy:-frnd()*330-70,
+    life:.65+frnd()*.55,col:pick(PC),s:2+frnd()*3.4});
+}
+
+/* --- 换纸 --- */
+function allPopped(){
+  for(var i=0;i<G.bubbles.length;i++)if(G.bubbles[i].st!==2)return false;
+  return true;
+}
+function newSheet(){
+  G.sheets++;G.flip=0;
+  buildSheet();
+  noise(.09,.035);tone(300,.1,'triangle',.04,520);
+}
+
+/* --- 输入:点击判定宽松,按住可一路划着捏 --- */
+var down=false;
+function tryPopAt(x,y){
+  var r=G.r*1.25,best=null,bd=1e9,i;
+  for(i=0;i<G.bubbles.length;i++){
+    var b=G.bubbles[i];if(b.st!==0)continue;
+    var dx=b.x-x,dy=b.y-y,d=dx*dx+dy*dy;
+    if(d<=r*r&&d<bd){bd=d;best=b}
+  }
+  if(best)pop(best);
+}
+cv.addEventListener('pointerdown',function(e){
+  if(G.state!=='play')return;
+  down=true;tryPopAt(e.clientX,e.clientY);
+},{passive:true});
+cv.addEventListener('pointermove',function(e){
+  if(!down||G.state!=='play')return;
+  tryPopAt(e.clientX,e.clientY);
+},{passive:true});
+window.addEventListener('pointerup',function(){down=false},{passive:true});
+window.addEventListener('pointercancel',function(){down=false},{passive:true});
+
+/* --- 开局 / 结算 --- */
+function startGame(mode){
+  G.mode=mode;
+  G.count=0;G.combo=0;G.maxCombo=0;G.comboT=0;G.score=0;
+  G.sheets=1;G.time=60;G.elapsed=0;G.parts=[];G.floats=[];G.flip=0;
+  G.total=+lsGet('bubb_total',0);
+  buildSheet();
+  G.state='play';
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  $('endbtn').style.display=mode?'none':'block';
+  KIT.addPlay();KIT.streak();
+  updHUD();
+  run();
+}
+function finish(){
+  if(G.state!=='play')return;
+  G.state='over';stop();down=false;
+  lsSet('bubb_total',G.total);
+  $('endbtn').style.display='none';
+  var isNew=G.mode?KIT.setBest(G.score):false;
+  $('onewrec').style.display=isNew?'block':'none';
+  $('ovtitle').textContent=G.mode?'时间到':'收工啦';
+  $('ostats').innerHTML=
+    '捏破泡泡 <b>'+G.count+'</b><br>'+
+    (G.mode?('得分 <b>'+G.score+'</b><br>'):('用时 <b>'+Math.round(G.elapsed)+' 秒</b><br>'))+
+    '最高连击 <b>x'+Math.max(1,G.maxCombo)+'</b><br>'+
+    '捏完纸张 <b>'+G.sheets+' 张</b><br>'+
+    '累计捏破 <b>'+G.total+' 个</b>';
+  $('mini2').innerHTML=(G.mode?('历史最高 <b>'+KIT.best()+'</b> 分 · '):'')+
+    '已玩 <b>'+KIT.plays()+'</b> 局 · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥';
+  $('over').classList.remove('hide');
+  tone(523,.12,'sine',.06);setTimeout(function(){tone(392,.12,'sine',.06)},120);
+  setTimeout(function(){tone(330,.3,'sine',.06)},250);
+}
+function updHUD(){
+  if(G.mode){
+    $('c1').innerHTML='分<b>'+G.score+'</b>';
+    $('c2').innerHTML='连击<b>x'+G.combo+'</b>';
+    $('c3').innerHTML='秒<b>'+Math.max(0,Math.ceil(G.time))+'</b>';
+  }else{
+    $('c1').innerHTML='个<b>'+G.count+'</b>';
+    $('c2').innerHTML='连击<b>x'+G.combo+'</b>';
+    $('c3').innerHTML='张<b>'+G.sheets+'</b>';
+  }
+}
+
+/* --- 更新 --- */
+function update(dt){
+  var i;
+  if(G.state!=='play')return;
+  G.elapsed+=dt;
+  if(G.mode){
+    G.time-=dt;
+    if(G.time<=0){G.time=0;updHUD();finish();return}
+  }
+  if(G.comboT>0){G.comboT-=dt;if(G.comboT<=0)G.combo=0}
+  if(G.flip<1)G.flip=Math.min(1,G.flip+dt*3.2);
+  for(i=0;i<G.bubbles.length;i++){
+    var b=G.bubbles[i];
+    if(b.st===1){b.pop-=dt*6.5;if(b.pop<=0){b.pop=0;b.st=2}}
+  }
+  for(i=G.parts.length-1;i>=0;i--){
+    var p=G.parts[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=760*dt;
+    if(p.life<=0)G.parts.splice(i,1);
+  }
+  for(i=G.floats.length-1;i>=0;i--){
+    var f=G.floats[i];f.life-=dt;f.y-=42*dt;
+    if(f.life<=0)G.floats.splice(i,1);
+  }
+  G.saveT+=dt;
+  if(G.saveT>3){G.saveT=0;lsSet('bubb_total',G.total)}
+  if(allPopped()){
+    G.clearT+=dt;
+    if(G.clearT>.34)newSheet();
+  }
+  updHUD();
+}
+
+/* --- 绘制 --- */
+function draw(){
+  var i;
+  var lg=ctx.createLinearGradient(0,0,0,VH);
+  lg.addColorStop(0,'#3a1d31');lg.addColorStop(.55,'#2a1524');lg.addColorStop(1,'#150a12');
+  ctx.fillStyle=lg;ctx.fillRect(0,0,VW,VH);
+
+  ctx.save();
+  if(G.flip<1){ctx.globalAlpha=G.flip;ctx.translate(0,(1-G.flip)*-46)}
+
+  // 纸张底纹
+  ctx.fillStyle='rgba(255,255,255,.028)';
+  ctx.fillRect(6,Math.max(60,VH*0.095),VW-12,VH-Math.max(60,VH*0.095)-Math.max(20,VH*0.035));
+
+  var spr=G.spr,sprG=G.sprG,r=G.r;
+  for(i=0;i<G.bubbles.length;i++){
+    var b=G.bubbles[i];
+    if(b.st===2){
+      // 捏破后留下的凹痕
+      ctx.fillStyle='rgba(0,0,0,.34)';
+      ctx.beginPath();ctx.arc(b.x,b.y,r*.9,0,6.2832);ctx.fill();
+      ctx.strokeStyle='rgba(255,180,215,.22)';ctx.lineWidth=Math.max(1,r*.1);
+      ctx.beginPath();ctx.arc(b.x,b.y,r*.88,0,6.2832);ctx.stroke();
+      ctx.fillStyle='rgba(0,0,0,.22)';
+      ctx.beginPath();ctx.arc(b.x,b.y,r*.62,0,6.2832);ctx.fill();
+    }else if(b.st===1){
+      // 收缩动画
+      var s=Math.max(0,b.pop),s2=s*(1.18-s*.18);
+      var sp=b.gold?sprG:spr,dd=sp.d*s2;
+      ctx.globalAlpha=G.flip*Math.min(1,s*1.6);
+      ctx.drawImage(sp.cv,b.x-dd/2,b.y-dd/2,dd,dd);
+      ctx.globalAlpha=G.flip;
+    }else{
+      var sp2=b.gold?sprG:spr;
+      ctx.drawImage(sp2.cv,b.x-sp2.d/2,b.y-sp2.d/2,sp2.d,sp2.d);
+    }
+  }
+  ctx.restore();
+
+  // 粒子
+  for(i=0;i<G.parts.length;i++){
+    var p=G.parts[i];
+    ctx.globalAlpha=clamp(p.life*1.9,0,1);
+    ctx.fillStyle=p.col;ctx.fillRect(p.x,p.y,p.s,p.s);
+  }
+  ctx.globalAlpha=1;
+
+  // 飘字
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(i=0;i<G.floats.length;i++){
+    var f=G.floats[i];
+    ctx.globalAlpha=clamp(f.life,0,1);
+    ctx.font='900 20px system-ui';ctx.fillStyle=f.c;
+    ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=4;
+    ctx.strokeText(f.t,f.x,f.y);ctx.fillText(f.t,f.x,f.y);
+  }
+  ctx.globalAlpha=1;
+
+  // 挑战模式倒计时警示
+  if(G.mode&&G.state==='play'&&G.time<=10){
+    ctx.globalAlpha=.35+Math.abs(Math.sin(G.elapsed*6))*.45;
+    ctx.font='900 '+Math.round(Math.min(90,VW*0.24))+'px system-ui';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#ff6a8a';
+    ctx.fillText(Math.ceil(G.time),VW/2,VH/2);
+    ctx.globalAlpha=1;
+  }
+}
+
+/* --- 启动 --- */
+function onResize(){if(G.bubbles.length)buildSheet()}
+$('freebtn').addEventListener('click',function(){startGame(0)});
+$('chbtn').addEventListener('click',function(){startGame(1)});
+$('againbtn').addEventListener('click',function(){startGame(G.mode)});
+$('endbtn').addEventListener('click',finish);
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+$('sharebtn').addEventListener('click',function(){
+  share(G.mode
+    ? ('我在「捏泡泡纸」60 秒捏破 '+G.count+' 个泡泡,得分 '+G.score+'!手速来战? https://yaoaibing.github.io/bubble/')
+    : ('我在「捏泡泡纸」捏破了 '+G.count+' 个泡泡,最高连击 x'+Math.max(1,G.maxCombo)+',超解压! https://yaoaibing.github.io/bubble/'));
+});
+$('mini').innerHTML='累计已捏破 <b>'+(+lsGet('bubb_total',0))+'</b> 个泡泡 · 挑战最高 <b>'+KIT.best()+'</b> 分';
+resize();
+buildSheet();
+updHUD();
+draw();
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='bubble'});
+  r.unshift({k:'bubble',n:'捏泡泡纸',e:'🫧'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+}catch(e){}
+</script>
+
+</body>
+</html>
