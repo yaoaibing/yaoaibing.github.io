@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>我的战绩 · 童年游戏路口</title>
-<meta name="description" content="我的游戏战绩:26款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
+<meta name="description" content="我的游戏战绩:34款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
 <meta property="og:title" content="我的战绩 · 童年游戏路口">
-<meta property="og:description" content="26款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
+<meta property="og:description" content="34款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#181030">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -127,8 +127,11 @@ function $(id){return document.getElementById(id)}
 function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
 function jp(k,d){try{return JSON.parse(lg(k,JSON.stringify(d)))||d}catch(e){return d}}
 
-/* 26 款游戏清单(与大厅卡片一致) */
+/* 34 款游戏清单(与大厅卡片一致) */
 var GAMES=[
+  ['bomb','炸弹人','💣','action'],['billiards','台球','🎱','action'],['darts','飞镖','🎯','action'],
+  ['flow','连线不交叉','🚇','puzzle'],['euler','一笔画','🎨','puzzle'],['mind','密码破译','🔐','puzzle'],
+  ['piano','钢琴块','🎹','action'],['solitaire','纸牌接龙','🃏','board'],
   ['knife','飞刀挑战','🗡️','action'],['tower','塔防保卫战','🏰','action'],['stairs','是男人就下一百层','🪜','action'],
   ['fifteen','数字华容道','🧩','puzzle'],['nono','数织','🔢','puzzle'],['mahjong','麻将消消乐','🀄','casual'],
   ['connect','四子棋','🔴','board'],['hexa','六边形消除','🧱','casual'],
@@ -137,7 +140,7 @@ var GAMES=[
   ['water','倒水大师','🧪','casual'],['bubble','捏泡泡纸','🫧','casual'],
   ['run','星夜跑酷','🏃','action'],['balloon','气球大作战','🎈','action'],['shousui','守岁大作战','🧨','action'],
   ['jump','跳一跳','🐸','action'],['match','糖果消消乐','🍬','puzzle'],['snake','蛇蛇争霸','🐍','puzzle'],
-  ['link','宠物连连看','🐱','puzzle'],['fc','FC游戏厅31合1','🕹️','puzzle'],
+  ['link','宠物连连看','🐱','puzzle'],['fc','FC游戏厅33合1','🕹️','puzzle'],
   ['diner','喵喵食堂','🍜','casual'],['moyu','摸鱼乐园','🐟','casual']
 ];
 var TOTAL=GAMES.length;
@@ -210,8 +213,8 @@ var maxBest=0;
 Object.keys(best).forEach(function(k){var v=+best[k]||0;if(v>maxBest)maxBest=v});
 var ACHS=[
   {e:'🎮',n:'初次上路',d:'玩过 1 款游戏',ok:playedCount>=1},
-  {e:'🗺️',n:'半程旅人',d:'玩过 13 款游戏',ok:playedCount>=13},
-  {e:'👑',n:'全能王',d:'26 款全部玩过',ok:playedCount>=TOTAL},
+  {e:'🗺️',n:'半程旅人',d:'玩过 17 款游戏',ok:playedCount>=17},
+  {e:'👑',n:'全能王',d:'全部 '+TOTAL+' 款都玩过',ok:playedCount>=TOTAL},
   {e:'🔥',n:'火苗三天',d:'连续打卡 3 天',ok:streak>=3},
   {e:'🏅',n:'一周不断',d:'连续打卡 7 天',ok:streak>=7},
   {e:'💯',n:'小有所成',d:'任意一款破 100 分',ok:maxBest>=100},
@@ -233,7 +236,7 @@ $('share').addEventListener('click',function(){
   var top3=rows.filter(function(r){return r.sc>0}).slice(0,3)
     .map(function(r){return r.e+r.n+' '+r.sc}).join(' / ');
   var txt='我在「童年游戏路口」玩了 '+plays+' 次,打卡 '+streak+' 天'+
-    (top3?',最高分:'+top3:'')+'。26 款小游戏随便玩,来比比? '+
+    (top3?',最高分:'+top3:'')+'。'+TOTAL+' 款小游戏随便玩,来比比? '+
     'https://yaoaibing.github.io/stats/';
   if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
   function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}

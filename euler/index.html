@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>一笔画 · 童年益智</title>
+<meta name="description" content="一笔画:手指按住节点拖动,把所有线段一笔画完、每条只画一次。24 关从三角形一路烧到八角星!">
+<meta property="og:title" content="一笔画 · 童年益智">
+<meta property="og:description" content="不抬笔、不重复,把所有线段一笔画完!24 关图形挑战。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#20182e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%A8%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#20182e;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:#ffd45c;margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(16,10,26,.88);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:#c9a6ff;text-shadow:0 3px 0 #452a7a,0 8px 26px rgba(180,130,255,.4);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:#ffd45c;margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#e6dcff;background:rgba(255,255,255,.06);border:1px solid rgba(180,140,255,.25);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:#ffd45c}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;color:#200f36;cursor:pointer;
+  background:linear-gradient(180deg,#e2ccff,#b487ff);box-shadow:0 5px 0 #5a3a9a,0 10px 30px rgba(180,130,255,.35)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #5a3a9a}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:#ffd45c}
+#ostats{font-size:15px;line-height:2.1;color:#e6dcff;background:rgba(255,255,255,.06);border:1px solid rgba(180,140,255,.25);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:#ffd45c;font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+
+/* ===== 本作 · 底部工具条 / 关卡面板 ===== */
+#bar{position:fixed;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:7;
+  display:flex;gap:8px;justify-content:center;pointer-events:none}
+#bar button{pointer-events:auto;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);
+  color:#fff;border-radius:14px;padding:11px 13px;font-size:13.5px;font-weight:800;letter-spacing:1px;backdrop-filter:blur(6px)}
+#bar button:active{transform:translateY(2px);background:rgba(255,255,255,.22)}
+.lgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:330px;
+  max-height:48vh;overflow-y:auto;padding:4px;margin:16px 0 18px}
+.lgrid button{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;
+  border-radius:12px;padding:12px 0;font-size:14px;font-weight:800;cursor:pointer}
+.lgrid button.done{background:linear-gradient(180deg,#b487ff,#7a4fd0);color:#fff;border-color:transparent}
+.lgrid button.cur{box-shadow:0 0 0 2px #ffd45c inset;color:#ffd45c}
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud">
+  <span class="chip">关<b id="hlevel">1</b></span>
+  <span class="chip">剩<b id="hleft">0</b></span>
+  <span class="chip">时<b id="htime">0:00</b></span>
+</div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="bar">
+  <button id="btnundo" type="button">↶ 撤销</button>
+  <button id="btnreset" type="button">⟳ 重开</button>
+  <button id="btnhint" type="button">💡 提示</button>
+  <button id="btnlvl" type="button">☰ 关卡</button>
+</div>
+
+<div id="start" class="screen">
+  <div class="title">一 笔 画<small>· 童 年 益 智 ·</small></div>
+  <div class="howto">
+    👆 手指<b>按住一个节点</b>,顺着线段拖到相邻节点,一段就画好了<br>
+    🚫 每条线段<b>只能画一次</b>,不能抬笔、不能重复<br>
+    ↩️ 画错不用点按钮:<b>手指拖回上一个节点</b>就把最后一段退掉<br>
+    ⚡ 拖到没有直连的节点会"嗡"一下,不会乱连<br>
+    💡 卡住了点提示,会高亮下一段该走的路<br>
+    🏆 共 <b>24 关</b>:三角形 → 房子 → 五角星 → 八角星
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 一 笔 画</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">全部画完</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 遍</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="lvl" class="screen hide">
+  <div class="title" style="font-size:26px;letter-spacing:3px">选择关卡</div>
+  <div class="lgrid" id="lgrid"></div>
+  <button class="bigbtn ghost" id="lvlclose" type="button">返 回</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='eule_best',PLAY='eule_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* ================== GAME · 一笔画 ================== */
+var PAL=['#7ef0cd','#ffd45c','#ff7ad9','#5aa8ff','#ff9d4a','#b487ff'];
+
+/* 圆周上均匀取点 / 多边形边 / 星形边 */
+function ring(n,rad){
+  var p=[],i;rad=rad||42;
+  for(i=0;i<n;i++){
+    var a=-Math.PI/2+i*2*Math.PI/n;
+    p.push([50+rad*Math.cos(a),50+rad*Math.sin(a)]);
+  }
+  return p;
+}
+function ringE(n){var e=[],i;for(i=0;i<n;i++)e.push([i,(i+1)%n]);return e}
+function starE(n,k){
+  var e=[],seen={},i;
+  for(i=0;i<n;i++){
+    var j=(i+k)%n,a=Math.min(i,j),b=Math.max(i,j),key=a+'-'+b;
+    if(a!==b&&!seen[key]){seen[key]=1;e.push([a,b])}
+  }
+  return e;
+}
+
+/* 内外交替的星形轮廓(六角星) */
+function starRing(n,ro,ri){
+  var p=[],i;
+  for(i=0;i<n;i++){
+    var a=-Math.PI/2+i*2*Math.PI/n;
+    p.push([50+ro*Math.cos(a),50+ro*Math.sin(a)]);
+    p.push([50+ri*Math.cos(a+Math.PI/n),50+ri*Math.sin(a+Math.PI/n)]);
+  }
+  return p;
+}
+
+var LV=[
+  {t:'三角',nodes:[[50,10],[12,86],[88,86]],edges:[[0,1],[1,2],[2,0]]},
+  {t:'四方',nodes:[[18,18],[82,18],[82,82],[18,82]],edges:ringE(4)},
+  {t:'对角方',nodes:[[18,18],[82,18],[82,82],[18,82]],edges:[[0,1],[1,2],[2,3],[3,0],[0,2]]},
+  {t:'小房子',nodes:[[20,46],[80,46],[80,88],[20,88],[50,10]],edges:[[0,1],[1,2],[2,3],[3,0],[0,4],[4,1]]},
+  {t:'沙漏',nodes:[[16,12],[84,12],[16,88],[84,88],[50,50]],edges:[[0,1],[0,4],[1,4],[2,3],[2,4],[3,4]]},
+  {t:'三角中线',nodes:[[50,8],[8,88],[92,88],[50,88]],edges:[[0,1],[1,3],[3,2],[2,0],[0,3]]},
+  {t:'共边三角',nodes:[[50,10],[50,90],[10,50],[90,50]],edges:[[0,1],[1,2],[2,0],[0,3],[3,1]]},
+  {t:'五边形',nodes:ring(5),edges:ringE(5)},
+  {t:'尖顶屋',nodes:[[50,8],[18,46],[82,46],[82,88],[18,88]],edges:[[0,1],[0,2],[1,2],[2,3],[3,4],[4,1]]},
+  {t:'房子带窗',nodes:[[20,46],[80,46],[80,88],[20,88],[50,10]],edges:[[0,1],[1,2],[2,3],[3,0],[0,4],[4,1],[0,2]]},
+  {t:'六边形',nodes:ring(6),edges:ringE(6)},
+  {t:'日字格',nodes:[[14,30],[50,30],[86,30],[14,74],[50,74],[86,74]],
+    edges:[[0,1],[1,2],[3,4],[4,5],[0,3],[1,4],[2,5]]},
+  {t:'日字加撇',nodes:[[14,30],[50,30],[86,30],[14,74],[50,74],[86,74]],
+    edges:[[0,1],[1,2],[3,4],[4,5],[0,3],[1,4],[2,5],[0,4]]},
+  {t:'五角星',nodes:ring(5),edges:starE(5,2)},
+  {t:'风车网',nodes:[[50,50],[50,8],[92,50],[50,92],[8,50]],
+    edges:[[0,1],[0,2],[0,3],[0,4],[1,2],[2,3],[3,4]]},
+  {t:'三角套三角',nodes:[[50,8],[8,88],[92,88],[29,48],[50,88],[71,48]],
+    edges:[[0,3],[3,1],[1,4],[4,2],[2,5],[5,0],[3,4],[4,5],[5,3]]},
+  {t:'六角星',nodes:starRing(6,46,19),edges:ringE(12)},
+  {t:'六边三',nodes:ring(6),edges:ringE(6).concat([[0,2],[2,4],[4,0]])},
+  {t:'七边形',nodes:ring(7),edges:ringE(7)},
+  {t:'星加环',nodes:ring(5),edges:ringE(5).concat(starE(5,2))},
+  {t:'六星加环',nodes:ring(6),edges:ringE(6).concat(starE(6,2))},
+  {t:'七角星',nodes:ring(7),edges:starE(7,2)},
+  {t:'八边形',nodes:ring(8),edges:ringE(8)},
+  {t:'八角星网',nodes:ring(8),edges:ringE(8).concat(starE(8,3))}
+];
+var MAXLV=LV.length;
+
+var E={state:'start',idx:0,li:null,adj:[],geo:null,path:[],used:[],remain:0,
+  t:0,time:0,down:false,parts:[],winT:-1,toast:'',toastT:0,buzzT:0,
+  hintN:-1,hintT:0,anim:0,lastSec:-1};
+
+function buildAdj(L){
+  var adj=[],i;
+  for(i=0;i<L.nodes.length;i++)adj.push([]);
+  for(i=0;i<L.edges.length;i++){
+    var a=L.edges[i][0],b=L.edges[i][1];
+    adj[a].push({to:b,e:i});adj[b].push({to:a,e:i});
+  }
+  return adj;
+}
+/* 校验:奇点个数 0 或 2,且图连通 —— 才真的一笔画得完 */
+function checkEuler(L,adj){
+  var odd=0,i;
+  for(i=0;i<adj.length;i++)if(adj[i].length%2)odd++;
+  var seen=[],q=[0],cnt=1;
+  for(i=0;i<adj.length;i++)seen.push(false);
+  seen[0]=true;
+  while(q.length){
+    var v=q.shift();
+    for(var j=0;j<adj[v].length;j++){
+      var w=adj[v][j].to;
+      if(!seen[w]){seen[w]=true;cnt++;q.push(w)}
+    }
+  }
+  var ok=(odd===0||odd===2)&&cnt===adj.length&&L.edges.length>0;
+  if(!ok)console.warn('[euler] 第'+(L.idx+1)+'关不可一笔画: 奇点 '+odd+' 连通 '+cnt+'/'+adj.length);
+  return ok;
+}
+function edgeBetween(a,b){
+  var l=E.adj[a]||[];
+  for(var i=0;i<l.length;i++)if(l[i].to===b)return l[i].e;
+  return -1;
+}
+function countRemain(){
+  var n=0;for(var i=0;i<E.used.length;i++)if(!E.used[i])n++;
+  return n;
+}
+
+/* --- 布局:按图形包围盒自适应缩放居中 --- */
+function layoutGraph(){
+  if(!E.li)return;
+  var nd=E.li.nodes,minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9,i;
+  for(i=0;i<nd.length;i++){
+    if(nd[i][0]<minx)minx=nd[i][0];
+    if(nd[i][0]>maxx)maxx=nd[i][0];
+    if(nd[i][1]<miny)miny=nd[i][1];
+    if(nd[i][1]>maxy)maxy=nd[i][1];
+  }
+  var top=Math.max(58,Math.round(VH*0.1));
+  var bot=VH-Math.max(56,Math.round(VH*0.095))-8;
+  var aw=Math.max(80,VW-52),ah=Math.max(80,bot-top-18);
+  var sw=Math.max(1,maxx-minx),sh=Math.max(1,maxy-miny);
+  var k=Math.min(aw/sw,ah/sh);
+  var ox=VW/2-((minx+maxx)/2)*k;
+  var oy=(top+bot)/2-((miny+maxy)/2)*k;
+  E.geo={k:k,ox:ox,oy:oy,r:clamp(k*1.7,10,20)};
+}
+function onResize(){layoutGraph()}
+function npos(i){
+  var g=E.geo,n=E.li.nodes[i];
+  return{x:g.ox+n[0]*g.k,y:g.oy+n[1]*g.k};
+}
+function nodeAt(x,y,mul){
+  if(!E.geo)return -1;
+  var best=-1,bd=1e9,i;
+  for(i=0;i<E.li.nodes.length;i++){
+    var p=npos(i),d=Math.hypot(x-p.x,y-p.y);
+    if(d<bd){bd=d;best=i}
+  }
+  var lim=Math.max(22,E.geo.r*1.9)*(mul||1);
+  return bd<=lim?best:-1;
+}
+
+/* --- 关卡装载 --- */
+function loadLevel(idx){
+  var L={idx:idx,t:LV[idx].t,nodes:LV[idx].nodes,edges:LV[idx].edges};
+  E.li=L;E.adj=buildAdj(L);
+  E.idx=idx;E.path=[];E.used=[];E.remain=L.edges.length;
+  E.winT=-1;E.anim=0;E.parts=[];E.toast='';E.toastT=0;E.hintN=-1;E.hintT=0;
+  E.buzzT=0;E.time=0;E.lastSec=-1;E.state='play';
+  for(var i=0;i<L.edges.length;i++)E.used.push(false);
+  checkEuler(L,E.adj);
+  layoutGraph();
+  $('hlevel').textContent=(idx+1);
+  $('hleft').textContent=E.remain;
+  $('htime').textContent='0:00';
+}
+
+/* --- 音效 --- */
+function buzz(){
+  if(E.buzzT>0)return;
+  E.buzzT=.16;
+  noise(.045,.045);tone(130,.08,'square',.05,80);
+  try{if(navigator.vibrate)navigator.vibrate(12)}catch(e){}
+}
+function addSeg(n,ei){
+  E.path.push(n);E.used[ei]=true;E.remain--;
+  $('hleft').textContent=E.remain;
+  tone(420+E.path.length*22,.05,'triangle',.045,520+E.path.length*22);
+  if(E.remain===0)win();
+}
+function popSeg(){
+  if(E.path.length<2)return;
+  var last=E.path.pop(),prev=E.path[E.path.length-1];
+  var ei=edgeBetween(prev,last);
+  if(ei>=0&&E.used[ei]){E.used[ei]=false;E.remain++;$('hleft').textContent=E.remain}
+  tone(300,.05,'triangle',.035,220);
+}
+function win(){
+  E.state='clear';E.winT=0;E.anim=0;
+  var rec=+lsGet('eule_lvl','0');
+  if(E.idx+1>rec)lsSet('eule_lvl',E.idx+1);
+  KIT.setBest(E.idx+1);
+  for(var i=0;i<46;i++)E.parts.push({x:VW/2+(frnd()-.5)*70,y:VH*.44,
+    vx:(frnd()-.5)*470,vy:(frnd()-.5)*470-150,life:1.2+frnd()*.6,
+    col:PAL[i%PAL.length],s:2.5+frnd()*3.5,w:2+frnd()*3});
+  tone(523,.09,'sine',.06);setTimeout(function(){tone(659,.09,'sine',.06)},90);
+  setTimeout(function(){tone(784,.09,'sine',.06)},180);setTimeout(function(){tone(1047,.22,'sine',.06)},270);
+}
+function finishAll(){
+  E.state='over';stop();
+  var isNew=KIT.setBest(MAXLV);
+  $('onewrec').style.display=isNew?'block':'none';
+  $('ostats').innerHTML='24 幅图形全部一笔画完 <b>YES</b><br>'+
+    '最高关卡 <b>第 '+KIT.best()+' 关</b><br>总共玩过 <b>'+KIT.plays()+'</b> 局';
+  $('mini2').innerHTML='连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥 · 换个游戏接着玩';
+  $('over').classList.remove('hide');
+}
+
+/* --- 交互 --- */
+function down(x,y){
+  if(!E.li)return;
+  var n=nodeAt(x,y,1.15);
+  if(n<0)return;
+  if(!E.path.length){
+    E.path=[n];tone(520,.07,'triangle',.05,700);return;
+  }
+  var last=E.path[E.path.length-1];
+  if(n===last)return;
+  if(E.path.length>=2&&n===E.path[E.path.length-2]){popSeg();return}
+  var ei=edgeBetween(last,n);
+  if(ei<0||E.used[ei]){buzz();return}
+  addSeg(n,ei);
+}
+function move(x,y){
+  if(!E.li||!E.path.length)return;
+  var n=nodeAt(x,y,1.25);
+  if(n<0)return;
+  var last=E.path[E.path.length-1];
+  if(n===last)return;
+  if(E.path.length>=2&&n===E.path[E.path.length-2]){popSeg();return}
+  var ei=edgeBetween(last,n);
+  if(ei<0||E.used[ei]){buzz();return}
+  addSeg(n,ei);
+}
+function undoLast(){
+  if(E.state!=='play')return;
+  if(!E.path.length){tone(180,.06,'square',.03);return}
+  if(E.path.length===1){E.path=[];tone(260,.06,'sine',.04);return}
+  popSeg();
+}
+
+/* --- 提示:在剩余图上跑 Hierholzer,给出下一步 --- */
+function eulerFrom(start,used,adj){
+  var ptr=[],st=[start],out=[],i,guard=0;
+  for(i=0;i<adj.length;i++)ptr.push(0);
+  while(st.length&&guard++<6000){
+    var v=st[st.length-1],moved=false;
+    while(ptr[v]<adj[v].length){
+      var e=adj[v][ptr[v]];
+      if(used[e.e]){ptr[v]++;continue}
+      ptr[v]++;used[e.e]=true;st.push(e.to);moved=true;break;
+    }
+    if(!moved)out.push(st.pop());
+  }
+  out.reverse();
+  return out;
+}
+function hint(){
+  if(E.state!=='play'||!E.li)return;
+  var used=E.used.slice(),rem=countRemain(),start;
+  if(!E.path.length){
+    var odd=-1,i;
+    for(i=0;i<E.adj.length;i++)if(E.adj[i].length%2){odd=i;break}
+    if(odd>=0)start=odd;
+    else{for(i=0;i<E.adj.length;i++)if(E.adj[i].length){start=i;break}}
+  }else start=E.path[E.path.length-1];
+  if(start===undefined||start<0)return;
+  var seq=eulerFrom(start,used,E.adj);
+  if(seq.length-1<rem){
+    E.toast='这样走不通,先退一段';E.toastT=1.9;buzz();return;
+  }
+  E.hintN=seq.length>1?seq[1]:start;
+  E.hintT=2.6;
+  tone(880,.08,'triangle',.05,1120);
+}
+
+/* --- 触摸 --- */
+cv.addEventListener('pointerdown',function(e){
+  if(E.state!=='play')return;
+  E.down=true;down(e.clientX,e.clientY);
+},{passive:true});
+cv.addEventListener('pointermove',function(e){
+  if(E.state!=='play'||!E.down)return;
+  move(e.clientX,e.clientY);
+},{passive:true});
+window.addEventListener('pointerup',function(){E.down=false});
+window.addEventListener('pointercancel',function(){E.down=false});
+
+/* --- 更新 --- */
+function fmtT(s){
+  var m=Math.floor(s/60),x=Math.floor(s%60);
+  return m+':'+(x<10?'0':'')+x;
+}
+function update(dt){
+  E.t+=dt;
+  if(E.buzzT>0)E.buzzT-=dt;
+  if(E.state==='play'){
+    E.time+=dt;
+    var sc=Math.floor(E.time);
+    if(sc!==E.lastSec){E.lastSec=sc;$('htime').textContent=fmtT(E.time)}
+    if(E.hintT>0)E.hintT-=dt;
+  }
+  if(E.toastT>0)E.toastT-=dt;
+  if(E.winT>=0){
+    E.winT+=dt;E.anim=Math.min(1,E.winT/1.05);
+    if(E.winT>1.7){
+      if(E.idx+1>=MAXLV)finishAll();else loadLevel(E.idx+1);
+    }
+  }
+  for(var i=E.parts.length-1;i>=0;i--){
+    var p=E.parts[i];
+    p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=430*dt;
+    if(p.life<=0)E.parts.splice(i,1);
+  }
+}
+
+/* --- 绘制 --- */
+function draw(){
+  var g=ctx.createLinearGradient(0,0,0,VH);
+  g.addColorStop(0,'#2a1f42');g.addColorStop(.55,'#20182e');g.addColorStop(1,'#120d1c');
+  ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+  if(!E.li||!E.geo){
+    ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.08)';
+    ctx.font='900 120px system-ui';ctx.fillText('🎨',VW/2,VH*.42);
+    return;
+  }
+  var i,L=E.li,g2=E.geo;
+  ctx.lineCap='round';ctx.lineJoin='round';
+
+  /* 底图线段(提示时把该走的那一段点亮) */
+  var tail=E.path.length?E.path[E.path.length-1]:-1;
+  for(i=0;i<L.edges.length;i++){
+    if(E.used[i])continue;
+    var a=npos(L.edges[i][0]),b=npos(L.edges[i][1]);
+    var isHint=E.hintT>0&&E.hintN>=0&&tail>=0&&
+      ((L.edges[i][0]===tail&&L.edges[i][1]===E.hintN)||(L.edges[i][1]===tail&&L.edges[i][0]===E.hintN));
+    ctx.strokeStyle=isHint?'rgba(255,212,92,.8)':'rgba(255,255,255,.16)';
+    ctx.lineWidth=isHint?Math.max(5,g2.r*.82):Math.max(3.2,g2.r*.62);
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+
+  /* 已画线段:按画下的顺序做彩虹渐变 */
+  var tot=L.edges.length;
+  for(i=0;i<L.edges.length;i++){
+    if(!E.used[i])continue;
+    var a2=npos(L.edges[i][0]),b2=npos(L.edges[i][1]);
+    var h=178+(i/tot)*140;
+    ctx.strokeStyle='hsl('+h.toFixed(0)+',92%,66%)';
+    ctx.lineWidth=Math.max(4,g2.r*.78);
+    ctx.beginPath();ctx.moveTo(a2.x,a2.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();
+  }
+
+  /* 当前路径上的流动光点 */
+  if(E.path.length>1){
+    var segs=E.path.length-1;
+    var tt=(E.t*1.2)%1;
+    var fi=Math.floor(tt*segs),fr2=tt*segs-fi;
+    var pa=npos(E.path[fi]),pb=npos(E.path[Math.min(segs,fi+1)]);
+    var lx=pa.x+(pb.x-pa.x)*fr2,ly=pa.y+(pb.y-pa.y)*fr2;
+    ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.beginPath();ctx.arc(lx,ly,Math.max(3,g2.r*.34),0,6.2832);ctx.fill();
+  }
+
+  /* 过关:整条路径按顺序发光跑一遍 */
+  if(E.state==='clear'&&E.path.length>1){
+    var total=E.path.length-1;
+    var upto=E.anim*total;
+    ctx.strokeStyle='rgba(255,255,255,.85)';
+    ctx.lineWidth=Math.max(3,g2.r*.62);
+    ctx.beginPath();
+    for(i=0;i<E.path.length;i++){
+      if(i>upto)break;
+      var q=npos(E.path[i]);
+      if(i===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);
+    }
+    var lastI=Math.min(E.path.length-1,Math.floor(upto));
+    var nq=npos(E.path[lastI]);
+    ctx.lineTo(nq.x,nq.y);
+    ctx.stroke();
+    var hp=npos(E.path[lastI]);
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(hp.x,hp.y,Math.max(4,g2.r*.5),0,6.2832);ctx.fill();
+  }
+
+  /* 节点 */
+  for(i=0;i<L.nodes.length;i++){
+    var p=npos(i),r=g2.r;
+    var isHead=E.path.length&&E.path[E.path.length-1]===i;
+    var isStart=E.path.length&&E.path[0]===i&&E.path.length===1;
+    ctx.fillStyle='#2b2340';
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,6.2832);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.28)';ctx.lineWidth=2;ctx.stroke();
+    if(isHead){
+      ctx.strokeStyle='#ffd45c';ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(p.x,p.y,r+4+Math.sin(E.t*6)*1.6,0,6.2832);ctx.stroke();
+      ctx.fillStyle='rgba(255,212,92,.35)';
+      ctx.beginPath();ctx.arc(p.x,p.y,r*.5,0,6.2832);ctx.fill();
+    }
+    if(isStart){
+      ctx.strokeStyle='rgba(255,212,92,.6)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(p.x,p.y,r+5,0,6.2832);ctx.stroke();
+    }
+    if(E.hintT>0&&E.hintN===i){
+      var rr2=r+6+((E.t*80)%(r+18));
+      ctx.strokeStyle='rgba(255,212,92,'+Math.max(0,1-rr2/(r+30)).toFixed(2)+')';
+      ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(p.x,p.y,rr2,0,6.2832);ctx.stroke();
+    }
+  }
+
+  /* 礼花 */
+  for(i=0;i<E.parts.length;i++){
+    var pt=E.parts[i];
+    ctx.globalAlpha=clamp(pt.life,0,1);
+    ctx.fillStyle=pt.col;
+    ctx.fillRect(pt.x,pt.y,pt.w||3,pt.s);
+  }
+  ctx.globalAlpha=1;
+
+  /* 过关横幅 */
+  if(E.state==='clear'){
+    var by=VH*.44;
+    ctx.fillStyle='rgba(20,12,32,.88)';
+    ctx.beginPath();
+    var bw=Math.min(280,VW-40);
+    ctx.moveTo(VW/2-bw/2,by-48);ctx.lineTo(VW/2+bw/2,by-48);
+    ctx.lineTo(VW/2+bw/2,by+44);ctx.lineTo(VW/2-bw/2,by+44);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='rgba(200,150,255,.55)';ctx.lineWidth=2;ctx.stroke();
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#c9a6ff';ctx.font='900 30px system-ui';
+    ctx.fillText('一 笔 画 成!',VW/2,by-16);
+    ctx.fillStyle='#ffd45c';ctx.font='800 14px system-ui';
+    ctx.fillText('第 '+(E.idx+1)+' 关 · '+E.li.t+' · '+fmtT(E.time),VW/2,by+18);
+  }
+
+  /* 提示条 */
+  if(E.toastT>0){
+    ctx.globalAlpha=clamp(E.toastT,0,1);
+    ctx.fillStyle='rgba(20,12,32,.9)';
+    ctx.beginPath();
+    ctx.moveTo(VW/2-104,VH*.5-20);ctx.lineTo(VW/2+104,VH*.5-20);
+    ctx.lineTo(VW/2+104,VH*.5+20);ctx.lineTo(VW/2-104,VH*.5+20);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#ffd45c';ctx.font='800 14px system-ui';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(E.toast,VW/2,VH*.5);
+    ctx.globalAlpha=1;
+  }
+}
+
+/* --- 关卡面板 --- */
+var paused=false;
+function openLvl(){
+  paused=(E.state==='play');
+  if(paused)E.state='pause';
+  var box=$('lgrid');box.innerHTML='';
+  var cleared=+lsGet('eule_lvl','0');
+  for(var i=0;i<MAXLV;i++){
+    (function(i){
+      var b=document.createElement('button');
+      b.type='button';b.textContent=(i+1);
+      if(i<cleared)b.className='done';
+      if(i===E.idx)b.className+=' cur';
+      b.onclick=function(){
+        $('lvl').classList.add('hide');paused=false;
+        loadLevel(i);run();
+      };
+      box.appendChild(b);
+    })(i);
+  }
+  $('lvl').classList.remove('hide');
+}
+function closeLvl(){
+  $('lvl').classList.add('hide');
+  if(paused){paused=false;E.state='play'}
+}
+
+/* --- 启动 --- */
+function startGame(){
+  KIT.addPlay();KIT.streak();
+  var cleared=+lsGet('eule_lvl','0');
+  loadLevel(Math.min(cleared,MAXLV-1));
+  $('start').classList.add('hide');$('over').classList.add('hide');$('lvl').classList.add('hide');
+  run();
+}
+$('startbtn').addEventListener('click',startGame);
+$('againbtn').addEventListener('click',function(){KIT.addPlay();loadLevel(0);$('over').classList.add('hide');run()});
+$('btnundo').addEventListener('click',undoLast);
+$('btnreset').addEventListener('click',function(){if(E.state==='play'||E.state==='clear')loadLevel(E.idx)});
+$('btnhint').addEventListener('click',hint);
+$('btnlvl').addEventListener('click',openLvl);
+$('lvlclose').addEventListener('click',closeLvl);
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+$('sharebtn').addEventListener('click',function(){
+  share('我在「一笔画」画到第 '+(E.idx+1)+' 关('+E.li.t+'),24 幅图形一笔画完不许重复!你能做到吗? https://yaoaibing.github.io/euler/');
+});
+$('mini').innerHTML='最高关卡 <b>第 '+Math.max(1,KIT.best())+' 关</b> · 已玩 <b>'+KIT.plays()+'</b> 局'+
+  (KIT.streakNow()>1?' · 连续打卡 <b>'+KIT.streakNow()+'</b> 天 🔥':'');
+
+resize();
+draw();
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='euler'});
+  r.unshift({k:'euler',n:'一笔画',e:'🎨'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:定期把本游戏自己的最高分同步进共享的 __best
+     (不用劫持 localStorage.setItem —— 那在部分环境下属性不可写会静默失败) */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['eule_best','eule_hi','eule_max','eule_score'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['euler']||0)){
+            B['euler']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
