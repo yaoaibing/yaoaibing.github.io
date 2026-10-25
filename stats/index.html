@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>我的战绩 · 童年游戏路口</title>
+<meta name="description" content="我的游戏战绩:26款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
+<meta property="og:title" content="我的战绩 · 童年游戏路口">
+<meta property="og:description" content="26款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#181030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;overscroll-behavior:none;
+  background:linear-gradient(180deg,#241548 0%,#181030 45%,#100a20 100%);color:#fff;min-height:100vh;padding-bottom:46px}
+.wrap{max-width:680px;margin:0 auto;padding:0 14px}
+header{text-align:center;padding:28px 14px 6px;position:relative}
+.back{position:absolute;left:14px;top:26px;text-decoration:none;color:#cbbce8;font-size:13px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);padding:6px 12px;border-radius:999px}
+h1{font-size:27px;letter-spacing:4px;font-weight:900;
+  background:linear-gradient(92deg,#ffd45c,#ff7db8,#7db8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{font-size:12.5px;color:#b8a8d8;margin-top:7px;letter-spacing:1px}
+
+/* 三格统计 */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:16px;padding:14px 8px;text-align:center}
+.stat b{display:block;font-size:26px;font-weight:900;color:#ffd45c;line-height:1.1}
+.stat small{display:block;font-size:11px;color:#b0a0cc;margin-top:6px;letter-spacing:1px}
+.stat.fire b{color:#ff8a5c}
+
+h2{font-size:15px;color:#ffd45c;letter-spacing:3px;margin:26px 4px 12px;display:flex;align-items:center;gap:8px}
+h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,212,92,.4),transparent)}
+h2 small{font-size:11px;color:#8a7aa8;letter-spacing:1px;font-weight:400}
+
+/* 打卡日历 */
+.cal{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px}
+.calrow{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.day{aspect-ratio:1;border-radius:5px;background:rgba(255,255,255,.07);position:relative}
+.day.on{background:linear-gradient(145deg,#ffd45c,#ff9d4a);box-shadow:0 0 8px rgba(255,170,60,.4)}
+.day.today{outline:2px solid #7db8ff;outline-offset:1px}
+.legend{display:flex;justify-content:space-between;font-size:11px;color:#8a7aa8;margin-top:10px}
+
+/* 战绩列表 */
+.list{display:flex;flex-direction:column;gap:8px}
+.row2{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:11px 13px;text-decoration:none;color:#fff}
+.row2:active{transform:scale(.985)}
+.row2.off{opacity:.45}
+.row2 .rank{font-size:12px;font-weight:900;color:#8a7aa8;width:20px;text-align:center;flex:none}
+.row2.top .rank{color:#ffd45c}
+.row2 .em{font-size:22px;flex:none;width:28px;text-align:center}
+.row2 .nm{flex:1;min-width:0}
+.row2 .nm b{display:block;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row2 .nm i{display:block;font-style:normal;font-size:11px;color:#9a8ab8;margin-top:3px}
+.row2 .sc{flex:none;font-size:17px;font-weight:900;color:#ffd45c;font-variant-numeric:tabular-nums}
+.row2 .sc.dash{color:#5a4a78;font-size:14px}
+.empty{text-align:center;color:#8a7aa8;font-size:13px;padding:26px 0;line-height:1.9}
+
+.btnrow{display:flex;gap:9px;margin-top:24px}
+.btn{flex:1;border:0;border-radius:999px;padding:13px 10px;font-size:14.5px;font-weight:800;letter-spacing:1px;
+  font-family:inherit;cursor:pointer;text-align:center;text-decoration:none;display:block;color:#102040;
+  background:linear-gradient(180deg,#b8e8ff,#6ec4ff);box-shadow:0 4px 0 #2a6ea8}
+.btn.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.16)}
+.btn:active{transform:translateY(2px)}
+footer{text-align:center;color:#7a6a98;font-size:11.5px;margin-top:24px;line-height:1.9}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <a class="back" href="/">← 返回大厅</a>
+  <h1>我的战绩</h1>
+  <p>只存在你自己手机里 · 不上传</p>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat fire"><b id="s1">0</b><small>连续打卡</small></div>
+    <div class="stat"><b id="s2">0</b><small>游玩次数</small></div>
+    <div class="stat"><b id="s3">0</b><small>玩过款数</small></div>
+  </div>
+
+  <h2>🔥 打卡日历 <small id="calinfo"></small></h2>
+  <div class="cal">
+    <div class="calrow" id="cal"></div>
+    <div class="legend"><span>30 天前</span><span>今天</span></div>
+  </div>
+
+  <h2>🏆 最高分排行 <small id="listinfo"></small></h2>
+  <div class="list" id="list"></div>
+  <div class="empty" id="empty" style="display:none">
+    还没有战绩记录～<br>去玩一局,回来就有数据了
+  </div>
+
+  <div class="btnrow">
+    <a class="btn" href="/">🎮 去玩</a>
+    <button class="btn ghost" id="share" type="button">📤 晒战绩</button>
+  </div>
+  <footer>最高分来自各游戏本地存档,同一浏览器下自动汇总<br>换设备或清缓存会清零</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+function $(id){return document.getElementById(id)}
+function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function jp(k,d){try{return JSON.parse(lg(k,JSON.stringify(d)))||d}catch(e){return d}}
+
+/* 26 款游戏清单(与大厅卡片一致) */
+var GAMES=[
+  ['knife','飞刀挑战','🗡️','action'],['tower','塔防保卫战','🏰','action'],['stairs','是男人就下一百层','🪜','action'],
+  ['fifteen','数字华容道','🧩','puzzle'],['nono','数织','🔢','puzzle'],['mahjong','麻将消消乐','🀄','casual'],
+  ['connect','四子棋','🔴','board'],['hexa','六边形消除','🧱','casual'],
+  ['brick','弹球打砖块','🏐','action'],['plane','雷霆战机','🚀','action'],['mine','扫雷英雄','💣','puzzle'],
+  ['box','推箱子','📦','puzzle'],['gomoku','五子棋','⚫','board'],['jungle','斗兽棋','🦁','board'],
+  ['water','倒水大师','🧪','casual'],['bubble','捏泡泡纸','🫧','casual'],
+  ['run','星夜跑酷','🏃','action'],['balloon','气球大作战','🎈','action'],['shousui','守岁大作战','🧨','action'],
+  ['jump','跳一跳','🐸','action'],['match','糖果消消乐','🍬','puzzle'],['snake','蛇蛇争霸','🐍','puzzle'],
+  ['link','宠物连连看','🐱','puzzle'],['fc','FC游戏厅31合1','🕹️','puzzle'],
+  ['diner','喵喵食堂','🍜','casual'],['moyu','摸鱼乐园','🐟','casual']
+];
+var TOTAL=GAMES.length;
+
+var best=jp('__best',{});
+var days=jp('__days',[]);
+var plays=+lg('__plays_all','0')||0;
+var streak=+lg('__streak','0')||0;
+var recent=jp('__recent',[]);
+
+var playedSet={};
+recent.forEach(function(x){if(x&&x.k)playedSet[x.k]=1});
+Object.keys(best).forEach(function(k){playedSet[k]=1});
+
+/* 顶部统计 */
+$('s1').textContent=streak;
+$('s2').textContent=plays;
+$('s3').textContent=Object.keys(playedSet).length+'/'+TOTAL;
+
+/* 打卡日历:最近 30 天 */
+function dstr(d){
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+}
+var daySet={};
+days.forEach(function(x){daySet[x]=1});
+var todayStr=dstr(new Date());
+var html=[];
+for(var i=29;i>=0;i--){
+  var d=new Date(Date.now()-i*864e5);
+  var s=dstr(d);
+  var cls='day'+(daySet[s]?' on':'')+(s===todayStr?' today':'');
+  html.push('<div class="'+cls+'"></div>');
+}
+$('cal').innerHTML=html.join('');
+var onCount=0;
+for(var k2 in daySet)if(daySet[k2])onCount++;
+$('calinfo').textContent=onCount?('累计打卡 '+onCount+' 天'):'从今天开始记录';
+
+/* 排行榜:有分数的按分数降序,没玩的排后面 */
+var rows=GAMES.map(function(g){
+  var k=g[0];
+  return {k:k,n:g[1],e:g[2],cat:g[3],sc:best[k]||0,played:!!playedSet[k]};
+}).sort(function(a,b){
+  if(a.sc!==b.sc)return b.sc-a.sc;
+  if(a.played!==b.played)return a.played?-1:1;
+  return 0;
+});
+
+var scored=rows.filter(function(r){return r.sc>0}).length;
+$('listinfo').textContent=scored?('已有 '+scored+' 款成绩'):'';
+$('list').innerHTML=rows.map(function(r,i){
+  var top=r.sc>0&&i<3?' top':'';
+  var off=r.played?'':' off';
+  return '<a class="row2'+top+off+'" href="https://tongnian-'+r.k+'.netlify.app/">'+
+    '<span class="rank">'+(r.sc>0?(i+1):'·')+'</span>'+
+    '<span class="em">'+r.e+'</span>'+
+    '<span class="nm"><b>'+r.n+'</b><i>'+(r.played?'玩过':'还没玩')+'</i></span>'+
+    '<span class="sc'+(r.sc?'':' dash')+'">'+(r.sc?r.sc:'—')+'</span></a>';
+}).join('');
+
+if(!scored&&!plays)$('empty').style.display='block';
+
+/* 分享 */
+$('share').addEventListener('click',function(){
+  var top3=rows.filter(function(r){return r.sc>0}).slice(0,3)
+    .map(function(r){return r.e+r.n+' '+r.sc}).join(' / ');
+  var txt='我在「童年游戏路口」玩了 '+plays+' 次,打卡 '+streak+' 天'+
+    (top3?',最高分:'+top3:'')+'。26 款小游戏随便玩,来比比? '+
+    'https://yaoaibing.github.io/stats/';
+  if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+  function fb(){try{
+    var ta=document.createElement('textarea');ta.value=txt;
+    ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+    var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+});
+})();
+</script>
+</body>
+</html>

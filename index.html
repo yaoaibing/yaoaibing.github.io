@@ -26,10 +26,15 @@ h1{font-size:34px;letter-spacing:5px;font-weight:900;
 header p{font-size:13px;color:#b8a8d8;margin-top:8px;letter-spacing:2px}
 
 /* 攻略条 */
-.guidebar{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0;max-width:480px;text-decoration:none;
-  background:linear-gradient(95deg,#ffd45c,#ff9d4a);color:#4a2808;font-weight:900;font-size:16px;letter-spacing:3px;
-  padding:13px;border-radius:999px;box-shadow:0 5px 0 #9a5a10,0 10px 26px rgba(255,180,60,.3)}
-.guidebar:active{transform:translateY(3px);box-shadow:0 2px 0 #9a5a10}
+.quick{display:flex;gap:10px;margin:18px auto 0;max-width:480px}
+.quick a{flex:1;text-align:center;text-decoration:none;font-weight:900;font-size:14.5px;letter-spacing:1px;
+  padding:13px 8px;border-radius:999px;line-height:1.2}
+.quick a:active{transform:translateY(3px)}
+.guidebar{background:linear-gradient(95deg,#ffd45c,#ff9d4a);color:#4a2808;
+  box-shadow:0 5px 0 #9a5a10,0 10px 26px rgba(255,180,60,.3)}
+.guidebar:active{box-shadow:0 2px 0 #9a5a10}
+.statbar{background:linear-gradient(95deg,#3a2a8e,#6a3adf);color:#fff;box-shadow:0 5px 0 #241548}
+.statbar:active{box-shadow:0 2px 0 #241548}
 
 /* 搜索 */
 .searchbox{position:relative;margin:16px 0 0}
@@ -114,7 +119,10 @@ footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-heigh
 </header>
 
 <div class="wrap">
-  <a class="guidebar" href="./guide/">📖 全游戏攻略 · 一册在手高分我有</a>
+  <div class="quick">
+    <a class="guidebar" href="./guide/">📖 全游戏攻略</a>
+    <a class="statbar" href="./stats.html">📊 我的战绩</a>
+  </div>
 
   <div class="searchbox"><input id="q" type="search" placeholder="搜游戏:跑酷 / 扫雷 / 五子棋…" autocomplete="off"></div>
 
