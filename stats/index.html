@@ -124,6 +124,10 @@ var GAMES=[
 ];
 var TOTAL=GAMES.length;
 
+/* 站内路径:主站部署在 /stats/ 下,游戏在兄弟目录 */
+var PREFIX=(/^\/stats/.test(location.pathname))?'../':'./';
+function gurl(k){return PREFIX+k+'/'}
+
 var best=jp('__best',{});
 var days=jp('__days',[]);
 var plays=+lg('__plays_all','0')||0;
@@ -173,7 +177,7 @@ $('listinfo').textContent=scored?('已有 '+scored+' 款成绩'):'';
 $('list').innerHTML=rows.map(function(r,i){
   var top=r.sc>0&&i<3?' top':'';
   var off=r.played?'':' off';
-  return '<a class="row2'+top+off+'" href="https://tongnian-'+r.k+'.netlify.app/">'+
+  return '<a class="row2'+top+off+'" href="'+gurl(r.k)+'">'+
     '<span class="rank">'+(r.sc>0?(i+1):'·')+'</span>'+
     '<span class="em">'+r.e+'</span>'+
     '<span class="nm"><b>'+r.n+'</b><i>'+(r.played?'玩过':'还没玩')+'</i></span>'+
