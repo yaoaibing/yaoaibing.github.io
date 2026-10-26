@@ -451,10 +451,13 @@ function render(dt){
     var cell=grid[r]&&grid[r][c];
     if(!cell)continue;
     /* 渲染位插值 */
+    /* 渲染位插值:两个轴必须各自判断,
+       否则某一轴先到位被置 undefined 后,另一轴还在插值就会把坐标算成 NaN(糖果直接画不出来) */
     if(cell.tx!==undefined){
       cell.x+=(cell.tx-cell.x)*Math.min(1,dt*14);
+      if(Math.abs(cell.tx-cell.x)<.6){cell.x=cell.tx;cell.tx=undefined}}
+    if(cell.ty!==undefined){
       cell.y+=(cell.ty-cell.y)*Math.min(1,dt*14);
-      if(Math.abs(cell.tx-cell.x)<.6){cell.x=cell.tx;cell.tx=undefined}
       if(Math.abs(cell.ty-cell.y)<.6){cell.y=cell.ty;cell.ty=undefined}}
     if(cell.pop>0){cell.pop=Math.max(0,cell.pop-dt*4)}
     var bounce=cell.pop>0?1+Math.sin(cell.pop*Math.PI)*.35:1;

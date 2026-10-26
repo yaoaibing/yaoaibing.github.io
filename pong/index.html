@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>乒乓对决 · 大屏版 · 竖屏乒乓大战</title>
+<meta name="description" content="竖屏乒乓球对决:拖动挡板左右移动,击球点决定反弹角度,横扫还能给球加旋转。菜鸟/老手/国手三档 AI,11 分制净胜两分,多拍回合有飘字与更长拖尾,手机单手也能打。">
+<meta property="og:title" content="乒乓对决 · 大屏版 · 竖屏乒乓大战">
+<meta property="og:description" content="竖屏乒乓球对决:拖动挡板左右移动,击球点决定反弹角度,横扫还能给球加旋转。菜鸟/老手/国手三档 AI,11 分制净胜两分,多拍回合有飘字与更长拖尾,手机单手也能打。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#150e2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E@ICON@🏓%3C/text%3E%3C/svg%3E">
+<style>
+/* ===== 配色:只改 :root 这一组,其余 CSS 不用动 ===== */
+:root{
+  --theme:#150e2e;      /* 页面底色 */
+  --panel:rgba(18,10,38,.92);      /* 浮层底(带透明度的 rgba) */
+  --ink:#d8b8ff;          /* 主标题字色 */
+  --edge:#4a2c86;        /* 标题描边 / 按钮投影 */
+  --btn1:#8a5cff;        /* 主按钮渐变·上 */
+  --btn2:#5c2fd0;        /* 主按钮渐变·下 */
+  --btnink:#ffffff;    /* 主按钮文字 */
+  --glow:rgba(138,92,255,.45);        /* 按钮外发光 rgba */
+  --gold:#ffd45c;         /* 全站统一高亮黄,别改 */
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+/* ===== GAME · 本页专属样式 ===== */
+#padrow{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;gap:9px;justify-content:center;
+  padding:8px 12px calc(10px + env(safe-area-inset-bottom,0px))}
+.padbtn{flex:1;max-width:132px;border:1px solid var(--hair);border-radius:16px;padding:15px 0;
+  font-size:17px;font-weight:900;letter-spacing:1px;color:#fff;font-family:inherit;cursor:pointer;
+  background:rgba(255,255,255,.1);box-shadow:0 4px 0 rgba(0,0,0,.35);touch-action:none;
+  -webkit-touch-callout:none;user-select:none}
+.padbtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.padbtn.on{background:rgba(255,255,255,.26)}
+.padbtn.cur{background:linear-gradient(180deg,var(--btn1),var(--btn2));border-color:transparent;
+  box-shadow:0 4px 0 var(--edge),0 6px 18px var(--glow)}
+#diffrow{display:flex;gap:9px;justify-content:center;width:100%;max-width:430px;margin:-4px 0 18px}
+#diffrow .padbtn{flex:1;max-width:none;padding:12px 0;font-size:15px}
+#diffrow .padbtn small{display:block;font-size:10.5px;font-weight:700;letter-spacing:0;opacity:.7;margin-top:2px}
+@media (max-height:640px){#padrow{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+  .padbtn{padding:12px 0;font-size:16px}}
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">你<b id="hscore">0</b></span><span class="chip">对手<b id="hcpu">0</b></span><span class="chip">连击<b id="hrally">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">乒 乓 对 决<small>· 竖 屏 大 屏 版 ·</small></div>
+  <div class="howto">
+🏓 你守<b>下方</b>挡板:拖动屏幕或用<b>← →</b>键移动<br>
+🎯 击球点<b>越靠边</b>回球角度越大,挡板横扫能给球<b>加旋转</b><br>
+⚡ 每次有效回击球速<b>+3%</b>,上限锁死<b>1.9 倍</b>初速<br>
+🤖 三档 AI 靠<b>反应延迟 + 移速 + 误差</b>变强,不是贴球无解<br>
+🏆 <b>11 分制</b>须净胜 2 分,<b>每 2 分</b>换发球(平分后每 1 分换)<br>
+🔥 单回合连击<b>超过 6 拍</b>出「多拍」飘字,拖尾变长
+  </div>
+  <div id="diffrow">
+    <button class="padbtn" id="d0" type="button">菜 鸟<small>得分 x1</small></button>
+    <button class="padbtn" id="d1" type="button">老 手<small>得分 x2</small></button>
+    <button class="padbtn" id="d2" type="button">国 手<small>得分 x3</small></button>
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">上 场 开 打</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">本 局 结 束</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padrow">
+  <button class="padbtn" id="btnleft" type="button">◀ 左移</button>
+  <button class="padbtn" id="btndiff" type="button">换难度</button>
+  <button class="padbtn" id="btnright" type="button">右移 ▶</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='pong_best',PLAY='pong_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 乒乓对决 · 大屏版 ================== */
+/* 游戏代码只写在下面这一行之后;上面 CORE 段一行都不要动 */
+
+/* ▼▼▼ 游戏代码 ▼▼▼ */
+
+/* ---------- 状态与几何 ---------- */
+var state='start';            // 'start' | 'play' | 'over'
+var phase='serve';            // 'serve' 发球吸附 | 'rally' 对打 | 'gap' 得分停顿
+var S=300,CX0=0,CX1=0,CY0=0,CY1=0,PMIN=0,PMAX=0;
+var PW=90,PH=10,BR=7,BASE=320,MAXSP=600,PSPEED=420;
+var MAXANG=1.05;              // 60°,挡板边缘最大反弹角
+var pl={x:0,y:0,vx:0,prev:0,tx:null};   // 玩家挡板(下)
+var cp={x:0,y:0,vx:0,prev:0,timer:0,target:0,decided:false}; // AI 挡板(上)
+var b={x:0,y:0,vx:0,vy:0,sp:0,spin:0,r:7,trail:[]};
+var my=0,cpu=0,SCORE=0,rally=0,bestRally=0;
+var server='p',firstServer='p',serveT=0,gapT=0,pendingOver=false;
+var fx=[],flashP=0,flashA=0,grd=null;
+var keys={l:0,r:0},padDir=0,dragging=false;
+
+/* ---------- 难度:反应延迟(s) / 移速系数 / 判断误差(比例 of S) ---------- */
+var DIFF=+lsGet('pong_diff',1);
+if(DIFF!==0&&DIFF!==1&&DIFF!==2)DIFF=1;
+var DN=['菜鸟','老手','国手'];
+var AID=[{d:.22,s:.44,e:.135},{d:.13,s:.80,e:.040},{d:.06,s:1.12,e:.014}];
+
+/* ---------- 布局 ---------- */
+function layout(){
+  S=Math.min(VW,VH);
+  CX0=Math.round(VW*.055);CX1=Math.round(VW*.945);
+  CY0=Math.round(VH*.115);CY1=Math.round(VH*.755);
+  PW=clamp(VW*.28,60,190);PH=Math.max(8,Math.round(S*.016));BR=Math.max(5,Math.round(S*.0155));
+  if(VW>VH*1.15)PW=clamp(VW*.13,60,150);             // 横屏/平板:场地更宽,挡板相对收窄
+  PMIN=CX0+PW/2;PMAX=CX1-PW/2;
+  pl.y=CY1-PH-Math.round(S*.022);cp.y=CY0+Math.round(S*.022);
+  pl.x=clamp(pl.x||(CX0+CX1)/2,PMIN,PMAX);
+  cp.x=clamp(cp.x||(CX0+CX1)/2,PMIN,PMAX);
+  b.r=BR;PSPEED=S*1.3;
+  setSpeed();grd=null;
+}
+function onResize(){
+  var midRally=(state==='play'&&phase==='rally');
+  layout();
+  if(midRally)startServe();          // 中途转屏:重开发球,避免球卡在旧场地外被判分
+}
+function setSpeed(){BASE=(CY1-CY0)/(1.95-DIFF*.28);MAXSP=BASE*1.9}
+
+/* ---------- 飘字 ---------- */
+function fxPush(s,x,y,c,g){fx.push({s:s,x:x,y:y,c:c,g:g,a:1,vy:-S*.3})}
+function updFx(dt){
+  for(var i=fx.length-1;i>=0;i--){var f=fx[i];f.y+=f.vy*dt;f.a-=dt*1.05;
+    if(f.a<=0)fx.splice(i,1)}
+}
+
+/* ---------- 音效 ---------- */
+function sndHit(){tone(300+rally*26,.055,'square',.06);if(!LOWEND)noise(.045,.03)}
+function sndWall(){tone(165,.06,'triangle',.05,120)}
+function sndServe(){tone(560,.07,'triangle',.045)}
+function sndGood(){tone(620,.09,'sine',.06,880);setTimeout(function(){tone(920,.11,'sine',.05,1180)},80)}
+function sndBad(){tone(300,.12,'sawtooth',.05,160)}
+function sndWin(){[523,659,784,1046].forEach(function(f,i){setTimeout(function(){tone(f,.13,'triangle',.06)},i*110)})}
+function sndLose(){[660,520,400,260].forEach(function(f,i){setTimeout(function(){tone(f,.16,'sawtooth',.05)},i*130)})}
+function buzz(v){navigator.vibrate&&navigator.vibrate(v)}
+
+/* ---------- AI:落点预判 ---------- */
+function predict(lineY){
+  var x=b.x,y=b.y,vx=b.vx,vy=b.vy,sp=b.spin,i=0,r=b.r;
+  if(vy>=0)return x;
+  while(y>lineY&&i++<420){
+    x+=vx/60;y+=vy/60;vx+=sp/60;sp*=(1-2.1/60);
+    vx=clamp(vx,-b.sp*.92,b.sp*.92);
+    if(x<CX0+r){x=CX0+r;vx=Math.abs(vx)*.97}
+    if(x>CX1-r){x=CX1-r;vx=-Math.abs(vx)*.97}
+  }
+  return x;
+}
+
+/* ---------- 玩家挡板 ---------- */
+function moveP(dt){
+  pl.prev=pl.x;
+  var step=PSPEED*dt;
+  if(pl.tx!==null){var d=pl.tx-pl.x,m=step*2.0;pl.x+=clamp(d,-m,m)}
+  var dir=clamp(padDir+(keys.r?1:0)-(keys.l?1:0),-1,1);
+  if(dir)pl.x+=dir*step*1.25;
+  pl.x=clamp(pl.x,PMIN,PMAX);
+  pl.vx=clamp((pl.x-pl.prev)/dt,-S*3.2,S*3.2);
+}
+
+/* ---------- AI 挡板 ---------- */
+function moveC(dt){
+  var P=AID[DIFF],cv2=(CX0+CX1)/2;
+  cp.prev=cp.x;
+  if(b.vy<0){
+    cp.timer-=dt;
+    if(cp.timer<=0&&!cp.decided){
+      cp.decided=true;
+      cp.target=clamp(predict(cp.y+PH)+(frnd()*2-1)*P.e*S,PMIN,PMAX);
+    }
+  }else{
+    cp.decided=false;cp.timer=P.d;
+    cp.target=cp.target+(cv2-cp.target)*Math.min(1,dt*2.2);
+  }
+  var st=S*P.s*dt,d=cp.target-cp.x;
+  cp.x+=clamp(d,-st,st);
+  cp.x=clamp(cp.x,PMIN,PMAX);
+  cp.vx=clamp((cp.x-cp.prev)/dt,-S*3.2,S*3.2);
+}
+
+/* ---------- 击球 ---------- */
+function doHit(p,isPl){
+  rally++;
+  if(rally>bestRally)bestRally=rally;
+  b.sp=Math.min(b.sp*1.03,MAXSP);
+  var off=clamp((b.x-p.x)/(PW/2),-1,1);
+  if(!isPl&&DIFF===2){                       // 国手:主动用边缘打大角度,避开玩家
+    var away=(pl.x<(CX0+CX1)/2)?1:-1;
+    off=away*(.7+frnd()*.22);
+  }
+  var ang=clamp(off*MAXANG+clamp(p.vx/(S*2.4),-.3,.3),-1.22,1.22);
+  var dir=isPl?-1:1;
+  b.vx=b.sp*Math.sin(ang);
+  b.vy=dir*b.sp*Math.cos(ang);
+  b.spin=clamp(p.vx*2.3,-S*5,S*5);           // 横扫旋转:每帧作用于 vx 并衰减
+  b.y=isPl?p.y-b.r-1:p.y+PH+b.r+1;
+  cp.timer=AID[DIFF].d;cp.decided=false;
+  sndHit();
+  if(rally>6&&(rally===7||rally%5===0)){
+    fxPush('多 拍 x '+rally,b.x,b.y,'#ffd45c',Math.round(S*.062));
+    tone(980,.09,'triangle',.05,1420);buzz(8);
+  }
+  updHud();
+}
+
+/* ---------- 发球 / 得分 ---------- */
+function stick(){
+  b.vx=0;b.vy=0;b.spin=0;b.trail.length=0;
+  if(server==='p'){b.x=pl.x;b.y=pl.y-b.r-3}
+  else{b.x=cp.x;b.y=cp.y+PH+b.r+3}
+}
+function launch(){
+  b.sp=BASE;
+  var ang=(frnd()*2-1)*.5*MAXANG,dir=server==='p'?-1:1;
+  b.vx=b.sp*Math.sin(ang);b.vy=dir*b.sp*Math.cos(ang);b.spin=0;
+  phase='rally';rally=0;updHud();sndServe();
+}
+function startServe(){phase='serve';serveT=.6;stick()}
+function nextServer(){
+  var tot=my+cpu,flips=(my>=10&&cpu>=10)?10+(tot-20):Math.floor(tot/2);
+  server=(flips%2===0)?firstServer:(firstServer==='p'?'a':'p');
+}
+function point(w){                // w='p' 你得分,'a' 对手得分
+  rally=0;b.trail.length=0;
+  if(w==='p'){my++;flashP=1;sndGood();fxPush('得 分 !',(CX0+CX1)/2,(CY0+CY1)/2,'#9ee8ff',Math.round(S*.062))}
+  else{cpu++;flashA=1;sndBad();fxPush('对 手 得 分',(CX0+CX1)/2,(CY0+CY1)/2,'#ff9d9d',Math.round(S*.055))}
+  buzz(12);updHud();
+  var done=(my>=11||cpu>=11)&&Math.abs(my-cpu)>=2;
+  if(!done)nextServer();
+  stick();phase='gap';gapT=done?.85:.55;pendingOver=done;
+}
+
+/* ---------- 物理 ---------- */
+function physics(dt){
+  b.vx+=b.spin*dt;b.spin*=(1-2.1*dt);
+  b.vx=clamp(b.vx,-b.sp*.92,b.sp*.92);
+  var minvy=b.sp*.34;
+  if(Math.abs(b.vy)<minvy)b.vy=(b.vy<0?-1:1)*minvy;
+  b.x+=b.vx*dt;b.y+=b.vy*dt;
+  if(b.x<CX0+b.r){b.x=CX0+b.r;b.vx=Math.abs(b.vx)*.97;b.spin*=-.45;sndWall();fxPush('擦边',CX0+b.r+2,b.y,'#9ee8ff',Math.round(S*.03))}
+  if(b.x>CX1-b.r){b.x=CX1-b.r;b.vx=-Math.abs(b.vx)*.97;b.spin*=-.45;sndWall();fxPush('擦边',CX1-b.r-2,b.y,'#9ee8ff',Math.round(S*.03))}
+  var cap=(rally>6?(LOWEND?3:8):(LOWEND?2:5));
+  b.trail.push({x:b.x,y:b.y});while(b.trail.length>cap)b.trail.shift();
+  var win=Math.abs(b.vy)*dt+b.r+PH+4;
+  if(b.vy>0&&b.y+b.r>=pl.y&&b.y-b.r<=pl.y+win&&Math.abs(b.x-pl.x)<=PW/2+b.r){doHit(pl,true);return}
+  if(b.vy<0&&b.y-b.r<=cp.y+PH&&b.y+b.r>=cp.y-win&&Math.abs(b.x-cp.x)<=PW/2+b.r){doHit(cp,false);return}
+  if(b.y-b.r>CY1+14){point('a');return}   // 越过你这一侧底线 → 对手得分
+  if(b.y+b.r<CY0-14){point('p');return}   // 越过 AI 顶线 → 你得分
+}
+
+/* ---------- 结算屏背景演示:双方挡板自动回球 ---------- */
+function startDemo(){
+  phase='serve';rally=0;b.trail.length=0;
+  b.sp=BASE*.85;b.x=(CX0+CX1)/2;b.y=(CY0+CY1)/2;b.spin=0;
+  var a=(frnd()*2-1)*.55;
+  b.vx=b.sp*Math.sin(a);b.vy=(frnd()<.5?-1:1)*b.sp*Math.cos(a);
+}
+function demoRun(dt){
+  b.vx+=b.spin*dt;b.spin=0;b.vx=clamp(b.vx,-b.sp*.9,b.sp*.9);
+  b.x+=b.vx*dt;b.y+=b.vy*dt;
+  if(b.x<CX0+b.r){b.x=CX0+b.r;b.vx=Math.abs(b.vx)}
+  if(b.x>CX1-b.r){b.x=CX1-b.r;b.vx=-Math.abs(b.vx)}
+  var st=S*.95*dt,c1=b.x;
+  pl.x=clamp(pl.x+clamp(c1-pl.x,-st,st),PMIN,PMAX);
+  cp.x=clamp(cp.x+clamp(c1-cp.x,-st*.9,st*.9),PMIN,PMAX);
+  if(b.vy>0&&b.y+b.r>=pl.y&&b.y-b.r<=pl.y+PH+b.r+8){demoBounce(pl,true)}
+  else if(b.vy<0&&b.y-b.r<=cp.y+PH&&b.y+b.r>=cp.y-PH-b.r-8){demoBounce(cp,false)}
+  else if(b.y<CY0-30||b.y>CY1+30){startDemo()}
+  var cap=LOWEND?2:4;
+  b.trail.push({x:b.x,y:b.y});while(b.trail.length>cap)b.trail.shift();
+}
+function demoBounce(p,isPl){
+  var off=clamp((b.x-p.x)/(PW/2),-1,1);
+  var ang=clamp(off*MAXANG*.9,-1.1,1.1),dir=isPl?-1:1;
+  b.vx=b.sp*Math.sin(ang);b.vy=dir*b.sp*Math.cos(ang);
+  b.y=isPl?p.y-b.r-1:p.y+PH+b.r+1;
+}
+
+/* ---------- 主循环 ---------- */
+function update(dt){
+  updFx(dt);
+  if(flashP>0)flashP=Math.max(0,flashP-dt*2.4);
+  if(flashA>0)flashA=Math.max(0,flashA-dt*2.4);
+  if(state!=='play'){demoRun(dt);return}
+  moveP(dt);moveC(dt);
+  if(phase==='serve'){stick();serveT-=dt;if(serveT<=0)launch();return}
+  if(phase==='gap'){gapT-=dt;if(gapT<=0){if(pendingOver){pendingOver=false;gameOver()}else startServe()}return}
+  physics(dt);
+}
+
+/* ---------- 绘制 ---------- */
+function makeGrad(){
+  var g=ctx.createLinearGradient(0,CY0,0,CY1);
+  g.addColorStop(0,'#241a4d');g.addColorStop(.5,'#1a1238');g.addColorStop(1,'#241a4d');
+  return g;
+}
+function rr(x,y,w,h,r,c){
+  ctx.fillStyle=c;ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();ctx.fill();
+}
+function txt(s,x,y,g,c,al,a){
+  ctx.globalAlpha=(a===undefined)?1:a;
+  ctx.fillStyle=c;ctx.textAlign=al||'center';ctx.textBaseline='middle';
+  ctx.font='900 '+g+'px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText(s,x,y);ctx.globalAlpha=1;
+}
+function draw(){
+  ctx.fillStyle='#0d0820';ctx.fillRect(0,0,VW,VH);
+  if(!grd)grd=makeGrad();
+  ctx.fillStyle=grd;ctx.fillRect(CX0,CY0,CX1-CX0,CY1-CY0);
+  /* 球台边缘(上下各一条)+ 边框 */
+  var eh=Math.max(4,Math.round(S*.012));
+  rr(CX0-6,CY0-eh-2,CX1-CX0+12,eh,Math.round(eh/2),'#5c2fd0');
+  rr(CX0-6,CY1+2,CX1-CX0+12,eh,Math.round(eh/2),'#5c2fd0');
+  ctx.strokeStyle='rgba(216,184,255,.32)';ctx.lineWidth=2;
+  ctx.strokeRect(CX0,CY0,CX1-CX0,CY1-CX0);
+  /* 场外压暗,突出球台 */
+  if(!LOWEND){
+    ctx.fillStyle='rgba(255,255,255,.05)';
+    ctx.fillRect(0,0,VW,CY0-eh);ctx.fillRect(0,CY1+eh,VW,VH-CY1-eh);
+  }
+  /* 中线(半透明) */
+  var my2=(CY0+CY1)/2;
+  ctx.strokeStyle='rgba(255,255,255,.13)';ctx.lineWidth=Math.max(1,Math.round(S*.004));
+  ctx.setLineDash([Math.round(S*.04),Math.round(S*.035)]);
+  ctx.beginPath();ctx.moveTo(CX0,my2);ctx.lineTo(CX1,my2);ctx.stroke();
+  ctx.setLineDash([]);
+  /* 比分水印 */
+  var gs=Math.round(S*.2);
+  txt(String(cpu),(CX0+CX1)/2,CY0+(my2-CY0)*.5,gs,'rgba(255,157,157,.16)');
+  txt(String(my),(CX0+CX1)/2,my2+(CY1-my2)*.5,gs,'rgba(158,232,255,.18)');
+  /* 难度角标 */
+  txt('难度·'+DN[DIFF]+' x'+(DIFF+1),CX0+Math.round(S*.03),CY0+Math.round(S*.032),Math.round(S*.028),'rgba(255,255,255,.42)','left');
+  txt('速度 '+Math.round(b.sp/BASE*100)+'%',CX1-Math.round(S*.03),CY0+Math.round(S*.032),Math.round(S*.026),'rgba(255,255,255,.34)','right');
+  /* 得分闪光 */
+  if(flashP>0){ctx.fillStyle='rgba(158,232,255,'+(flashP*.2)+')';ctx.fillRect(CX0,my2,CX1-CX0,CY1-my2)}
+  if(flashA>0){ctx.fillStyle='rgba(255,157,157,'+(flashA*.2)+')';ctx.fillRect(CX0,CY0,CX1-CX0,my2-CY0)}
+  /* 挡板 */
+  rr(cp.x-PW/2,cp.y,PW,PH,PH/2,'#ff9d9d');
+  rr(pl.x-PW/2,pl.y,PW,PH,PH/2,'#9ee8ff');
+  /* 球拖尾 */
+  for(var i=0;i<b.trail.length;i++){
+    var t=b.trail[i],k=(i+1)/b.trail.length;
+    ctx.globalAlpha=k*.4;ctx.fillStyle='#ffd45c';
+    ctx.beginPath();ctx.arc(t.x,t.y,b.r*(.3+k*.6),0,6.283);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  /* 球 */
+  var dim=(phase==='gap')?.35:1;
+  if(!LOWEND&&dim===1){ctx.shadowColor='#ffd45c';ctx.shadowBlur=Math.round(S*.05)}
+  ctx.globalAlpha=dim;ctx.fillStyle='#fff3c4';
+  ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();
+  ctx.shadowBlur=0;ctx.fillStyle='#ffd45c';
+  ctx.beginPath();ctx.arc(b.x,b.y,b.r*.62,0,6.283);ctx.fill();
+  ctx.globalAlpha=1;
+  /* 发球提示 */
+  if(state==='play'&&phase==='serve'){
+    txt('发 球 '+serveT.toFixed(1),b.x,b.y+(server==='p'?-S*.06:S*.06),Math.round(S*.04),'#ffd45c','center',.85);
+  }
+  /* 飘字 */
+  for(var j=0;j<fx.length;j++){var f=fx[j];txt(f.s,f.x,f.y,f.g,f.c,'center',clamp(f.a,0,1))}
+}
+
+/* ---------- HUD ---------- */
+function updHud(){
+  $('hscore').textContent=my;$('hcpu').textContent=cpu;$('hrally').textContent=rally;
+}
+
+/* ---------- 难度 ---------- */
+function setDiff(v){
+  DIFF=clamp(v|0,0,2);lsSet('pong_diff',DIFF);
+  setSpeed();syncDiff();
+  $('mini').innerHTML=miniTxt();
+  if(state==='play'){fxPush('难度 · '+DN[DIFF],(CX0+CX1)/2,(CY0+CY1)/2,'#d8b8ff',Math.round(S*.055));buzz(10)}
+  tone(420+DIFF*160,.08,'triangle',.05);
+}
+function syncDiff(){
+  for(var i=0;i<3;i++){var el=$('d'+i);if(el)el.classList[i===DIFF?'add':'remove']('cur')}
+  var bd=$('btndiff');if(bd)bd.textContent='难度·'+DN[DIFF];
+}
+function miniTxt(){
+  return '历史最高 <b>'+KIT.best()+'</b> · 已玩 <b>'+KIT.plays()+'</b> 局 · 连续打卡 <b>'+KIT.streakNow()+'</b> 天<br>当前难度 <b>'+DN[DIFF]+'</b>(得分系数 x'+(DIFF+1)+'),打越难越上榜';
+}
+
+/* ---------- 流程 ---------- */
+function startGame(){
+  KIT.streak();actx();
+  my=0;cpu=0;SCORE=0;rally=0;bestRally=0;fx=[];flashP=0;flashA=0;pendingOver=false;
+  firstServer=(rnd(2)?'p':'a');server=firstServer;
+  pl.tx=null;padDir=0;keys.l=0;keys.r=0;
+  setSpeed();startServe();updHud();syncDiff();
+  state='play';
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  tone(520,.09,'triangle',.05,720);
+}
+function gameOver(){
+  state='over';KIT.addPlay();
+  var win=my>cpu;
+  SCORE=Math.round(my*(DIFF+1));
+  var rec=KIT.setBest(SCORE);
+  $('onewrec').style.display=rec?'block':'none';
+  $('ostats').innerHTML=
+    '你 <b>'+my+'</b> : '+cpu+' 对手<br>'+
+    (win?'✅ 你赢了':'❌ 你输了')+' · 难度 '+DN[DIFF]+(win?'(x'+(DIFF+1)+')':'')+'<br>'+
+    '最长回合 <b>'+bestRally+'</b> 拍<br>'+
+    '本场得分 <b>'+SCORE+'</b> · 历史最高:'+KIT.best()+'<br>'+
+    '已玩 '+KIT.plays()+' 局';
+  var ot=document.querySelector('#over .title');
+  if(ot)ot.textContent=win?'你 赢 了 !':'惜 败 一 局';
+  $('mini2').innerHTML='得分 = 你本场得分 x 难度系数(菜鸟 x1 / 老手 x2 / 国手 x3)<br>当前难度 <b>'+DN[DIFF]+'</b>';
+  if(win)sndWin();else sndLose();
+  buzz(win?[18,60,26]:[30,90,14]);
+  startDemo();
+}
+
+/* ---------- 输入 ---------- */
+cv.addEventListener('pointerdown',function(e){
+  e.preventDefault();actx();
+  if(state==='play'){dragging=true;pl.tx=e.clientX}
+},{passive:false});
+cv.addEventListener('pointermove',function(e){
+  e.preventDefault();
+  if(state!=='play')return;
+  if(dragging||e.pointerType==='mouse')pl.tx=e.clientX;
+},{passive:false});
+function endDrag(){dragging=false;pl.tx=null}
+cv.addEventListener('pointerup',function(e){e.preventDefault();endDrag()},{passive:false});
+cv.addEventListener('pointercancel',endDrag);
+cv.addEventListener('pointerleave',endDrag);
+window.addEventListener('pointerup',endDrag);
+
+function bindHold(id,dir){
+  var el=$(id);if(!el)return;
+  var on=function(e){e.preventDefault();padDir=dir;el.classList.add('on');actx()};
+  var off=function(){if(padDir===dir)padDir=0;el.classList.remove('on')};
+  el.addEventListener('pointerdown',on,{passive:false});
+  el.addEventListener('pointerup',off,{passive:false});
+  el.addEventListener('pointerleave',off);
+  el.addEventListener('pointercancel',off);
+}
+bindHold('btnleft',-1);bindHold('btnright',1);
+$('btndiff').addEventListener('click',function(){setDiff((DIFF+1)%3)});
+$('d0').addEventListener('click',function(){setDiff(0)});
+$('d1').addEventListener('click',function(){setDiff(1)});
+$('d2').addEventListener('click',function(){setDiff(2)});
+
+window.addEventListener('keydown',function(e){
+  var k=e.key;
+  if(k==='ArrowLeft'||k==='a'||k==='A'){keys.l=1;e.preventDefault()}
+  else if(k==='ArrowRight'||k==='d'||k==='D'){keys.r=1;e.preventDefault()}
+  else if(k==='ArrowUp'||k==='ArrowDown'||k===' '||k==='Enter'){
+    e.preventDefault();
+    if((k===' '||k==='Enter')&&state!=='play')startGame();
+  }
+  else if(k==='1'){setDiff(0)}else if(k==='2'){setDiff(1)}else if(k==='3'){setDiff(2)}
+});
+window.addEventListener('keyup',function(e){
+  var k=e.key;
+  if(k==='ArrowLeft'||k==='a'||k==='A')keys.l=0;
+  if(k==='ArrowRight'||k==='d'||k==='D')keys.r=0;
+});
+document.addEventListener('contextmenu',function(e){e.preventDefault()});
+
+$('startbtn').addEventListener('click',startGame);
+$('againbtn').addEventListener('click',startGame);
+$('sharebtn').addEventListener('click',function(){
+  share('我在「乒乓对决 · 大屏版」'+(my>cpu?'赢了':'输了')+' '+my+':'+cpu+
+    ',最长回合 '+bestRally+' 拍,难度'+DN[DIFF]+',得分 '+SCORE+'!来比比? '+location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+
+/* ---------- 启动 ---------- */
+resize();
+syncDiff();
+$('mini').innerHTML=miniTxt();
+startDemo();
+updHud();
+draw();
+run();
+
+})();
+</script>
+
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='pong'});
+  r.unshift({k:'pong',n:'乒乓对决',e:'🏓'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:定期把本游戏自己的最高分同步进共享的 __best
+     (不用劫持 localStorage.setItem —— 那在部分环境下属性不可写会静默失败) */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['pong_best','pong_hi','pong_max','pong_score'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['pong']||0)){
+            B['pong']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>我的战绩 · 童年游戏路口</title>
-<meta name="description" content="我的游戏战绩:42款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
+<meta name="description" content="我的游戏战绩:50款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
 <meta property="og:title" content="我的战绩 · 童年游戏路口">
-<meta property="og:description" content="42款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
+<meta property="og:description" content="50款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#181030">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -127,8 +127,14 @@ function $(id){return document.getElementById(id)}
 function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
 function jp(k,d){try{return JSON.parse(lg(k,JSON.stringify(d)))||d}catch(e){return d}}
 
-/* 42 款游戏清单(与大厅卡片一致) */
+/* 45 款游戏清单(与大厅卡片一致) */
 var GAMES=[
+  ['golf','迷你高尔夫','⛳','casual'],
+  ['bowling','保龄球','🎳','action'],
+  ['tetris','俄罗斯方块','🧱','puzzle'],
+  ['zuma','祖玛','🔮','puzzle'],
+  ['pinball','弹珠台','🎰','action'],
+  ['memory','记忆翻牌','🃏','puzzle'],['mole','打地鼠','🔨','action'],['pong','乒乓对决','🏓','action'],
   ['slingshot','弹弓小鸟','🐦','action'],['fish','钓鱼达人','🎣','casual'],['parking','停车场华容道','🚗','puzzle'],
   ['ice','冰面滑行','🧊','puzzle'],['tangram','七巧板','🧩','puzzle'],['ludo','飞行棋','🎲','board'],
   ['checkers','国际跳棋','♟️','board'],['blackjack','21点','🃏','board'],
@@ -147,6 +153,8 @@ var GAMES=[
   ['diner','喵喵食堂','🍜','casual'],['moyu','摸鱼乐园','🐟','casual']
 ];
 var TOTAL=GAMES.length;
+/* 半程阈值跟着总数走,以后加游戏不用再改 */
+var HALF=Math.ceil(TOTAL/2);
 
 /* 站内路径:主站部署在 /stats/ 下,游戏在兄弟目录 */
 var PREFIX=(/^\/stats/.test(location.pathname))?'../':'./';
@@ -216,7 +224,7 @@ var maxBest=0;
 Object.keys(best).forEach(function(k){var v=+best[k]||0;if(v>maxBest)maxBest=v});
 var ACHS=[
   {e:'🎮',n:'初次上路',d:'玩过 1 款游戏',ok:playedCount>=1},
-  {e:'🗺️',n:'半程旅人',d:'玩过 21 款游戏',ok:playedCount>=21},
+  {e:'🗺️',n:'半程旅人',d:'玩过 '+HALF+' 款游戏',ok:playedCount>=HALF},
   {e:'👑',n:'全能王',d:'全部 '+TOTAL+' 款都玩过',ok:playedCount>=TOTAL},
   {e:'🔥',n:'火苗三天',d:'连续打卡 3 天',ok:streak>=3},
   {e:'🏅',n:'一周不断',d:'连续打卡 7 天',ok:streak>=7},
