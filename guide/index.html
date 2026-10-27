@@ -60,7 +60,7 @@ mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
 </head>
 <body>
 <header>
-  <div class="wrap"><h1>📖 游戏总攻略</h1>
+  <div class="wrap" id="pagetop"><h1>📖 游戏总攻略</h1>
   <p>各种游戏路口 · 全部游戏唯一攻略站 · 收藏这一个就够了</p></div>
 </header>
 <div class="wrap">
@@ -75,6 +75,12 @@ mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
   <a href="/diner/">🐱 喵喵食堂</a><a href="/moyu/">🐟 摸鱼乐园</a><a href="/knife/">🗡️ 飞刀</a><a href="/tower/">🏰 塔防</a><a href="/stairs/">🪜 下一百层</a><a href="/fifteen/">🧩 华容道</a><a href="/nono/">🔢 数织</a><a href="/mahjong/">🀄 麻将</a><a href="/connect/">🔴 四子棋</a><a href="/hexa/">🧱 六边形</a><a href="/brick/">🏐 打砖块</a><a href="/plane/">🚀 雷霆战机</a><a href="/mine/">💣 扫雷</a><a href="/box/">📦 推箱子</a><a href="/gomoku/">⚫ 五子棋</a><a href="/jungle/">🦁 斗兽棋</a><a href="/water/">🧪 倒水</a><a href="/bubble/">🫧 捏泡泡</a>
 <a href="/bomb/">💣 炸弹人</a><a href="/billiards/">🎱 台球</a><a href="/darts/">🎯 飞镖</a><a href="/flow/">🚇 连线</a><a href="/euler/">🎨 一笔画</a><a href="/mind/">🔐 密码</a><a href="/piano/">🎹 钢琴块</a><a href="/solitaire/">🃏 接龙</a><a href="/slingshot/">🐦 弹弓</a><a href="/fish/">🎣 钓鱼</a><a href="/parking/">🚗 停车场</a><a href="/ice/">🧊 冰面</a><a href="/tangram/">🧩 七巧板</a><a href="/ludo/">🎲 飞行棋</a><a href="/checkers/">♟️ 跳棋</a><a href="/blackjack/">🃏 21点</a><a href="/tictactoe/">⭕ 井字棋</a><a href="/hanoi/">🗼 汉诺塔</a><a href="/matchstick/">🔥 火柴</a><a href="/wheel/">🎡 转盘</a><a href="/reaction/">⚡ 手速</a><a href="/crossy/">🐔 过马路</a><a href="/jenga/">🏗️ 层层叠</a><a href="/claw/">🧸 夹娃娃</a><a href="/bulls/">🔢 猜数字</a><a href="/make24/">🃏 24点</a><a href="/spotdiff/">🔍 找不同</a><a href="/rps/">✊ 猜拳</a><a href="/doodle/">🟢 跳跳球</a><a href="/basketball/">🏀 投篮</a><a href="/spy/">🕵️ 卧底</a><a href="/coloring/">🎨 填色</a><a href="/rhythm/">🎵 节奏</a><a href="/rope/">🪢 跳绳</a><a href="/idiom/">📜 成语</a><a href="/trivia/">❓ 问答</a><a href="/scratch/">🎫 刮刮乐</a><a href="/pet/">🐣 宠物</a><a href="/idle/">⛏️ 矿场</a><a href="/swing/">🧗 摆荡</a><a href="/popstar/">⭐ 消星星</a><a href="/duopong/">🏓 双人乒乓</a><a href="/muyu/">🙏 木鱼</a><a href="/flash/">👁️ 瞬记</a><a href="/fireworks/">🎆 烟花</a><a href="/balance/">🎪 平衡</a><a href="/aim/">👻 猎人</a><a href="/toss/">🧺 套圈</a><a href="/gold/">🪙 矿工</a><a href="/maze/">🧭 迷宫</a><a href="/poem/">🎋 诗词</a><a href="/hidden/">🌄 搜寻</a><a href="/drawn/">✏️ 画线</a><a href="/tonepin/">🎼 音感</a><a href="/slalom/">⛷️ 滑雪</a><a href="/duel/">🆚 反应</a><a href="/stroop/">🔷 颜色</a><a href="/coinpush/">💰 推币</a><a href="/emojiriddle/">🤔 猜谜</a><a href="/penalty/">⚽ 点球</a><a href="/wire/">✂️ 剪线</a><a href="/skipstone/">🌊 水漂</a><a href="/monte/">🎴 三张牌</a><a href="/schulte/">🔟 方格</a><a href="/laser/">🔦 激光</a><a href="/dive/">🤿 跳水</a><a href="/cashier/">💵 收银</a><a href="/bee/">🐝 蜜蜂</a><a href="/moto/">🏍️ 飞车</a><a href="/clock/">⏰ 时钟</a><a href="/scale/">⚖️ 天平</a><a href="/glider/">🪂 滑翔</a></nav>
 
+<div class="cnav">
+  <b>📑 快速跳转:</b>
+  <a href="#pagetop">⬆ 页首</a>
+  <a href="#fc">🕹️ FC合集</a>
+  <a href="#games">🎮 独立游戏</a>
+</div>
 <div class="gsearch" id="gsbar">
   <div class="in">
     <input id="gq" type="search" placeholder="搜攻略:飞行棋 / 停车 / 扫雷 / 五子棋…" autocomplete="off">
@@ -83,6 +89,12 @@ mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
 </div>
 <div class="gempty" id="gempty">没找到这游戏的攻略,换个词试试</div>
 
+<style>.cnav{margin:14px 0;padding:12px 14px;background:rgba(255,255,255,.05);border-radius:12px;line-height:2.2}
+.cnav a{display:inline-block;margin:2px 6px 2px 0;padding:3px 12px;border-radius:99px;background:rgba(255,255,255,.08);color:#c8f0d8;text-decoration:none;font-size:13px}
+.cnav a:active{background:rgba(255,255,255,.2)}
+.gtop{position:fixed;right:14px;bottom:18px;z-index:50;border:0;width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.15);color:#fff;font-size:17px;cursor:pointer;display:none;font-family:inherit;
+  border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)}</style>
 <div class="fcnav">
   <b>🕹️ FC游戏厅 31合1 · 攻略快速跳转:</b><br>
   <a href="#fc">通用</a><a href="#fc-melon">🍉大西瓜</a><a href="#fc-tetris">🧱方块</a><a href="#fc-snake">🐍贪吃蛇</a><a href="#fc-breakout">🏓砖块</a>
@@ -304,7 +316,7 @@ mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
   <div class="tip"><b>技巧:</b>① 默念颜色口诀(红蓝绿黄…)比记位置牢;② 长序列分段记(前4后4);③ 音调每个颜色不同,听声辅助记忆。</div>
 </div>
 
-<h2>🎮 独立游戏(大屏专属版)</h2>
+<h2 id="games">🎮 独立游戏(大屏专属版)</h2>
 
 <h3>🍬 糖果消消乐</h3>
 <div class="card">
@@ -1553,6 +1565,14 @@ gt.addEventListener('click',function(){
   requestAnimationFrame(step);
 });
 onScroll();
+})();
+</script>
+<button class="gtop" id="gtopbtn" type="button" aria-label="返回顶部">⬆</button>
+<script>
+(function(){
+  var b=document.getElementById("gtopbtn");
+  window.addEventListener("scroll",function(){b.style.display=window.scrollY>500?"block":"none"},{passive:true});
+  b.addEventListener("click",function(){try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){window.scrollTo(0,0)}});
 })();
 </script>
 </body>

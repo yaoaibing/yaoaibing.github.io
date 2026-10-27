@@ -45,7 +45,9 @@ header p{font-size:13px;color:#b8a8d8;margin-top:8px;letter-spacing:2px}
 .searchbox:before{content:'🔍';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.6}
 
 /* 分类 */
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  position:sticky;top:0;z-index:30;background:linear-gradient(180deg,rgba(24,16,48,.97) 70%,rgba(24,16,48,.85));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin:0 -14px;border-bottom:1px solid rgba(255,255,255,.06)}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#d8ccee;
   border-radius:999px;padding:7px 15px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
@@ -70,6 +72,9 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
   border:1px solid rgba(255,255,255,.12);transition:transform .12s;animation:pop .28s both}
 .card.hide{display:none}
 .card:active{transform:scale(.97)}
+@media (hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.35);border-color:rgba(255,255,255,.25)}
+.card:hover .em{transform:scale(1.12) rotate(-4deg)}
+.card .em{transition:transform .18s}}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
 .card .em{font-size:36px;line-height:1;display:block;margin-bottom:9px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
 .card b{font-size:16px;display:block;letter-spacing:1px}
@@ -229,7 +234,7 @@ footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-heigh
     <a class="statbar" href="./stats/">📊 我的战绩</a>
   </div>
 
-  <div class="searchbox"><input id="q" type="search" placeholder="搜游戏:跑酷 / 扫雷 / 五子棋…" autocomplete="off"></div>
+  <div class="searchbox"><input id="q" type="search" placeholder="搜游戏:跑酷 / 扫雷 / 五子棋…(按 / 快速搜索)" autocomplete="off"></div>
 
   <div class="tabs" id="tabs">
     <button class="tab on" data-cat="all" type="button">全部</button>
@@ -693,6 +698,15 @@ $('share').addEventListener('click',function(){
   try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
 });
 
+/* 分类计数徽标 */
+(function(){
+  var cnts={all:cards.length};
+  cards.forEach(function(c){var k=c.getAttribute('data-cat');cnts[k]=(cnts[k]||0)+1});
+  [].slice.call(document.querySelectorAll('.tab')).forEach(function(t){
+    var k=t.getAttribute('data-cat');
+    if(k&&cnts[k])t.innerHTML=t.textContent+'<i style="font-style:normal;opacity:.75;font-size:10.5px;margin-left:4px">'+cnts[k]+'</i>';
+  });
+})();
 renderRecent();
 renderRec();
 apply();

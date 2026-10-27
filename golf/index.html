@@ -813,7 +813,7 @@ function drawAim(){
   ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;
   ctx.setLineDash([6,7]);
   ctx.beginPath();ctx.moveTo(X,Y);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.setLineDash(null);
+  ctx.setLineDash([]);
   var ang=Math.atan2(-G.ay,G.ax),ar=Math.max(6,SC*3);
   ctx.beginPath();ctx.moveTo(ex,ey);
   ctx.lineTo(ex-Math.cos(ang-0.45)*ar,ey-Math.sin(ang-0.45)*ar);
