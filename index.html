@@ -163,6 +163,8 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
   background:rgba(255,255,255,.13);color:#fff;font-size:17px;border:1px solid rgba(255,255,255,.2);
   backdrop-filter:blur(6px);display:none;cursor:pointer;font-family:inherit}
 #totop:active{transform:scale(.94)}
+.shufbtn,.sech button{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#ffd45c;font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 13px;cursor:pointer;font-family:inherit;letter-spacing:1px}
+.shufbtn:active{transform:scale(.94)}
 .empty{text-align:center;color:#8a7aa8;font-size:13px;padding:30px 0}
 
 /* 分享 */
@@ -199,7 +201,7 @@ footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-heigh
   </div>
 
   <div id="recwrap" style="display:none">
-    <h2>🎲 今日推荐</h2>
+    <h2 style="display:flex;align-items:center;gap:12px">🎲 今日推荐<button id="recshuffle" type="button">🔄 换一批</button></h2>
     <div class="grid" id="rec"></div>
   </div>
 
@@ -505,10 +507,11 @@ function renderRecent(){
 }
 
 /* 今日推荐:按日期取当天固定的 3 款 */
-function renderRec(){
+function renderRec(seed){
   var pool=cards.filter(function(c){return !c.classList.contains('big')});
   if(pool.length<4)return;
-  var d=new Date(),seed=d.getFullYear()*372+d.getMonth()*31+d.getDate();
+  var d=new Date();
+  if(seed===undefined)seed=d.getFullYear()*372+d.getMonth()*31+d.getDate();
   var idx=[],i=0;
   while(idx.length<4&&i<200){
     seed=(seed*1103515245+12345)&0x7fffffff;
@@ -519,7 +522,7 @@ function renderRec(){
   $('rec').innerHTML=idx.map(function(k){
     var c=pool[k];
     var cl=c.cloneNode(true);
-    cl.style.animation='none';
+    cl.style.animationDelay=((idx.indexOf(k)||0)*0.06)+'s';
     return cl.outerHTML;
   }).join('');
   $('recwrap').style.display='block';
@@ -551,6 +554,10 @@ $('share').addEventListener('click',function(){
 renderRecent();
 renderRec();
 apply();
+var recShuffle=document.getElementById('recshuffle');
+if(recShuffle)recShuffle.addEventListener('click',function(){
+  renderRec((Math.random()*900000000)|0);
+});
 })();
 </script>
 </body>
