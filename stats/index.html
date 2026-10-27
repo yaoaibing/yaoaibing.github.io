@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>我的战绩 · 童年游戏路口</title>
+<title>我的战绩 · 各种游戏路口</title>
 <meta name="description" content="我的游戏战绩:50款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
-<meta property="og:title" content="我的战绩 · 童年游戏路口">
+<meta property="og:title" content="我的战绩 · 各种游戏路口">
 <meta property="og:description" content="50款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#181030">
@@ -262,7 +262,7 @@ $('s3').textContent=playedCount+'/'+TOTAL;
 $('share').addEventListener('click',function(){
   var top3=rows.filter(function(r){return r.sc>0}).slice(0,3)
     .map(function(r){return r.e+r.n+' '+r.sc}).join(' / ');
-  var txt='我在「童年游戏路口」玩了 '+plays+' 次,打卡 '+streak+' 天'+
+  var txt='我在「各种游戏路口」玩了 '+plays+' 次,打卡 '+streak+' 天'+
     (top3?',最高分:'+top3:'')+'。'+TOTAL+' 款小游戏随便玩,来比比? '+
     'https://yaoaibing.github.io/stats/';
   if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
