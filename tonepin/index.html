@@ -239,6 +239,8 @@ function drawEm(em,x,y,px){
 var NAME='音感测试 · 绝对耳力';
 var state='start',round=0,correct=0,time=0;
 var f1=0,f2=0,higher=0,qT=10,selT=0,selOk=false;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+
 function playPair(){
   tone(f1,.5,'sine',.09);
   setTimeout(function(){tone(f2,.5,'sine',.09)},750);
