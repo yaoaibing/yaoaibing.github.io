@@ -127,7 +127,7 @@ function $(id){return document.getElementById(id)}
 function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
 function jp(k,d){try{return JSON.parse(lg(k,JSON.stringify(d)))||d}catch(e){return d}}
 
-/* 98 款游戏清单(与大厅卡片一致) */
+/* 106 款游戏清单(与大厅卡片一致) */
 var GAMES=[
   ['tictactoe','井字棋','⭕','board'],
   ['hanoi','汉诺塔','🗼','puzzle'],
@@ -177,6 +177,14 @@ var GAMES=[
   ['skipstone','打水漂','🌊','casual'],
   ['monte','三张牌','🎴','casual'],
   ['schulte','舒尔特方格','🔟','puzzle'],
+  ['laser','激光迷宫','🔦','puzzle'],
+  ['dive','跳水表演','🤿','action'],
+  ['cashier','收银员','💵','casual'],
+  ['bee','蜜蜂酿蜜','🐝','puzzle'],
+  ['moto','飞车特技','🏍️','action'],
+  ['clock','认识时钟','⏰','puzzle'],
+  ['scale','天平称重','⚖️','puzzle'],
+  ['glider','滑翔伞','🪂','casual'],
   ['golf','迷你高尔夫','⛳','casual'],
   ['bowling','保龄球','🎳','action'],
   ['tetris','俄罗斯方块','🧱','puzzle'],
