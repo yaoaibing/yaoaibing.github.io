@@ -127,8 +127,16 @@ function $(id){return document.getElementById(id)}
 function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
 function jp(k,d){try{return JSON.parse(lg(k,JSON.stringify(d)))||d}catch(e){return d}}
 
-/* 45 款游戏清单(与大厅卡片一致) */
+/* 58 款游戏清单(与大厅卡片一致) */
 var GAMES=[
+  ['tictactoe','井字棋','⭕','board'],
+  ['hanoi','汉诺塔','🗼','puzzle'],
+  ['matchstick','火柴算式','🔥','puzzle'],
+  ['wheel','幸运大转盘','🎡','casual'],
+  ['reaction','手速大挑战','⚡','casual'],
+  ['crossy','过马路小鸡快跑','🐔','action'],
+  ['jenga','层层叠','🏗️','action'],
+  ['claw','夹娃娃机','🧸','casual'],
   ['golf','迷你高尔夫','⛳','casual'],
   ['bowling','保龄球','🎳','action'],
   ['tetris','俄罗斯方块','🧱','puzzle'],
