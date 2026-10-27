@@ -148,6 +148,10 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .sech{font-size:14px;color:#ffd45c;letter-spacing:2px;margin:22px 4px 10px;display:flex;align-items:center;gap:8px}
 .sech b{font-size:11.5px;color:#8a7aa8;font-weight:600;letter-spacing:0}
 .sech:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,212,92,.4),transparent)}
+.sech{cursor:pointer;user-select:none}
+.sech .chev{font-size:10px;color:#8a7aa8;margin:0 10px 0 8px;transition:transform .18s;display:inline-block}
+.sech.col .chev{transform:rotate(-90deg)}
+.sech.col b{opacity:.6}
 .secgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .card.fav{border-color:rgba(255,212,92,.6);box-shadow:0 0 0 1px rgba(255,212,92,.3),0 6px 20px rgba(255,212,92,.14)}
 .favstar{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:10px;border:0;background:rgba(0,0,0,.3);
@@ -327,13 +331,14 @@ var sections={};
 cards.forEach(function(c,i){c._ord=i});
 CATS.forEach(function(ct){
   var h=document.createElement('div');h.className='sech';h.setAttribute('data-sech',ct[0]);
+  h.innerHTML='<span>'+ct[1]+'</span><b></b><span class="chev">▼</span>';
   var g=document.createElement('div');g.className='secgrid';g.setAttribute('data-secg',ct[0]);
   listEl.appendChild(h);listEl.appendChild(g);
-  sections[ct[0]]={h:h,g:g,name:ct[1]};
+  sections[ct[0]]={h:h,g:g,name:ct[1],n:h.querySelector('b')};
 });
-var favH=document.createElement('div');favH.className='sech';favH.setAttribute('data-sech','fav');
+var favH=document.createElement('div');favH.className='sech';favH.setAttribute('data-sech','fav');var favN;
 var favG=document.createElement('div');favG.className='secgrid';favG.setAttribute('data-secg','fav');
-listEl.appendChild(favH);listEl.appendChild(favG);
+favH.innerHTML='<span>⭐ 我的收藏</span><b></b><span class="chev">▼</span>';favN=favH.querySelector('b');listEl.appendChild(favH);listEl.appendChild(favG);
 cards.forEach(function(c){
   var cat=c.getAttribute('data-cat');
   if(sections[cat])sections[cat].g.appendChild(c);
@@ -377,6 +382,9 @@ function refreshFavSec(){
   var has=favs.length>0;
   favH.style.display=has?'flex':'none';
 }
+var FOLDKEY='hub_fold';
+var fold=(function(){try{return JSON.parse(localStorage.getItem(FOLDKEY)||'{}')||{}}catch(e){return{}}})();
+function saveFold(){try{localStorage.setItem(FOLDKEY,JSON.stringify(fold))}catch(e){}}
 refreshFavSec();
 CATS.forEach(function(ct){sortSection(sections[ct[0]].g)});
 
@@ -396,8 +404,9 @@ function apply(){
     });
     var secShow=secHit>0&&(viewAll||key===cat);
     sec.h.style.display=secShow?'flex':'none';
-    sec.g.style.display=secShow?'grid':'none';
-    if(secShow)sec.h.innerHTML=sec.name+'<b>'+secHit+' 款</b>';
+    var folded=fold[key]&&!kw;
+    sec.g.style.display=(secShow&&!folded)?'grid':'none';
+    if(secShow){sec.n.textContent=secHit+' 款';sec.h.classList.toggle('col',!!folded)}
   });
   var favHit=0;
   [].slice.call(favG.children).forEach(function(c){
@@ -406,13 +415,20 @@ function apply(){
     c.classList.toggle('hide',!show);
     if(show)favHit++;
   });
-  favH.style.display=(viewFav&&favHit>0)?'flex':'none';
-  favG.style.display=(viewFav&&favHit>0)?'grid':'none';
-  if(viewFav)favH.innerHTML='⭐ 我的收藏<b>'+favHit+' 款</b>';
+  var favShow=viewFav&&favHit>0;
+  favH.style.display=favShow?'flex':'none';
+  favG.style.display=(favShow&&!fold.fav&&!kw)?'grid':'none';
+  if(favShow){favN.textContent=favHit+' 款';favH.classList.toggle('col',!!fold.fav&&!kw)}
   hit=viewFav?favHit:hit;
   $('empty').style.display=hit?'none':'block';
   $('listtitle').textContent=viewAll?'🎮 全部游戏':viewFav?'⭐ 我的收藏':CATNAME[cat]||'🎮 全部游戏';
 }
+listEl.addEventListener('click',function(e){
+  var h=e.target.closest('.sech');if(!h)return;
+  var k=h.getAttribute('data-sech');if(!k)return;
+  e.preventDefault();e.stopPropagation();
+  fold[k]=!fold[k];saveFold();apply();
+});
 document.getElementById('tabs').addEventListener('click',function(e){
   var b=e.target.closest('.tab');if(!b||b.id==='dice')return;
   [].slice.call(this.children).forEach(function(x){x.classList.toggle('on',x===b)});
