@@ -73,7 +73,7 @@ mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
   <a href="/match/">🍬 消消乐</a><a href="/snake/">🐍 蛇蛇</a>
   <a href="/shousui/">🧨 守岁</a><a href="/jump/">🐸 跳一跳</a>
   <a href="/diner/">🐱 喵喵食堂</a><a href="/moyu/">🐟 摸鱼乐园</a><a href="/knife/">🗡️ 飞刀</a><a href="/tower/">🏰 塔防</a><a href="/stairs/">🪜 下一百层</a><a href="/fifteen/">🧩 华容道</a><a href="/nono/">🔢 数织</a><a href="/mahjong/">🀄 麻将</a><a href="/connect/">🔴 四子棋</a><a href="/hexa/">🧱 六边形</a><a href="/brick/">🏐 打砖块</a><a href="/plane/">🚀 雷霆战机</a><a href="/mine/">💣 扫雷</a><a href="/box/">📦 推箱子</a><a href="/gomoku/">⚫ 五子棋</a><a href="/jungle/">🦁 斗兽棋</a><a href="/water/">🧪 倒水</a><a href="/bubble/">🫧 捏泡泡</a>
-<a href="/bomb/">💣 炸弹人</a><a href="/billiards/">🎱 台球</a><a href="/darts/">🎯 飞镖</a><a href="/flow/">🚇 连线</a><a href="/euler/">🎨 一笔画</a><a href="/mind/">🔐 密码</a><a href="/piano/">🎹 钢琴块</a><a href="/solitaire/">🃏 接龙</a><a href="/slingshot/">🐦 弹弓</a><a href="/fish/">🎣 钓鱼</a><a href="/parking/">🚗 停车场</a><a href="/ice/">🧊 冰面</a><a href="/tangram/">🧩 七巧板</a><a href="/ludo/">🎲 飞行棋</a><a href="/checkers/">♟️ 跳棋</a><a href="/blackjack/">🃏 21点</a><a href="/tictactoe/">⭕ 井字棋</a><a href="/hanoi/">🗼 汉诺塔</a><a href="/matchstick/">🔥 火柴</a><a href="/wheel/">🎡 转盘</a><a href="/reaction/">⚡ 手速</a><a href="/crossy/">🐔 过马路</a><a href="/jenga/">🏗️ 层层叠</a><a href="/claw/">🧸 夹娃娃</a></nav>
+<a href="/bomb/">💣 炸弹人</a><a href="/billiards/">🎱 台球</a><a href="/darts/">🎯 飞镖</a><a href="/flow/">🚇 连线</a><a href="/euler/">🎨 一笔画</a><a href="/mind/">🔐 密码</a><a href="/piano/">🎹 钢琴块</a><a href="/solitaire/">🃏 接龙</a><a href="/slingshot/">🐦 弹弓</a><a href="/fish/">🎣 钓鱼</a><a href="/parking/">🚗 停车场</a><a href="/ice/">🧊 冰面</a><a href="/tangram/">🧩 七巧板</a><a href="/ludo/">🎲 飞行棋</a><a href="/checkers/">♟️ 跳棋</a><a href="/blackjack/">🃏 21点</a><a href="/tictactoe/">⭕ 井字棋</a><a href="/hanoi/">🗼 汉诺塔</a><a href="/matchstick/">🔥 火柴</a><a href="/wheel/">🎡 转盘</a><a href="/reaction/">⚡ 手速</a><a href="/crossy/">🐔 过马路</a><a href="/jenga/">🏗️ 层层叠</a><a href="/claw/">🧸 夹娃娃</a><a href="/bulls/">🔢 猜数字</a><a href="/make24/">🃏 24点</a><a href="/spotdiff/">🔍 找不同</a><a href="/rps/">✊ 猜拳</a><a href="/doodle/">🟢 跳跳球</a><a href="/basketball/">🏀 投篮</a><a href="/spy/">🕵️ 卧底</a><a href="/coloring/">🎨 填色</a></nav>
 
 <div class="gsearch" id="gsbar">
   <div class="in">
@@ -942,6 +942,99 @@ mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 1px}
   <div class="tip"><b>拿分要点:</b>① <b>稳字当头</b>:普通娃娃 10 分命中率高,60 秒稳定 20+ 次尝试,把基础分吃满;② 皇冠价值 6 个娃娃但只有两成把握,<b>摇摆到皇冠正上方再下爪</b>,别碰运气;③ 娃娃共三排深度,<b>前排的更容易对准</b>,后排的容易被前排挡住视线;④ 半路滑落的娃娃会掉回机内不亏不赚,<b>连抓失败别上头</b>,回到稳抓节奏;⑤ 时间快到时爪子还在回收也算数,<b>最后 2 秒别点</b>。</div>
   <p><b>结算:</b>收获金币、抓到只数、评级、历史最高金币。</p>
   <p style="margin-top:8px"><a class="play" href="/claw/">▶ 夹娃娃机</a></p>
+</div>
+
+
+<h3 id="bulls">🔢 猜数字 · 1A2B</h3>
+<div class="card">
+  <p><b>目标:</b>电脑藏了 <b>4 个不重复的数字</b>(0-9),猜出它的顺序。每次猜测反馈:<b>A</b>=数字对且位置对的个数,<b>B</b>=数字对但位置错的个数,看到 <b>4A0B</b> 即破解。</p>
+  <table><tr><th>难度</th><th>机会次数</th><th>分数系数</th></tr>
+    <tr><td>简单</td><td>5 次</td><td>×1</td></tr>
+    <tr><td>标准</td><td>8 次</td><td>×1.6</td></tr>
+    <tr><td>练习</td><td>无限</td><td>×0.5(不计入排行)</td></tr></table>
+  <p><b>操作:</b>点数字键输入(数字不能重复),<kbd>⌫</kbd> 删除、<kbd>✓</kbd> 确认;键盘直接按数字、<kbd>回车</kbd> 确认。剩余每次机会值 120 分,越快破解分越高。</p>
+  <div class="tip"><b>推理技巧:</b>① 首猜固定用 <b>0123</b>,第二猜 4567,两轮就能把 8 个数字的"在不在"摸清;② 记住恒等式 <b>nA+mB=4</b>,每轮反馈都要能对上,否则是你记错了;③ 把每轮反馈写在历史里交叉对比,<b>B 多说明数字都在只是位置乱</b>,用交换法逐位归位;④ 剩余机会越多分越高,标准档 4 次内破解是高手线。</div>
+  <p><b>结算:</b>使用次数、剩余机会、本局得分、历史最高分。</p>
+  <p style="margin-top:8px"><a class="play" href="/bulls/">▶ 猜数字 · 1A2B</a></p>
+</div>
+
+<h3 id="make24">🃏 24点 · 算术大师</h3>
+<div class="card">
+  <p><b>目标:</b>每题发 <b>4 张牌</b>(A=1 … K=13),用 <b>+ − × ÷</b> 把它们算成 <b>24</b>。点两张牌再点运算符合并成新牌,合并顺序天然就是括号,每张牌只能用一次。</p>
+  <p><b>操作:</b>点<b>第一张牌</b>(金框亮起)→ 点<b>运算符</b> → 点<b>第二张牌</b>,自动合并。除法可以出小数,最终牌面等于 24 即过关。↩撤销=整题重发;🔄换一题免费但本题不计分;练习模式不限时。</p>
+  <p><b>计分:</b>限时模式 90 秒,答对 <b>+100 起、连对每题再 +20</b>;结算分=题数×120+最大连对×15。</p>
+  <div class="tip"><b>速算要点:</b>① 先找 <b>3×8、4×6、2×12、12+12</b> 这些"标准分解",把四张牌往这些组合上凑;② 有 <b>3、4、6、8</b> 的题大概率是乘法题;③ 大牌(K/Q/J)先想办法<b>减掉或除掉</b>变成小数字;④ 分数解法别怕,游戏支持小数显示,比如 8÷(3−8÷3)=24 这种经典难题;⑤ 越到后面越依赖练出来的"数字敏感度",每天 90 秒很够用。</div>
+  <p><b>结算:</b>题数、最大连对、本局得分、历史最高分。</p>
+  <p style="margin-top:8px"><a class="play" href="/make24/">▶ 24点 · 算术大师</a></p>
+</div>
+
+<h3 id="spotdiff">🔍 找不同 · 火眼金睛</h3>
+<div class="card">
+  <p><b>目标:</b>上下两幅 emoji 图<b>只有一处不一样</b>,在下图里点出它。关卡越深格子越多、限时越短,共 3 颗心,点错扣心,心用完或超时结束。</p>
+  <table><tr><th>关卡</th><th>棋盘</th><th>限时</th></tr>
+    <tr><td>1~2</td><td>4×3</td><td>20 秒</td></tr>
+    <tr><td>3~5</td><td>5×4</td><td>16 秒</td></tr>
+    <tr><td>6~8</td><td>6×4</td><td>13 秒</td></tr>
+    <tr><td>9+</td><td>7×5</td><td>10 秒</td></tr></table>
+  <p><b>操作:</b>直接点下面那幅图里的不同 emoji;点错扣 1 心并震屏提示,答对 +100 起每关递增 10 分,点错另扣 30 分。</p>
+  <div class="tip"><b>眼力要点:</b>① 把棋盘<b>分成 4 块逐块扫</b>,别整屏乱瞟;② 先扫<b>行列数量</b>再比对形状,大多数差别是"多了一个/换了一个";③ 上下图<b>同行同列对位看</b>,视线别跳;④ 相似家族是题库核心:🐶🐺 🐱🐯 ⭐🌟 🍎🍑…看到这些八成就是答案;⑤ 9 关后 7×5 大图 10 秒,拼的就是扫描节奏。</div>
+  <p><b>结算:</b>闯关数、本局得分、历史最高分。</p>
+  <p style="margin-top:8px"><a class="play" href="/spotdiff/">▶ 找不同 · 火眼金睛</a></p>
+</div>
+
+<h3 id="rps">✊ 石头剪刀布 · 心理战</h3>
+<div class="card">
+  <p><b>目标:</b>经典三选一对决。🍀萌新 AI 纯随机;🧠心理学家 AI 会<b>统计你最近两拳的组合规律</b>,预测你的下一步并出克制拳(带 20% 随机噪声防死循环)。</p>
+  <p><b>操作:</b>点 ✊✌️✋ 三键出拳(键盘 <kbd>1</kbd>石头 <kbd>2</kbd>剪刀 <kbd>3</kbd> 布),双手 3-2-1 摇动后亮牌。赢 +100 起连胜每场再 +20,平 +10,输 -30。点底部"🏁收手结算"随时收官。</p>
+  <div class="tip"><b>博弈要点:</b>① 心理学家 AI 靠"你上两拳→这一拳"的频率表预判,<b>打破规律</b>就是破解:别连着用同一种思路出拳;② 人类出拳很少真随机——<b>输了之后倾向换拳、赢了之后倾向留拳</b>,AI 正是抓这个,反着打试试;③ 真想赢就<b>脑子里默念随机数列</b>或看 seconds 尾数决定,让 AI 无规律可学;④ 连胜滚分很肥,手感来了多打几场。</div>
+  <p><b>结算:</b>胜/平/负战绩、最高连胜、累计得分、历史最高分。</p>
+  <p style="margin-top:8px"><a class="play" href="/rps/">▶ 石头剪刀布 · 心理战</a></p>
+</div>
+
+<h3 id="doodle">🟢 跳跳球 · 冲上云霄</h3>
+<div class="card">
+  <p><b>目标:</b>小球落地<b>自动弹起</b>,你只负责左右移动踩平台,跳得越高分越高(每 50 像素=1 米)。掉回屏幕底部就结束。</p>
+  <table><tr><th>平台</th><th>效果</th></tr>
+    <tr><td>🟩 普通</td><td>稳定弹跳</td></tr>
+    <tr><td>🟦 移动</td><td>左右巡航,<b>落点要预判</b></td></tr>
+    <tr><td>🟫 易碎</td><td>踩一次就碎,只送你一程</td></tr>
+    <tr><td>🌀 弹簧</td><td><b>弹力接近双倍</b>,快速爬升通道</td></tr></table>
+  <p><b>操作:</b>手机<b>按住左/右半屏</b>即可持续转向,也可拖动;键盘 <kbd>←</kbd><kbd>→</kbd>/<kbd>A</kbd><kbd>D</kbd>。屏幕左右<b>穿边瞬移</b>到另一侧。</p>
+  <div class="tip"><b>拿分要点:</b>① 落点要<b>踩平台中段</b>,边缘容易弹空;② 上升时<b>提前把手指移到下一平台的横向位置</b>,下落中调整最灵活;③ 易碎平台只能踩一次,<b>别把它当休息点</b>,弹完立刻找下一块;④ 弹簧平台弹得极高,是拉开分差的关键,但落点失控风险大,<b>确认上方有空位再踩</b>;⑤ 高处平台间隔更大、易碎更多,移动要更早更小步。</div>
+  <p><b>结算:</b>高度(米)、历史最高、已玩局数。</p>
+  <p style="margin-top:8px"><a class="play" href="/doodle/">▶ 跳跳球 · 冲上云霄</a></p>
+</div>
+
+<h3 id="basketball">🏀 投篮大师 · 神射手</h3>
+<div class="card">
+  <p><b>目标:</b>45 秒限时投篮。篮筐每次随机换位置,力度条来回摆动,<b>点屏幕定格力度</b>出手,球自动飞向篮筐,越接近"黄色甜蜜点"越准。</p>
+  <table><tr><th>距离</th><th>分值</th><th>占比</th></tr>
+    <tr><td>近筐</td><td>2 分</td><td>约 55%</td></tr>
+    <tr><td>远筐</td><td>3 分</td><td>约 45%</td></tr>
+    <tr><td>🔥 连中 3 球</td><td>得分 ×2</td><td>投丢即熄火</td></tr></table>
+  <p><b>操作:</b>点屏幕任意处或 <kbd>空格</kbd> 出手;绿色力度条停在黄色甜蜜区内基本必进。球在空中时不用等,系统已备好下一投。</p>
+  <div class="tip"><b>拿分要点:</b>① 每球的甜蜜点位置不同,<b>先看黄块在哪再出手</b>,别凭肌肉记忆;② 远筐 3 分且甜蜜区和近筐一样宽,<b>收益更高优先打远筐</b>;③ 手感 ×2 期间是刷分窗口,<b>宁可慢半拍也要稳</b>,打铁一次全清零;④ 命中率 60% 以上、单场 30+ 分算入门高手;⑤ 打铁后心态别崩,回近筐找节奏重启连胜。</div>
+  <p><b>结算:</b>总得分、出手/命中/命中率、历史最高分。</p>
+  <p style="margin-top:8px"><a class="play" href="/basketball/">▶ 投篮大师 · 神射手</a></p>
+</div>
+
+<h3 id="spy">🕵️ 谁是卧底 · 派对推理</h3>
+<div class="card">
+  <p><b>目标:</b>一部手机 4-8 人开玩的经典派对游戏。平民拿<b>同一个词</b>,卧底拿<b>相近词</b>(如「可乐」vs「雪碧」),描述-投票-放逐,<b>揪出卧底平民胜,卧底活到最后 2 人卧底胜</b>。</p>
+  <p><b>流程:</b>① 选人数开局;② 按提示<b>轮流交手机</b>,点「查看我的词」偷看,点「隐藏」交给下一位;③ 全部看完进入<b>自由讨论</b>,每人一句话描述自己的词(不许说出词本身);④ 点「开始投票」,点选玩家头像→<b>二次确认放逐</b>;⑤ 放逐错人继续下一轮,直到分出胜负。</p>
+  <div class="tip"><b>场下技巧:</b>① 平民描述要<b>具体但不暴露词</b>,说功能、说场景最稳;② 卧底开局少说、贴着别人的描述"跟风加一点",暴露是大忌;③ 票型也是信息:<b>被集中投票的往往是话最多或最含糊的</b>;④ 词库 30 对全是生活词,新手友好;⑤ 卧底胜也能拿分,但平民胜 +150 更肥。</div>
+  <p><b>结算:</b>胜负阵营、两个词、卧底是谁、轮数、本局得分、历史最高分。</p>
+  <p style="margin-top:8px"><a class="play" href="/spy/">▶ 谁是卧底 · 派对推理</a></p>
+</div>
+
+<h3 id="coloring">🎨 填色小画家 · 涂色减压</h3>
+  <div class="card">
+  <p><b>目标:</b>6 幅线稿(花朵/小屋/金鱼/蝴蝶/蛋糕/火箭)随你涂色,点区域上色,涂满一幅触发庆祝。纯解压玩具,没有失败。</p>
+  <p><b>操作:</b>底部调色盘 12 色任选,点画里的<b>封闭区域</b>涂色;点屏幕两侧 <kbd>◀</kbd><kbd>▶</kbd> 换画;🧽清空重涂本幅。<b>每幅画的配色自动保存</b>,随时回来继续。</p>
+  <p><b>计分:</b>完成一幅画作数 +1,历史最高=累计完成幅数(重复涂同一幅只记一次,清空后可再刷)。</p>
+  <div class="tip"><b>涂色灵感:</b>① 先铺<b>大面积底色</b>再点小区域,视觉上更快"像回事";② 花瓣用相邻色系(粉→紫)、屋顶深墙浅,对比出来最好看;③ 金鱼的气泡留白反而灵动,不必涂满;④ 白色可以当"橡皮"把涂错的改回来;⑤ 完成度到 100% 才算完成,差最后一块时用"完成"提示检查哪里还是灰色。</div>
+  <p><b>结算:</b>完成画作数、当前完成度、历史最高。</p>
+  <p style="margin-top:8px"><a class="play" href="/coloring/">▶ 填色小画家</a></p>
 </div>
 
 <h3 id="golf">⛳ 迷你高尔夫</h3>

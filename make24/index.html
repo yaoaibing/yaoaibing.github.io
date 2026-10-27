@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>24点 · 四张牌算出24</title>
+<meta name="description" content="经典24点扑克算术:4张牌用加减乘除算出24!A到K共13个数字,可以加括号任意组合,限时挑战看你能连对几题,练口算神器!">
+<meta property="og:title" content="24点 · 四张牌算出24">
+<meta property="og:description" content="经典24点扑克算术:4张牌用加减乘除算出24!A到K共13个数字,可以加括号任意组合,限时挑战看你能连对几题,练口算神器!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#123320">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🃏%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色:只改 :root 这一组,其余 CSS 不用动 ===== */
+:root{
+  --theme:#123320,
+  --panel:rgba(10,30,18,.94),
+  --ink:#b8f0c8,
+  --edge:#0a2412,
+  --btn1:#2aa858,
+  --btn2:#157a3a,
+  --btnink:#ffffff,
+  --glow:rgba(42,168,88,.45),
+  --gold:#ffd45c,
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+/* ===== GAME · 24点 · 算术大师 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">题<b id="hsolved">0</b></span><span class="chip">秒<b id="hsec">90</b></span><span class="chip">连对<b id="hcb">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">二 十 四 点<small>· 算 术 大 师 ·</small></div>
+  <div id="diffrow">
+    <button class="padbtn dbtn" type="button">⏱ 限时 90 秒</button>
+    <button class="padbtn dbtn" type="button">🧘 练习模式</button>
+  </div>
+  <div class="howto">
+  🃏 每题发 <b>4 张牌</b>(A=1,J=11,Q=12,K=13),用 <b>+ − × ÷</b> 把它们算成 <b>24</b><br>
+  👆 点<b>两张牌</b> + 一个<b>运算符</b> = 合并成新牌,每张牌<b>只能用一次</b><br>
+  🧮 除法可以出小数/分数,合并顺序就是<b>括号</b>,能算出 24 就行<br>
+  ↩ 点<b>撤销</b>悔一步,<b>换一题</b>免费换牌(本题不得分)<br>
+  ⏱ 限时模式 90 秒内连答,答对越多分越高<br>
+  💡 每题都保证<b>有解</b>,实在想不出点换一题<br>
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 算 24</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">时 间 到!</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+    <button class="padbtn" id="diffbtn" type="button">↩ 换模式</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide">
+  <button class="padbtn" id="undobtn" type="button">↩ 撤销</button>
+  <button class="padbtn" id="skipbtn" type="button">🔄 换一题</button>
+</div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='make24_best',PLAY='make24_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+/* ================== GAME · 24点 · 算术大师 ================== */
+/* 游戏代码只写在下面这一行之后;上面 CORE 段一行都不要动 */
+
+/* ▼▼▼ 24点游戏代码 ▼▼▼ */
+var NAME='24点 · 算术大师';
+var OPS=['+','−','×','÷'];
+var state='start',timed=1;
+var cards=[],sel=-1,op=-1,solved=0,combo=0,secs=90,lastSec=-1,time=0;
+var stackHist=[],winT=0,shakeT=0,msg='',msgT=0;
+var CW=0,CH=0,CY=0,OPY=0;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function gcd(a,b){return b?gcd(b,a%b):a}
+function frac(n,d){if(d<0){n=-n;d=-d}var g=gcd(Math.abs(n),d)||1;return{n:n/g,d:d/g}}
+function fAdd(a,b){return frac(a.n*b.d+b.n*a.d,a.d*b.d)}
+function fSub(a,b){return frac(a.n*b.d-b.n*a.d,a.d*b.d)}
+function fMul(a,b){return frac(a.n*b.n,a.d*b.d)}
+function fDiv(a,b){return b.n===0?null:frac(a.n*b.d,a.d*b.n)}
+function fVal(a){return a.n/a.d}
+function fStr(a){
+  if(a.d===1)return String(a.n);
+  var v=fVal(a);
+  if(Math.abs(v-Math.round(v))<1e-9)return String(Math.round(v));
+  return '('+(a.n/a.d).toFixed(2)+')';
+}
+function solve24(nums){
+  var items=[];
+  for(var i=0;i<nums.length;i++)items.push({f:frac(nums[i],1),e:String(nums[i])});
+  function go(list){
+    if(list.length===1){
+      var f=list[0].f;
+      if(f.d!==0&&f.n/f.d===24&&f.n===24*f.d)return list[0].e;
+      return null;
+    }
+    for(var a=0;a<list.length;a++)for(var b=0;b<list.length;b++){
+      if(a===b)continue;
+      var rest=[];
+      for(var k=0;k<list.length;k++)if(k!==a&&k!==b)rest.push(list[k]);
+      var A=list[a],B=list[b];
+      var tries=[
+        {f:fAdd(A.f,B.f),e:'('+A.e+'+'+B.e+')'},
+        {f:fSub(A.f,B.f),e:'('+A.e+'−'+B.e+')'},
+        {f:fMul(A.f,B.f),e:'('+A.e+'×'+B.e+')'}
+      ];
+      if(B.f.n!==0)tries.push({f:fDiv(A.f,B.f),e:'('+A.e+'÷'+B.e+')'});
+      for(var t=0;t<tries.length;t++){
+        var r=go(rest.concat([tries[t]]));
+        if(r)return r;
+      }
+    }
+    return null;
+  }
+  return go(items);
+}
+function deal(){
+  var nums=null,sol=null,n=0;
+  while(n++<300){
+    nums=[1+rnd(13),1+rnd(13),1+rnd(13),1+rnd(13)];
+    sol=solve24(nums);
+    if(sol)break;
+  }
+  cards=[];
+  for(var i=0;i<4;i++)cards.push({f:frac(nums[i],1),e:String(nums[i]),used:false});
+  sel=-1;op=-1;stackHist=[];
+  return sol;
+}
+var curSol='';
+function nextHand(){
+  curSol=deal();
+}
+function startGame(){
+  solved=0;combo=0;secs=timed?90:0;lastSec=-1;winT=0;
+  nextHand();
+  state='play';
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  setHud();tone(520,.08,'triangle',.05);
+}
+function setHud(){
+  $('hsolved').textContent=solved;
+  $('hsec').textContent=timed?Math.max(0,Math.ceil(secs)):Math.floor(secs);
+  $('hcb').textContent=combo;
+}
+function cardLeft(){var n=0;for(var i=0;i<cards.length;i++)if(!cards[i].used)n++;return n}
+function doMerge(){
+  var alive=[];
+  for(var i=0;i<cards.length;i++)if(!cards[i].used)alive.push(i);
+  var ai=alive[0],bi=alive[1];
+  var A=cards[ai],B=cards[bi],r=null;
+  if(op===0)r=fAdd(A.f,B.f);
+  else if(op===1)r=fSub(A.f,B.f);
+  else if(op===2)r=fMul(A.f,B.f);
+  else r=fDiv(A.f,B.f);
+  if(!r||!isFinite(r.n)||r.d===0){shakeT=.4;tone(200,.12,'square',.04);op=-1;return}
+  A.used=true;
+  B.f=r;B.e='('+A.e+OPS[op]+B.e+')';
+  sel=-1;op=-1;
+  stackHist.push(1);
+  tone(500+r.n%200,.07,'triangle',.045);
+  if(cardLeft()===1){
+    var v=B.f;
+    if(v.d!==0&&v.n/v.d===24&&v.n===24*v.d){
+      solved++;combo++;
+      var gain=100+combo*20;
+      if(timed)0;
+      msg='✓ '+B.e.replace(/[()]/g,'')+' = 24  +'+gain;msgT=2;
+      tone(523,.09,'triangle',.05);setTimeout(function(){tone(659,.09,'triangle',.05)},100);setTimeout(function(){tone(784,.16,'triangle',.06)},200);
+      setTimeout(function(){nextHand();setHud()},900);
+      state='winwait';
+    }else{
+      msg='这道最后算出来是 '+ (Math.round(fVal(B.f)*100)/100) +' ,不是 24,撤销重来';msgT=2;
+      tone(200,.15,'sawtooth',.04);
+    }
+  }
+  setHud();
+}
+function tapCard(x,y){
+  for(var i=0;i<cards.length;i++){
+    if(cards[i].used)continue;
+    var cx=VW/2+(i-1.5)*(CW+10);
+    if(x>=cx-CW/2&&x<=cx+CW/2&&y>=CY&&y<=CY+CH){
+      if(op>=0){cards[i].f=undefined;0;}
+      if(sel===i){sel=-1;tone(300,.05,'triangle',.04);return}
+      sel=i;tone(560,.06,'triangle',.045);
+      return;
+    }
+  }
+}
+function tapOp(x,y){
+  for(var o=0;o<4;o++){
+    var ox=VW/2+(o-1.5)*(CW+10);
+    if(x>=ox-CW/2&&x<=ox+CW/2&&y>=OPY&&y<=OPY+CH*.62){
+      if(sel<0){msg='先点一张牌';msgT=1.2;return}
+      op=o;tone(460+o*60,.06,'triangle',.045);
+      setTimeout(doMerge,120);
+      return;
+    }
+  }
+}
+function undo(){
+  var n=stackHist.length;
+  if(!n){msg='没有可撤销的操作';msgT=1.2;return}
+  /* 简化:整题重发(保证有解且状态干净) */
+  nextHand();setHud();tone(300,.08,'triangle',.04);
+  msg='已换一题(整题重发)';msgT=1.2;
+}
+function onResize(){
+  CW=Math.min((VW-52)/4.4,96);
+  CH=CW*1.32;
+  CY=(VH-150)/2-CH*.28;
+  OPY=CY+CH+18;
+}
+function update(dt){
+  time+=dt;
+  if(shakeT>0)shakeT-=dt;
+  if(msgT>0)msgT-=dt;
+  if(state!=='play')return;
+  secs-=dt;
+  var s2=Math.max(0,Math.ceil(secs));
+  if(s2!==lastSec){lastSec=s2;$('hsec').textContent=timed?s2:Math.floor(secs)}
+  if(timed&&secs<=0)gameOver();
+}
+function gameOver(){
+  state='over';KIT.addPlay();KIT.streak();
+  var sc=solved*120+combo*15;
+  var rec=KIT.setBest(sc);
+  $('onewrec').style.display=rec?'block':'none';
+  $('ostats').innerHTML='算出 <b>'+solved+'</b> 题 · 最高连对 <b>'+combo+'</b><br>'+
+    '本局得分 <b>'+sc+'</b><br>历史最高:'+KIT.best()+'<br>已玩 '+KIT.plays()+' 局';
+  $('mini2').innerHTML='答对一题 +100 起,连对每题多 +20;换一题不扣分但不得分';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+}
+function drawCard(i){
+  var c=cards[i];
+  var cx=VW/2+(i-1.5)*(CW+10);
+  var isSel=sel===i;
+  rr(cx-CW/2,CY,CW,CH,12);
+  ctx.fillStyle=c.used?'rgba(255,255,255,.03)':isSel?'rgba(42,168,88,.3)':'rgba(255,255,255,.09)';
+  ctx.fill();
+  ctx.strokeStyle=c.used?'rgba(255,255,255,.06)':isSel?'#ffd45c':'rgba(255,255,255,.2)';
+  ctx.lineWidth=isSel?3:1.5;ctx.stroke();
+  if(!c.used){
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    var v=c.f.n/c.f.d;
+    var label=v>=1&&v<=13&&c.f.d===1?['','A','2','3','4','5','6','7','8','9','10','J','Q','K'][c.f.n]||String(c.f.n):String(Math.round(v*100)/100);
+    ctx.fillStyle='#fff';
+    ctx.font='900 '+Math.round(CH*.34)+'px ui-monospace,monospace';
+    ctx.fillText(label,cx,CY+CH*.36);
+    ctx.font='600 '+Math.round(CH*.11)+'px "PingFang SC",sans-serif';
+    ctx.fillStyle=c.e.length>18?'rgba(255,255,255,.55)':'rgba(255,255,255,.7)';
+    var e=c.e.replace(/[()]/g,'');
+    if(e.length>20)e=e.slice(0,19)+'…';
+    ctx.fillText(e,cx,CY+CH*.78);
+  }
+}
+function draw(){
+  ctx.fillStyle='#123320';ctx.fillRect(0,0,VW,VH);
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(var i=0;i<4;i++)drawCard(i);
+  for(var o=0;o<4;o++){
+    var ox=VW/2+(o-1.5)*(CW+10);
+    rr(ox-CW/2,OPY,CW,CH*.62,10);
+    ctx.fillStyle=op===o?'rgba(255,212,92,.4)':'rgba(255,255,255,.09)';ctx.fill();
+    ctx.strokeStyle=op===o?'#ffd45c':'rgba(255,255,255,.2)';ctx.lineWidth=op===o?3:1.5;ctx.stroke();
+    ctx.fillStyle='#fff';
+    ctx.font='900 '+Math.round(CH*.3)+'px ui-monospace,monospace';
+    ctx.fillText(OPS[o],ox,OPY+CH*.31);
+  }
+  ctx.font='600 13px "PingFang SC",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.55)';
+  ctx.fillText('点两张牌 → 点运算符 → 合并,把它们变成 24',VW/2,CY-24);
+  if(msgT>0&&msg){
+    ctx.font='700 15px "PingFang SC",sans-serif';
+    ctx.fillStyle=msg.indexOf('✓')===0?'rgba(58,200,138,.95)':'rgba(255,212,92,.95)';
+    var m=msg;if(m.length>34)m=m.slice(0,33)+'…';
+    ctx.fillText(m,VW/2,OPY+CH*.62+28);
+  }
+}
+cv.addEventListener('pointerdown',function(e){e.preventDefault()});
+cv.addEventListener('pointerup',function(e){
+  e.preventDefault();
+  if(state!=='play')return;
+  var x=e.clientX,y=e.clientY;
+  if(y>=CY&&y<=CY+CH)tapCard(x,y);
+  else if(y>=OPY&&y<=OPY+CH*.62)tapOp(x,y);
+});
+window.addEventListener('keydown',function(e){
+  if(e.target&&e.target.tagName==='BUTTON')return;
+  if(state!=='play')return;
+  if(e.key==='Backspace'){e.preventDefault();undo()}
+});
+var dbtns=document.querySelectorAll('.dbtn');
+function syncDiff(){for(var i=0;i<dbtns.length;i++){if(i===timed)dbtns[i].classList.add('on');else dbtns[i].classList.remove('on')}}
+for(var bi=0;bi<dbtns.length;bi++)(function(el,idx){el.addEventListener('click',function(){
+  timed=idx;syncDiff();tone(560+idx*60,.07,'triangle',.04)})})(dbtns[bi],bi);
+$('undobtn').addEventListener('click',undo);
+$('skipbtn').addEventListener('click',function(){
+  if(state!=='play')return;
+  nextHand();combo=0;setHud();
+  msg='换了一题,本题不计分';msgT=1.4;tone(300,.08,'triangle',.04);
+});
+$('startbtn').addEventListener('click',startGame);
+$('againbtn').addEventListener('click',startGame);
+$('diffbtn').addEventListener('click',function(){state='start';$('over').classList.add('hide');$('start').classList.remove('hide');updMini()});
+$('sharebtn').addEventListener('click',function(){
+  share('我在「'+NAME+'」90秒算出 '+solved+' 题,连对 '+combo+'!口算来战 '+location.href.split('#')[0])});
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+onResize();syncDiff();updMini();nextHand();run();
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='make24'});
+  r.unshift({k:'make24',n:'24点 · 算术大师',e:'🃏'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['make24_best','make24_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['make24']||0)){
+            B['make24']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+</body>
+</html>
