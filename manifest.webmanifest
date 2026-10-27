@@ -1,0 +1,17 @@
+{
+ "name": "各种游戏路口 · 74款免费小游戏",
+ "short_name": "游戏路口",
+ "description": "74款免费在线小游戏:动作/益智/棋牌/解压/音乐/问答/养成/放置,点开就玩!",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#181030",
+ "theme_color": "#181030",
+ "icons": [
+  {
+   "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>",
+   "sizes": "any",
+   "type": "image/svg+xml",
+   "purpose": "any"
+  }
+ ]
+}
