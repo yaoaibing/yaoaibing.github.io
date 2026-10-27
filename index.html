@@ -491,10 +491,10 @@ function renderRecent(){
 /* 今日推荐:按日期取当天固定的 3 款 */
 function renderRec(){
   var pool=cards.filter(function(c){return !c.classList.contains('big')});
-  if(pool.length<3)return;
+  if(pool.length<4)return;
   var d=new Date(),seed=d.getFullYear()*372+d.getMonth()*31+d.getDate();
   var idx=[],i=0;
-  while(idx.length<3&&i<200){
+  while(idx.length<4&&i<200){
     seed=(seed*1103515245+12345)&0x7fffffff;
     var k=seed%pool.length;
     if(idx.indexOf(k)<0)idx.push(k);
