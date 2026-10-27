@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>画线救援智慧引导 · 物理画线</title>
+<meta name="description" content="画线救援:画一条线引导下落的小球滚进杯子里!重力+碰撞真实物理,8个关卡障碍重重,一笔定乾坤,动脑又动手的物理益智!">
+<meta property="og:title" content="画线救援智慧引导 · 物理画线">
+<meta property="og:description" content="画线救援:画一条线引导下落的小球滚进杯子里!重力+碰撞真实物理,8个关卡障碍重重,一笔定乾坤,动脑又动手的物理益智!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#181828">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E✏️%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色:只改 :root 这一组,其余 CSS 不用动 ===== */
+:root{
+  --theme:#181828,
+  --panel:rgba(16,16,32,.94),
+  --ink:#c8d0ff,
+  --edge:#101020,
+  --btn1:#6a6ae0,
+  --btn2:#3a3a9a,
+  --btnink:#ffffff,
+  --glow:rgba(106,106,224,.45),
+  --gold:#ffd45c,
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+/* ===== GAME · 画线救援 · 智慧引导 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<style>html,body{overscroll-behavior:none}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">关卡<b id="hlv">1/8</b></span><span class="chip">线长<b id="hlen">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">画 线 救 援<small>· 智 慧 引 导 ·</small></div>
+  <div class="howto">
+  ✏️ <b>按住画一条线</b>,松手后点▶开始,小球开始下落<br>
+  🥤 画出斜坡/挡板/<b>弹墙</b>,把所有小球引进杯子里<br>
+  🚧 线最多画 <b>320 像素</b>,画完就不能改,重来点↻<br>
+  🧱 灰色砖块是固定障碍,球会弹开<br>
+  ⚽ 所有球进杯即过关,球掉出屏幕要重来<br>
+  🧠 一笔包含方向和角度,先在脑子里过一遍物理<br>
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 画 线</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">全 部 救 出!</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 玩 一 遍</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide">
+  <button class="padbtn" id="gobtn" type="button">▶ 开始</button>
+  <button class="padbtn" id="clearbtn" type="button">↻ 重画</button>
+</div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='drawn_best',PLAY='drawn_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+/* ================== GAME · 画线救援 · 智慧引导 ================== */
+/* 游戏代码只写在下面这一行之后;上面 CORE 段一行都不要动 */
+
+/* ▼▼▼ 画线救援游戏代码 ▼▼▼ */
+var NAME='画线救援 · 智慧引导';
+var MAXLEN=320;
+var state='start',lv=0,time=0;
+var line=[],drawing=false,len=0;
+var balls=[],saved=0,lost=0,running=false,failT=0,winT=0;
+var BW=0,SPAWN=[],CUP={x:0,w:90},OBST=[];
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+var LEVELS=[
+ {balls:[{x:.2,y:.08},{x:.5,y:.08}],cup:.78,obst:[[.55,.45,.2,.04]]},
+ {balls:[{x:.15,y:.06},{x:.5,y:.06},{x:.85,y:.06}],cup:.5,obst:[[.3,.4,.4,.04]]},
+ {balls:[{x:.5,y:.06}],cup:.15,obst:[[.3,.35,.06,.4],[.62,.5,.06,.3]]},
+ {balls:[{x:.25,y:.06},{x:.75,y:.06}],cup:.5,obst:[[.15,.45,.3,.04],[.55,.45,.3,.04]]},
+ {balls:[{x:.5,y:.05},{x:.35,y:.12}],cup:.85,obst:[[.1,.4,.5,.04],[.3,.62,.4,.04]]},
+ {balls:[{x:.1,y:.06},{x:.5,y:.06},{x:.9,y:.06}],cup:.2,obst:[[.25,.35,.5,.04],[.4,.58,.2,.04]]},
+ {balls:[{x:.3,y:.06},{x:.7,y:.1}],cup:.05,obst:[[.2,.4,.25,.04],[.55,.4,.25,.04],[.38,.62,.24,.04]]},
+ {balls:[{x:.5,y:.05},{x:.15,y:.1},{x:.85,y:.1}],cup:.45,obst:[[.1,.38,.35,.04],[.55,.38,.35,.04],[.3,.6,.4,.04],[.46,.3,.08,.14]]}
+];
+function loadLevel(){
+  var L=LEVELS[lv];
+  line=[];len=0;running=false;
+  balls=[];saved=0;lost=0;
+  SPAWN=L.balls;CUP={x:L.cup,w:.16};
+  OBST=L.obst.map(function(o){return{x:o[0],y:o[1],w:o[2],h:o[3]}});
+}
+function startGame(){
+  lv=0;
+  loadLevel();
+  state='play';
+  $('start').classList.add('hide');$('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  setHud();tone(520,.08,'triangle',.05);
+}
+function setHud(){$('hlv').textContent=(lv+1)+'/8';$('hlen').textContent=Math.round(len)}
+function go(){
+  if(state!=='play'||running||line.length<2){tone(220,.08,'square',.04);return}
+  running=true;
+  balls=[];
+  for(var i=0;i<SPAWN.length;i++)balls.push({x:SPAWN[i].x*VW,y:SPAWN[i].y*VH,vx:0,vy:0,r:9,live:true});
+  tone(600,.08,'triangle',.05);
+}
+function segClosest(px,py,ax,ay,bx2,by2){
+  var dx=bx2-ax,dy=by2-ay;
+  var l2=dx*dx+dy*dy||1;
+  var t=clamp(((px-ax)*dx+(py-ay)*dy)/l2,0,1);
+  return{x:ax+dx*t,y:ay+dy*t};
+}
+function onResize(){0}
+function update(dt){
+  time+=dt;
+  if(failT>0){failT-=dt;if(failT<=0){loadLevel()}}
+  if(winT>0){winT-=dt;if(winT<=0){
+    lv++;
+    if(lv>=LEVELS.length){gameOver();return}
+    loadLevel();
+  }}
+  if(state!=='play'||!running)return;
+  for(var i=0;i<balls.length;i++){
+    var b=balls[i];
+    if(!b.live)continue;
+    b.vy+=1150*dt;
+    b.x+=b.vx*dt;b.y+=b.vy*dt;
+    /* 画线碰撞 */
+    for(var s2=0;s2<line.length-1;s2++){
+      var cp=segClosest(b.x,b.y,line[s2][0],line[s2][1],line[s2+1][0],line[s2+1][1]);
+      var dx=b.x-cp.x,dy=b.y-cp.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<b.r&&d>0){
+        var nx=dx/d,ny=dy/d;
+        b.x=cp.x+nx*b.r;b.y=cp.y+ny*b.r;
+        var dot=b.vx*nx+b.vy*ny;
+        b.vx=(b.vx-2*dot*nx)*.55;
+        b.vy=(b.vy-2*dot*ny)*.55;
+        if(Math.abs(b.vy)>40)tone(300,.04,'triangle',.02);
+      }
+    }
+    /* 障碍碰撞 */
+    for(var o=0;o<OBST.length;o++){
+      var ob=OBST[o];
+      var ox=ob.x*VW,oy=ob.y*VH,ow=ob.w*VW,oh=ob.h*VH;
+      if(b.x>ox-b.r&&b.x<ox+ow+b.r&&b.y>oy-b.r&&b.y<oy+oh+b.r){
+        var cl=clamp(b.x,ox,ox+ow),ct=clamp(b.y,oy,oy+oh);
+        var ddx=b.x-cl,ddy=b.y-ct,dd=Math.sqrt(ddx*ddx+ddy*ddy);
+        if(dd<b.r&&dd>0){
+          var nx2=ddx/dd,ny2=ddy/dd;
+          b.x=cl+nx2*b.r;b.y=ct+ny2*b.r;
+          var dot2=b.vx*nx2+b.vy*ny2;
+          b.vx=(b.vx-2*dot2*nx2)*.5;
+          b.vy=(b.vy-2*dot2*ny2)*.5;
+        }else if(dd===0){b.y=oy-b.r;b.vy=-Math.abs(b.vy)*.5}
+      }
+    }
+    /* 墙 */
+    if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx)*.55}
+    if(b.x>VW-b.r){b.x=VW-b.r;b.vx=-Math.abs(b.vx)*.55}
+    /* 杯子 */
+    var cx=CUP.x*VW,cw=CUP.w*VW,cy=VH-96;
+    if(b.y>cy-4&&b.y<cy+50&&b.x>cx+b.r&&b.x<cx+cw-b.r){
+      b.live=false;saved++;
+      tone(523,.1,'triangle',.06);setTimeout(function(){tone(784,.14,'triangle',.07)},120);
+      continue;
+    }
+    if(b.y>VH+30){b.live=false;lost++}
+  }
+  var allDone=balls.every(function(b2){return !b2.live});
+  if(allDone){
+    if(lost>0||saved<SPAWN.length){failT=1.2;running=false}
+    else{winT=1.1;running=false}
+  }
+}
+function gameOver(){
+  state='over';KIT.addPlay();KIT.streak();
+  var rec=KIT.setBest(score0());
+  $('onewrec').style.display=rec?'block':'none';
+  $('ostats').innerHTML='8 关全部救出!<br>总得分 <b>'+score0()+'</b><br>历史最高:'+KIT.best()+'<br>已玩 '+KIT.plays()+' 局';
+  $('mini2').innerHTML='线可以画在半空当托盘,斜率决定球滚动的方向';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+}
+function score0(){return lv*100+saved*10}
+cv.setAttribute('tabindex','0');
+function pt(e){return[e.clientX,e.clientY]}
+cv.addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  if(state!=='play'||running)return;
+  drawing=true;line=[];len=0;
+  var p=pt(e);line.push(p);
+});
+cv.addEventListener('pointermove',function(e){
+  if(!drawing)return;
+  var p=pt(e);
+  var last=line[line.length-1];
+  if(!last)return;
+  var dx=p[0]-last[0],dy=p[1]-last[1];
+  var d=Math.sqrt(dx*dx+dy*dy);
+  if(d>=9&&len+d<=MAXLEN){line.push(p);len+=d;setHud()}
+  else if(len+d>MAXLEN)drawing=false;
+});
+cv.addEventListener('pointerup',function(e){e.preventDefault();drawing=false});
+cv.addEventListener('pointercancel',function(){drawing=false});
+$('gobtn').addEventListener('click',go);
+$('clearbtn').addEventListener('click',function(){
+  if(state!=='play')return;
+  loadLevel();tone(300,.08,'triangle',.04);
+});
+$('startbtn').addEventListener('click',startGame);
+$('againbtn').addEventListener('click',startGame);
+$('sharebtn').addEventListener('click',function(){
+  share('我在「'+NAME+'」8关小球全部救出!物理画线挑战 '+location.href.split('#')[0])});
+$('hubbtn').addEventListener('click',function(){location.href='/'});
+function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+onResize();updMini();loadLevel();run();
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+  // 回大厅
+  var hb=document.createElement('button');
+  hb.setAttribute('type','button');hb.textContent='\uD83C\uDFE0';
+  hb.style.cssText='position:fixed;top:'+SAFE+';left:10px;z-index:99;border:0;width:36px;height:36px;'+
+    'border-radius:12px;font-size:15px;background:rgba(255,255,255,.14);color:#fff;'+
+    'border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);cursor:pointer';
+  hb.onclick=function(){location.href='/'};
+  document.body.appendChild(hb);
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='drawn'});
+  r.unshift({k:'drawn',n:'画线救援 · 智慧引导',e:'✏️'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['drawn_best','drawn_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['drawn']||0)){
+            B['drawn']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+</body>
+</html>
