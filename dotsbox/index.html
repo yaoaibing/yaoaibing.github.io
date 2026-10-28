@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>点格棋 · 圈地大战 · 圈地大战</title>
+<meta name="description" content="点格棋:轮流在相邻点之间画线,谁画上格子的第 4 条边就占下这一格再画一次!16 格圈地大战,三档棋盘,和 AI 斗智斗勇抢格子!">
+<meta property="og:title" content="点格棋 · 圈地大战 · 圈地大战">
+<meta property="og:description" content="点格棋:轮流在相邻点之间画线,谁画上格子的第 4 条边就占下这一格再画一次!16 格圈地大战,三档棋盘,和 AI 斗智斗勇抢格子!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0d1428">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%94%B2%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#0d1428;
+  --panel:rgba(12,20,40,.94);
+  --ink:#d9e8ff;
+  --edge:#1d3a6e;
+  --btn1:#5c9df0;
+  --btn2:#2a5cc8;
+  --btnink:#041028;
+  --glow:rgba(90,157,240,.4);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 点格棋 · 圈地大战 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">我<b id="hme">0</b></span><span class="chip">电脑<b id="hai">0</b></span><span class="chip">棋盘<b id="hsize">4x4</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">点 格 棋<small>· 圈 地 大 战 ·</small></div>
+  <div class="howto">
+🔲 棋盘是点阵,轮流在<b>相邻两点间画一条线</b><br>📦 画上某格的第 4 条边就<b>占领这格</b>,并且**再画一次**<br>⚠️ 危险:画出一条边让某格已有 3 条边,等于送给电脑<br>🏁 16 格全部占完,格子多的一方获胜!<br>⌨️ 键盘:R 新局
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 圈 地</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">圈 地 结 束</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 战 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="diffbtn" type="button">🎚 4x4</button><button class="padbtn" id="newbtn" type="button">↻ 新局</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='dotsbox_best',PLAY='dotsbox_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 点格棋 · 圈地大战 ================== */
+var NAME = '点格棋 · 圈地大战';
+var state = 'start';
+var SIZES = [4, 5, 6];
+var SIZE_N = ['4x4', '5x5', '6x6'];
+var sizeIdx = 0;
+var N = 4;                       /* 格子数/边 */
+var H = [], V = [], owner = [];  /* H:(N+1)行xN列 V:N行x(N+1)列 owner:N*N */
+var myBoxes = 0, aiBoxes = 0, turn = 0; /* 0=我 1=AI */
+var lastEdge = null, flashT = 0, thinking = 0;
+var chains = 0, longestChain = 0, curChain = 0;
+var BX = 0, BY = 0, BS = 0, CS = 0;
+
+function layout() {
+  var top = Math.max(92, VH * .13);
+  var pad = VW < 360 ? 100 : 56;
+  var bottom = VH - pad - 62;
+  BS = Math.floor(Math.min(VW - 26, bottom - top, 470));
+  CS = Math.floor(BS / N);
+  BS = CS * N;
+  BX = Math.round((VW - BS) / 2);
+  BY = Math.round(top + Math.max(0, (bottom - top - BS) * .45));
+}
+function onResize() { layout(); }
+
+function newBoard() {
+  N = SIZES[sizeIdx];
+  layout();
+  var i;
+  H = []; V = []; owner = [];
+  for (i = 0; i < (N + 1) * N; i++) H.push(0);
+  for (i = 0; i < N * (N + 1); i++) V.push(0);
+  for (i = 0; i < N * N; i++) owner.push(-1);
+  myBoxes = 0; aiBoxes = 0; turn = 0;
+  lastEdge = null; flashT = 0; thinking = 0;
+  chains = 0; longestChain = 0; curChain = 0;
+}
+function boxEdges(b) {
+  var r = Math.floor(b / N), c = b % N;
+  return [
+    { t: 'H', r: r, c: c },
+    { t: 'H', r: r + 1, c: c },
+    { t: 'V', r: r, c: c },
+    { t: 'V', r: r, c: c + 1 }
+  ];
+}
+function edgeSet(e) {
+  return (e.t === 'H' ? H : V)[e.t === 'H' ? e.r * N + e.c : e.r * (N + 1) + e.c];
+}
+function setEdge(e, v) {
+  (e.t === 'H' ? H : V)[e.t === 'H' ? e.r * N + e.c : e.r * (N + 1) + e.c] = v;
+}
+function edgesOfBox(b) { return boxEdges(b); }
+function boxSides(b) {
+  var n = 0, es = edgesOfBox(b), i;
+  for (i = 0; i < 4; i++) if (edgeSet(es[i])) n++;
+  return n;
+}
+function allEdges() {
+  var out = [], r, c;
+  for (r = 0; r <= N; r++) for (c = 0; c < N; c++) if (!H[r * N + c]) out.push({ t: 'H', r: r, c: c });
+  for (r = 0; r < N; r++) for (c = 0; c <= N; c++) if (!V[r * (N + 1) + c]) out.push({ t: 'V', r: r, c: c });
+  return out;
+}
+function freeBoxes() {
+  var out = [], i;
+  for (i = 0; i < N * N; i++) if (owner[i] < 0) out.push(i);
+  return out;
+}
+/* 落一条边:返回本轮新占的格子数组 */
+function applyEdge(e, who) {
+  setEdge(e, 1);
+  lastEdge = e;
+  flashT = .25;
+  var got = [], i;
+  for (i = 0; i < N * N; i++) {
+    if (owner[i] >= 0) continue;
+    if (boxSides(i) === 4) {
+      owner[i] = who;
+      got.push(i);
+      if (who === 0) myBoxes++; else aiBoxes++;
+      curChain++;
+    }
+  }
+  if (got.length) {
+    chains++;
+    if (curChain > longestChain) longestChain = curChain;
+  } else {
+    curChain = 0;
+  }
+  return got;
+}
+/* 模拟贪心吃链:当前局面下对手一路吃下去能拿几格(不改动 owner) */
+function simChain() {
+  var len = 0, guard = 0, progress = true;
+  while (progress && guard++ < N * N) {
+    progress = false;
+    for (var b = 0; b < N * N; b++) {
+      if (owner[b] >= 0) continue;
+      if (boxSides(b) === 3) {
+        var es = edgesOfBox(b), k;
+        for (k = 0; k < 4; k++) if (!edgeSet(es[k])) { setEdge(es[k], 1); break; }
+        len++; progress = true; break;
+      }
+    }
+  }
+  return len;
+}
+/* AI:能吃就吃整条链;否则画安全边;否则送最短链 */
+function aiStep() {
+  var edges = allEdges(), i;
+  /* 1) 吃掉所有可完成的格 */
+  for (i = 0; i < N * N; i++) {
+    if (owner[i] < 0 && boxSides(i) === 3) {
+      var es = edgesOfBox(i), k;
+      for (k = 0; k < 4; k++) if (!edgeSet(es[k])) { return es[k]; }
+    }
+  }
+  /* 2) 安全边:不制造任何三边格 */
+  var safe = [];
+  for (i = 0; i < edges.length; i++) {
+    setEdge(edges[i], 1);
+    var danger = false, b;
+    for (b = 0; b < N * N; b++) if (owner[b] < 0 && boxSides(b) === 3) { danger = true; break; }
+    setEdge(edges[i], 0);
+    if (!danger) safe.push(edges[i]);
+  }
+  if (safe.length) return safe[rnd(safe.length)];
+  /* 3) 被迫送链:选让对手连吃最短的开口 */
+  var best = null, bestLen = 99;
+  for (i = 0; i < edges.length; i++) {
+    var sH = H.slice(), sV = V.slice();
+    setEdge(edges[i], 1);
+    var len = simChain();
+    H = sH; V = sV;
+    if (len < bestLen) { bestLen = len; best = edges[i]; }
+  }
+  return best || edges[0];
+}
+function resetGame() {
+  newBoard();
+  syncHud();
+}
+function startGame() {
+  resetGame();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  $('diffbtn').textContent = '🎚 ' + SIZE_N[sizeIdx];
+}
+function finish() {
+  state = 'over';
+  KIT.addPlay(); KIT.streak();
+  var diff = myBoxes - aiBoxes;
+  var score = Math.max(60, 600 + diff * 60 + N * N * 10);
+  if (diff <= 0) score = Math.max(40, 200 + N * N * 10 + diff * 30);
+  var rec = KIT.setBest(score);
+  var rank = diff > 0 ? (diff >= N * N * .3 ? '圈地狂魔' : '稳赢不亏') : diff === 0 ? '平分秋色' : '下回再战';
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '本局得分 <b>' + score + '</b><br>' +
+    '我 ' + myBoxes + ' 格 · 电脑 ' + aiBoxes + ' 格<br>' +
+    '最长连吃 ' + longestChain + ' 格<br>' + rank + '<br>' +
+    '历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = '画线前先看:这格是不是已经 3 条边,送格等于白给';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+  tone(diff > 0 ? 760 : 320, .28, 'sine', .07, diff > 0 ? 1150 : 240);
+}
+function afterMove(got) {
+  syncHud();
+  var free = freeBoxes();
+  if (!free.length) { finish(); return; }
+  if (!got.length) {
+    turn = 1 - turn;
+    if (turn === 1) thinking = .5;
+  } else if (turn === 1) {
+    thinking = .28; /* AI 连吃链时的节奏 */
+  }
+}
+function syncHud() {
+  $('hme').textContent = myBoxes;
+  $('hai').textContent = aiBoxes;
+  $('hsize').textContent = N + 'x' + N;
+}
+function update(dt) {
+  if (flashT > 0) flashT -= dt;
+  if (state !== 'play' || turn !== 1) return;
+  thinking -= dt;
+  if (thinking > 0) return;
+  var e = aiStep();
+  if (!e) { finish(); return; }
+  tone(300, .05, 'triangle', .03);
+  var got = applyEdge(e, 1);
+  afterMove(got);
+}
+function rr(x, y, w, h, rad) {
+  var k = Math.min(rad, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + k, y);
+  ctx.arcTo(x + w, y, x + w, y + h, k);
+  ctx.arcTo(x + w, y + h, x, y + h, k);
+  ctx.arcTo(x, y + h, x, y, k);
+  ctx.arcTo(x, y, x + w, y, k);
+  ctx.closePath();
+}
+function edgeMid(e) {
+  var ox = BX, oy = BY;
+  if (e.t === 'H') {
+    var x1 = ox + e.c * CS, y1 = oy + e.r * CS;
+    return { x1: x1, y1: y1, x2: x1 + CS, y2: y1, mx: x1 + CS / 2, my: y1 };
+  }
+  var x2 = ox + e.c * CS, y3 = oy + e.r * CS;
+  return { x1: x2, y1: y3, x2: x2, y2: y3 + CS, mx: x2, my: y3 + CS / 2 };
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#0f1830');
+  bg.addColorStop(1, '#070b16');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+
+  ctx.fillStyle = 'rgba(255,255,255,.04)';
+  rr(BX - 14, BY - 14, BS + 28, BS + 28, 22); ctx.fill();
+
+  var b, i;
+  for (b = 0; b < N * N; b++) {
+    var r = Math.floor(b / N), c = b % N;
+    var x = BX + c * CS, y = BY + r * CS;
+    if (owner[b] >= 0) {
+      ctx.fillStyle = owner[b] === 0 ? 'rgba(92,157,240,.34)' : 'rgba(240,120,90,.30)';
+      rr(x + 3, y + 3, CS - 6, CS - 6, 10); ctx.fill();
+      ctx.fillStyle = owner[b] === 0 ? 'rgba(220,238,255,.92)' : 'rgba(255,220,200,.9)';
+      ctx.font = '900 ' + Math.round(CS * .34) + 'px "PingFang SC",sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(owner[b] === 0 ? '我' : 'AI', x + CS / 2, y + CS / 2 + 1);
+    } else if (boxSides(b) === 3) {
+      ctx.fillStyle = 'rgba(255,110,90,.14)';
+      rr(x + 3, y + 3, CS - 6, CS - 6, 10); ctx.fill();
+    }
+  }
+  ctx.lineCap = 'round';
+  for (i = 0; i < (N + 1) * N; i++) {
+    if (!H[i]) continue;
+    var e = { t: 'H', r: Math.floor(i / N), c: i % N };
+    var m = edgeMid(e);
+    ctx.strokeStyle = '#5c9df0'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(m.x1, m.y1); ctx.lineTo(m.x2, m.y2); ctx.stroke();
+  }
+  for (i = 0; i < N * (N + 1); i++) {
+    if (!V[i]) continue;
+    var e2 = { t: 'V', r: Math.floor(i / (N + 1)), c: i % (N + 1) };
+    var m2 = edgeMid(e2);
+    ctx.strokeStyle = '#5c9df0'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(m2.x1, m2.y1); ctx.lineTo(m2.x2, m2.y2); ctx.stroke();
+  }
+  /* 点阵 */
+  var rr2, cc;
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  for (rr2 = 0; rr2 <= N; rr2++) for (cc = 0; cc <= N; cc++) {
+    ctx.beginPath();
+    ctx.arc(BX + cc * CS, BY + rr2 * CS, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  /* 最近可画的边预览 */
+  if (state === 'play' && turn === 0 && hoverEdge) {
+    var hm = edgeMid(hoverEdge);
+    ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(hm.x1, hm.y1); ctx.lineTo(hm.x2, hm.y2); ctx.stroke();
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = '600 12.5px "PingFang SC",sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  var left = freeBoxes().length;
+  ctx.fillText(turn === 0 ? '轮到你画线 · 剩 ' + left + ' 格' : '电脑思考中…', VW / 2, BY + BS + 34);
+  ctx.fillStyle = 'rgba(140,180,255,.55)';
+  ctx.fillText('画第 4 条边占格,占格后继续画!', VW / 2, BY + BS + 56);
+}
+var hoverEdge = null;
+function nearestEdge(x, y) {
+  var best = null, bestD = 22, i;
+  var all = allEdges();
+  for (i = 0; i < all.length; i++) {
+    var m = edgeMid(all[i]);
+    var d;
+    if (all[i].t === 'H') {
+      if (x < m.x1 || x > m.x2) continue;
+      d = Math.abs(y - m.y1);
+    } else {
+      if (y < m.y1 || y > m.y2) continue;
+      d = Math.abs(x - m.x1);
+    }
+    if (d < bestD) { bestD = d; best = all[i]; }
+  }
+  return best;
+}
+cv.addEventListener('pointermove', function (e) {
+  if (state !== 'play' || turn !== 0) { hoverEdge = null; return; }
+  hoverEdge = nearestEdge(e.clientX, e.clientY);
+});
+cv.addEventListener('pointerdown', function (e) {
+  e.preventDefault();
+  if (state !== 'play' || turn !== 0) return;
+  var e2 = nearestEdge(e.clientX, e.clientY);
+  if (!e2) return;
+  var got = applyEdge(e2, 0);
+  tone(420, .06, 'triangle', .045);
+  afterMove(got);
+  hoverEdge = null;
+});
+window.addEventListener('keydown', function (e) {
+  if (e.target && e.target.tagName === 'BUTTON') return;
+  if (e.key === 'r' || e.key === 'R') { e.preventDefault(); startGame(); }
+});
+
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+
+$('startbtn').addEventListener('click', startGame);
+$('againbtn').addEventListener('click', startGame);
+$('newbtn').addEventListener('click', startGame);
+$('diffbtn').addEventListener('click', function () {
+  sizeIdx = (sizeIdx + 1) % 3;
+  startGame();
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」以 ' + myBoxes + ':' + aiBoxes + ' 圈地获胜! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/' });
+
+window.__T = {
+  edgesH: function () { return H.slice(); },
+  edgesV: function () { return V.slice(); },
+  owner: function () { return owner.slice(); },
+  applyEdge: function (t, r, c, who) { return applyEdge({ t: t, r: r, c: c }, who); },
+  boxSides: boxSides,
+  myBoxes: function () { return myBoxes; },
+  aiBoxes: function () { return aiBoxes; },
+  turn: function () { return turn; },
+  think: function (v) { thinking = v === undefined ? 0 : v; },
+  aiPick: aiStep,
+  size: function () { return N; },
+  setSize: function (i) { sizeIdx = i; newBoard(); },
+  state: function () { return state; }
+};
+
+resize();
+resetGame();
+$('padbar').classList.add('hide');
+updMini();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='dotsbox'});
+  r.unshift({k:'dotsbox',n:'点格棋 · 圈地大战',e:'🔲'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['dotsbox_best','dotsbox_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['dotsbox']||0)){
+            B['dotsbox']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
