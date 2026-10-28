@@ -79,26 +79,35 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .recent a:active{transform:scale(.96)}
 .recent a i{font-style:normal;font-size:17px}
 
-/* 卡片 */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{display:block;text-decoration:none;color:#fff;border-radius:18px;padding:16px 14px 14px;position:relative;overflow:hidden;
+/* 卡片:图标磁贴 + 两行文字,一行一张,磁贴尺寸全站统一 */
+.grid,.secgrid{display:grid;grid-template-columns:1fr;gap:9px}
+@media (min-width:620px){.grid,.secgrid{grid-template-columns:1fr 1fr;gap:10px}}
+@media (min-width:1000px){.grid,.secgrid{grid-template-columns:repeat(3,1fr)}}
+.card{display:grid;grid-template-columns:46px 1fr;column-gap:11px;text-decoration:none;color:#fff;
+  border-radius:15px;padding:10px 12px;position:relative;overflow:hidden;align-items:center;
   border:1px solid rgba(255,255,255,.12);transition:transform .12s;animation:pop .28s both}
 .card.hide{display:none}
-.card:active{transform:scale(.97)}
-@media (hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.35);border-color:rgba(255,255,255,.25)}
-.card:hover .em{transform:scale(1.12) rotate(-4deg)}
+.card:active{transform:scale(.98)}
+@media (hover:hover){.card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.35);border-color:rgba(255,255,255,.25)}
+.card:hover .em{transform:scale(1.07)}
 .card .em{transition:transform .18s}}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
-.card .em{font-size:36px;line-height:1;display:block;margin-bottom:9px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
-.card b{font-size:16px;display:block;letter-spacing:1px}
-.card span.d{font-size:11px;opacity:.88;display:block;margin-top:5px;line-height:1.55}
-.card .tag{position:absolute;top:11px;right:11px;font-size:10px;font-weight:800;letter-spacing:1px;
-  background:rgba(0,0,0,.3);padding:3px 8px;border-radius:99px}
+.card .em{grid-row:1/3;justify-self:start;width:46px;height:46px;font-size:25px;line-height:1;display:flex;
+  align-items:center;justify-content:center;background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.16);border-radius:13px}
+.card b{grid-column:2;min-width:0;font-size:14.5px;display:block;letter-spacing:.5px;padding-right:34px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card span.d{grid-column:2;min-width:0;font-size:11.5px;opacity:.75;display:block;margin-top:3px;line-height:1.5;padding-right:34px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .tag{position:absolute;top:10px;right:43px;font-size:9px;font-weight:800;letter-spacing:.5px;
+  background:rgba(0,0,0,.32);padding:2px 6px;border-radius:99px}
 .card .hot{background:#ff5a5a}
 .card .new{background:#22c55e}
-.big{grid-column:1/-1;display:flex;align-items:center;gap:15px}
-.big .em{font-size:50px;margin:0}
-.big span.d{font-size:12.5px}
+.card .tag~b{padding-right:70px}
+.big{grid-column:1/-1;grid-template-columns:60px 1fr;padding:13px 14px}
+.big .em{width:60px;height:60px;font-size:32px}
+.big>div{min-width:0}
+.big b{font-size:16px;padding-right:34px}
+.big span.d{font-size:12.5px;white-space:normal;padding-right:34px}
 .g1{background:linear-gradient(150deg,#3a2a8e,#6a3adf)}
 .g2{background:linear-gradient(150deg,#8e2a4e,#df3a6a)}
 .g3{background:linear-gradient(150deg,#1d5c3a,#2aa868)}
@@ -219,26 +228,30 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .g118{background:linear-gradient(150deg,#1a1408,#e0932d)}
 .g119{background:linear-gradient(150deg,#081321,#3fa7d6)}
 .g120{background:linear-gradient(150deg,#101c0c,#7fc23c)}
-/* 分类分节 + 收藏 */
-.sech{font-size:14px;color:#ffd45c;letter-spacing:2px;margin:22px 4px 10px;display:flex;align-items:center;gap:8px}
-.sech b{font-size:11.5px;color:#8a7aa8;font-weight:600;letter-spacing:0}
-.sech:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,212,92,.4),transparent)}
-.sech{cursor:pointer;user-select:none}
-.sech .chev{font-size:10px;color:#8a7aa8;margin:0 10px 0 8px;transition:transform .18s;display:inline-block}
+/* 分类分节:整条可点的折叠标题,展开一个自动收起其它 */
+.sech{font-size:14.5px;color:#ffd45c;letter-spacing:1.5px;margin:14px 0 9px;padding:0 13px;display:flex;align-items:center;gap:9px;
+  min-height:48px;cursor:pointer;user-select:none;border-radius:14px;position:sticky;top:6px;z-index:3;
+  background:linear-gradient(100deg,rgba(255,212,92,.2),rgba(255,125,184,.1)),#221547;
+  border:1px solid rgba(255,212,92,.26)}
+.sech:active{transform:scale(.99)}
+.sech b{font-size:11.5px;color:#ffe4a8;font-weight:700;letter-spacing:0;background:rgba(0,0,0,.28);padding:3px 9px;border-radius:99px}
+.sech .chev{font-size:11px;color:#ffd45c;margin-left:2px;transition:transform .18s;display:inline-block}
+.sech:after{content:'点击展开';margin-left:auto;font-size:11px;letter-spacing:0;color:#e8dcff;opacity:.62;white-space:nowrap}
+.sech:not(.col):after{content:'点击收起'}
+.sech.col{background:linear-gradient(100deg,rgba(255,255,255,.07),rgba(255,255,255,.03)),#1c1238;border-color:rgba(255,255,255,.14)}
 .sech.col .chev{transform:rotate(-90deg)}
-.sech.col b{opacity:.6}
-.secgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sech.col b{opacity:.7}
 .card.fav{border-color:rgba(255,212,92,.6);box-shadow:0 0 0 1px rgba(255,212,92,.3),0 6px 20px rgba(255,212,92,.14)}
-.favstar{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:10px;border:0;background:rgba(0,0,0,.3);
+.favstar{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:10px;border:0;background:rgba(0,0,0,.3);
   font-size:15px;line-height:1;color:rgba(255,255,255,.55);cursor:pointer;z-index:2;padding:0}
 .favstar.on{color:#ffd45c;background:rgba(255,212,92,.18)}
-.card .tag{left:11px;right:auto}
-.card .tag~.em{margin-left:46px}
 #totop{position:fixed;right:14px;bottom:18px;z-index:9;border:0;width:42px;height:42px;border-radius:50%;
   background:rgba(255,255,255,.13);color:#fff;font-size:17px;border:1px solid rgba(255,255,255,.2);
   backdrop-filter:blur(6px);display:none;cursor:pointer;font-family:inherit}
 #totop:active{transform:scale(.94)}
-.shufbtn,.sech button{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#ffd45c;font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 13px;cursor:pointer;font-family:inherit;letter-spacing:1px}
+.shufbtn,.sech button,.foldbtn{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#ffd45c;font-size:11.5px;font-weight:700;border-radius:999px;padding:5px 13px;cursor:pointer;font-family:inherit;letter-spacing:1px}
+.foldbtn{order:3;margin-left:10px}
+.foldbtn.hide{display:none}
 .shufbtn:active{transform:scale(.94)}
 .empty{text-align:center;color:#8a7aa8;font-size:13px;padding:30px 0}
 
@@ -247,7 +260,11 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
   color:#eafff2;background:linear-gradient(95deg,#22c55e,#15803d);box-shadow:0 4px 0 #0d5c2c;cursor:pointer;font-family:inherit}
 #share:active{transform:translateY(2px);box-shadow:0 2px 0 #0d5c2c}
 footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-height:1.9;letter-spacing:1px}
-@media (max-width:400px){.grid{gap:10px}.card .em{font-size:30px}h1{font-size:28px}.card b{font-size:15px}}
+@media (max-width:400px){.card .em{width:42px;height:42px;font-size:23px}.card b{font-size:14px;letter-spacing:0;white-space:normal;line-height:1.25}h1{font-size:28px}
+  .card span.d{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.45}
+  .card .tag{right:38px;padding:2px 5px;font-size:8.5px}.card .tag~b{padding-right:56px}
+  .sech{letter-spacing:.5px;font-size:13.5px}}
+@media (min-width:1000px){.wrap{max-width:960px}}
 </style>
 </head>
 <body>
@@ -302,7 +319,7 @@ footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-heigh
     <div class="recent" id="recent"></div>
   </div>
 
-  <h2 id="listtitle">🎮 全部游戏</h2>
+  <h2 id="listtitle"><span id="listlbl">🎮 全部游戏</span><button class="foldbtn" id="foldall" type="button">展开全部</button></h2>
   <div id="list">
 
 <a class="card g97" data-cat="puzzle" data-key="laser" data-name="激光迷宫" href="/laser/"><span class="tag new">NEW</span><span class="em">🔦</span><b>激光迷宫 · 光路解谜</b><span class="d">旋转镜面折光,照到水晶过关</span></a>
@@ -533,6 +550,11 @@ footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-heigh
 function $(id){return document.getElementById(id)}
 var cards=[].slice.call(document.querySelectorAll('#list .card'));
 $('cnt').textContent=cards.length;
+/* 只给最新一批(g 编号最大的 8 款)保留 NEW 角标,老卡片的 NEW 是过期噪声,去掉后名字更完整 */
+(function(){
+  var byG=cards.map(function(c){var m=/\bg(\d+)\b/.exec(c.className);return{c:c,g:m?+m[1]:-1}}).sort(function(a,b){return b.g-a.g});
+  byG.slice(8).forEach(function(x){var t=x.c.querySelector('.tag.new');if(t)t.parentNode.removeChild(t)});
+})();
 
 /* ===== 分类分节 ===== */
 var CATS=[['action','⚡ 街机动作'],['puzzle','🧠 烧脑益智'],['board','♟️ 对战棋牌'],['casual','🫧 解压休闲']];
@@ -542,6 +564,7 @@ var sections={};
 cards.forEach(function(c,i){c._ord=i});
 CATS.forEach(function(ct){
   var h=document.createElement('div');h.className='sech';h.setAttribute('data-sech',ct[0]);
+  h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded','true');
   h.innerHTML='<span>'+ct[1]+'</span><b></b><span class="chev">▼</span>';
   var g=document.createElement('div');g.className='secgrid';g.setAttribute('data-secg',ct[0]);
   listEl.appendChild(h);listEl.appendChild(g);
@@ -594,8 +617,27 @@ function refreshFavSec(){
   favH.style.display=has?'flex':'none';
 }
 var FOLDKEY='hub_fold';
-var fold=(function(){try{return JSON.parse(localStorage.getItem(FOLDKEY)||'{}')||{}}catch(e){return{}}})();
+var fold=(function(){
+  var f={};
+  try{f=JSON.parse(localStorage.getItem(FOLDKEY)||'{}')||{}}catch(e){f={}}
+  /* 首次进入:只展开第一个分类,其余收起,页面不再一屏到底 */
+  if(!Object.keys(f).length){f.puzzle=f.board=f.casual=f.fav=true;f.action=false}
+  return f;
+})();
 function saveFold(){try{localStorage.setItem(FOLDKEY,JSON.stringify(fold))}catch(e){}}
+/* 手风琴:展开某个分类时,其余分类一起收起 */
+function onlyOpen(key){
+  CATS.forEach(function(ct){fold[ct[0]]=ct[0]!==key});
+  fold.fav=key!=='fav';
+  saveFold();
+}
+function openCount(){return CATS.filter(function(ct){return !fold[ct[0]]}).length}
+function toggleSec(k){
+  if(k==='fav'){fold.fav=!fold.fav}
+  else if(fold[k])onlyOpen(k);
+  else fold[k]=true;
+  saveFold();apply();
+}
 refreshFavSec();
 CATS.forEach(function(ct){sortSection(sections[ct[0]].g)});
 
@@ -606,18 +648,19 @@ function apply(){
   CATS.forEach(function(ct){
     var key=ct[0],sec=sections[key],secHit=0;
     [].slice.call(sec.g.children).forEach(function(c){
-      var okCat=viewAll||(!viewFav&&key===cat);
+      var okCat=viewAll||(!viewFav&&key===cat)||!!kw;
       var txt=(c.getAttribute('data-name')||'')+c.textContent;
       var okKw=!kw||txt.toLowerCase().indexOf(kw)>=0;
       var show=okCat&&okKw;
       c.classList.toggle('hide',!show);
       if(show){hit++;secHit++}
     });
-    var secShow=secHit>0&&(viewAll||key===cat);
+    var secShow=secHit>0&&(viewAll||key===cat||!!kw);
     sec.h.style.display=secShow?'flex':'none';
-    var folded=fold[key]&&!kw;
+    var folded=kw?false:!!fold[key];
     sec.g.style.display=(secShow&&!folded)?'grid':'none';
-    if(secShow){sec.n.textContent=secHit+' 款';sec.h.classList.toggle('col',!!folded)}
+    if(secShow){sec.n.textContent=secHit+' 款';sec.h.classList.toggle('col',folded);
+      sec.h.setAttribute('aria-expanded',String(!folded))}
   });
   var favHit=0;
   [].slice.call(favG.children).forEach(function(c){
@@ -629,21 +672,39 @@ function apply(){
   var favShow=viewFav&&favHit>0;
   favH.style.display=favShow?'flex':'none';
   favG.style.display=(favShow&&!fold.fav&&!kw)?'grid':'none';
-  if(favShow){favN.textContent=favHit+' 款';favH.classList.toggle('col',!!fold.fav&&!kw)}
+  if(favShow){favN.textContent=favHit+' 款';favH.classList.toggle('col',!!fold.fav&&!kw);
+    favH.setAttribute('aria-expanded',String(!fold.fav))}
   hit=viewFav?favHit:hit;
   $('empty').style.display=hit?'none':'block';
-  $('listtitle').textContent=viewAll?'🎮 全部游戏':viewFav?'⭐ 我的收藏':CATNAME[cat]||'🎮 全部游戏';
+  $('listlbl').textContent=kw?'🔍 搜索「'+kw+'」· '+hit+' 款'
+    :(viewAll?'🎮 全部游戏':viewFav?'⭐ 我的收藏':CATNAME[cat]||'🎮 全部游戏');
+  var fa=$('foldall');
+  fa.classList.toggle('hide',!!kw||viewFav);
+  if(!kw)fa.textContent=openCount()===CATS.length?'全部收起':openCount()?'展开全部':'全部展开';
 }
 listEl.addEventListener('click',function(e){
   var h=e.target.closest('.sech');if(!h)return;
   var k=h.getAttribute('data-sech');if(!k)return;
   e.preventDefault();e.stopPropagation();
-  fold[k]=!fold[k];saveFold();apply();
+  toggleSec(k);
+});
+listEl.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  var h=e.target.closest('.sech');if(!h)return;
+  var k=h.getAttribute('data-sech');if(!k)return;
+  e.preventDefault();toggleSec(k);
+});
+$('foldall').addEventListener('click',function(){
+  var all=openCount()===CATS.length;
+  CATS.forEach(function(ct){fold[ct[0]]=all});
+  saveFold();apply();
 });
 document.getElementById('tabs').addEventListener('click',function(e){
   var b=e.target.closest('.tab');if(!b||b.id==='dice')return;
   [].slice.call(this.children).forEach(function(x){x.classList.toggle('on',x===b)});
-  cat=b.getAttribute('data-cat')||'all';apply();
+  cat=b.getAttribute('data-cat')||'all';
+  if(cat!=='all')onlyOpen(cat);
+  apply();
 });
 
 /* 随机来一局:在当前筛选结果里抽一款 */
@@ -667,7 +728,17 @@ document.addEventListener('keydown',function(e){
 var tmr=0;
 $('q').addEventListener('input',function(){
   var v=this.value.trim().toLowerCase();
-  clearTimeout(tmr);tmr=setTimeout(function(){kw=v;apply()},90);
+  clearTimeout(tmr);tmr=setTimeout(function(){
+    kw=v;
+    /* 搜索跨全部分类命中,把高亮切回「全部」,避免分类按钮和结果不一致 */
+    if(kw&&cat!=='all'){
+      cat='all';
+      [].slice.call(document.querySelectorAll('.tab')).forEach(function(x){
+        x.classList.toggle('on',x.getAttribute('data-cat')==='all');
+      });
+    }
+    apply();
+  },90);
 });
 
 /* 收藏星标点击(委托,兼容克隆卡) */
