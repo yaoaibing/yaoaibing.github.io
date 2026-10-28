@@ -471,6 +471,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」完成了 '+done+' 幅填色画,解压神器!来涂两笔 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='已完成 <b>'+KIT.best()+'</b> 幅 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();setHud();run();
 })();
 </script>

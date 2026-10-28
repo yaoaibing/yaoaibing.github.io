@@ -374,6 +374,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」命中率 '+hits+'/'+shots+',拿下 '+score+' 分!神枪手来战 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

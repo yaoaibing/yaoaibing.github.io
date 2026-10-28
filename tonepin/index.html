@@ -371,6 +371,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的音感测试答对 '+correct+'/10,'+(correct>=9?'绝对音感认证!':'你觉得我五音不全?')+' 你来试试 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最佳 <b>'+KIT.best()+'/10</b> · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

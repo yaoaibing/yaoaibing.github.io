@@ -436,6 +436,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我们一桌人玩「'+NAME+'」,平民'+(civWin?'成功揪出':'被')+'卧底「'+wordS+'」!派对神器 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 syncDiff();updMini();run();
 })();
 </script>

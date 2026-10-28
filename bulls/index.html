@@ -419,6 +419,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」用 '+tries+' 次就破解了 4 位密码,拿 '+KIT.best()+' 分!来比比脑力 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();syncDiff();updMini();run();
 })();
 </script>

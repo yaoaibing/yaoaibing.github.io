@@ -371,6 +371,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的瞬间记忆闯到第 '+lv+' 关,拿 '+score+' 分!来测测你几关 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();deal();run();
 })();
 </script>

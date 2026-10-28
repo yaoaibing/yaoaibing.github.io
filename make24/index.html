@@ -486,6 +486,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」90秒算出 '+solved+' 题,连对 '+combo+'!口算来战 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();syncDiff();updMini();nextHand();run();
 })();
 </script>

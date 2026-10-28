@@ -340,6 +340,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」连跳 '+jumps+' 个没绊倒!绳速都拉到 '+(spd/3.1).toFixed(1)+'x 了 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 个 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

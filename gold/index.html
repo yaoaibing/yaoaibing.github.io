@@ -396,6 +396,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」60秒淘到 '+gold+' 金币!来比比手准 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 金币 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

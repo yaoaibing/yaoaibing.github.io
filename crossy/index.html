@@ -494,6 +494,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的小鸡在「'+NAME+'」走了 '+score+' 格!来比比谁走得远 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最远 <b>'+KIT.best()+'</b> 格 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

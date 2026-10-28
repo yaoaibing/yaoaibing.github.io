@@ -417,6 +417,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」'+N+'层塔用 '+moves+' 步搬完,拿 '+calcScore()+' 分!来比比? '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 reset();syncDiff();updMini();run();
 })();
 </script>

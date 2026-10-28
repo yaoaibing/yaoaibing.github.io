@@ -413,6 +413,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」抽出 '+removed+' 根积木塔才塌!来挑战我 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 根 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 buildTower();updMini();run();
 })();
 </script>

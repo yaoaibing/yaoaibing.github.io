@@ -428,6 +428,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的摩托飞了 '+Math.floor(dist/50)+' 米,完成 '+jumps+' 次峡谷飞跃! '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最远 <b>'+KIT.best()+'</b> 米 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();reset();run();
 })();
 </script>

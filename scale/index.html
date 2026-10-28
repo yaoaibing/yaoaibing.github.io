@@ -398,6 +398,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」8关天平全部配平,拿 '+score+' 分!数学谜题 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();loadLevel();run();
 })();
 </script>

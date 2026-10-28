@@ -389,6 +389,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我是「'+NAME+'」拆弹专家,拆了 '+(bomb-1)+' 颗炸弹拿 '+score+' 分! '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();newBomb();run();
 })();
 </script>

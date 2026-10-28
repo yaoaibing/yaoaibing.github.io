@@ -394,6 +394,7 @@ $('sharebtn').addEventListener('click',function(){
   share('点球大战我 5 罚 '+goals+' 中!敢来守我的门吗 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最佳 <b>'+KIT.best()+'/5</b> · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

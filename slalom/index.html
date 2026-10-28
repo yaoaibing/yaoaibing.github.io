@@ -391,6 +391,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我滑雪滑出了 '+Math.floor(dist/50)+' 米还穿了不少旗门!来雪岭飙一波 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最远 <b>'+KIT.best()+'</b> 米 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

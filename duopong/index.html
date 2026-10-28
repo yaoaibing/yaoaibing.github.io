@@ -363,6 +363,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我们在「'+NAME+'」打成 '+topS+':'+botS+'!双人同屏对战神器 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='已对战 <b>'+KIT.best()+'</b> 局 · 一部手机两人玩'}
+resize();
 onResize();updMini();run();
 })();
 </script>

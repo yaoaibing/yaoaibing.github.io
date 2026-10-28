@@ -425,6 +425,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」45秒狂砍 '+score+' 分,命中率 '+made+'/'+att+'!来斗牛 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();newHoop();run();
 })();
 </script>

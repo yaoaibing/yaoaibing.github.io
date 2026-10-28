@@ -355,6 +355,7 @@ $('sharebtn').addEventListener('click',function(){
   share('今晚的烟花秀我放了 '+total+' 发!治愈解压神器 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='累计 <b>'+KIT.best()+'</b> 发 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

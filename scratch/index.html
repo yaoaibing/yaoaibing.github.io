@@ -421,6 +421,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」刮出了 '+coins+' 金币!手气爆棚快来试 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 金币 · 已刮 <b>'+KIT.plays()+'</b> 张'}
+resize();
 onResize();updMini();newCard();run();
 })();
 </script>

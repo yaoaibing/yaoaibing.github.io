@@ -392,6 +392,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的挂机矿场总产量已经 '+fmt(save.total)+' 矿石!放置玩法了解一下 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='总产量 <b>'+KIT.best()+'</b> · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 loadSave();onResize();updMini();setHud();run();
 })();
 </script>

@@ -384,6 +384,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我家娃玩「'+NAME+'」答对 '+correct+'/12 道认表题!儿童时间启蒙 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();newQ();run();
 })();
 </script>

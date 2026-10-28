@@ -413,6 +413,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」已经转了 '+spins+' 次'+h+'!快来试试手气 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史累计 <b>'+KIT.best()+'</b> 次 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();syncDiff();updMini();setHud();run();
 })();
 </script>

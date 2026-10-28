@@ -363,6 +363,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」钢丝上走了 '+Math.floor(dist/50)+' 米没掉!平衡力挑战 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最远 <b>'+KIT.best()+'</b> 米 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

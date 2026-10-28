@@ -384,6 +384,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我打水漂连漂 '+(stone?stone.skips:bestSkip)+' 次!指尖物理了解一下 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='最高连漂 <b>'+bestSkip+'</b> 次 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

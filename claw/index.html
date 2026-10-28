@@ -434,6 +434,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我 60 秒在「'+NAME+'」抓了 '+got+' 只娃娃,收 '+coins+' 金币!来比比手气 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='金币纪录 <b>'+KIT.best()+'</b> · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();reset();updMini();run();
 })();
 </script>

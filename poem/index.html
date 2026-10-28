@@ -393,6 +393,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」对上 '+correct+' 句古诗,拿 '+score+' 分!语文老师快来看 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();newQ();run();
 })();
 </script>

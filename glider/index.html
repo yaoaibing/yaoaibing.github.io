@@ -356,6 +356,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我乘滑翔伞飞了 '+Math.floor(dist/50)+' 米,收集 '+stars+' 颗星!云端翱翔 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

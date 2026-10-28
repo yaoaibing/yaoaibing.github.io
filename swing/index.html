@@ -409,6 +409,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的荡绳飞人荡出了 '+Math.floor(maxX/50)+' 米!手感挑战了解一下 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最远 <b>'+KIT.best()+'</b> 米 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 reset();updMini();run();
 })();
 </script>

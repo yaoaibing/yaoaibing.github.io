@@ -422,6 +422,7 @@ function updMini(){
   $('mini').innerHTML=(mode===0?('手速纪录 <b>'+KIT.best()+'</b> 点'):
     ('反应纪录 <b>'+(+lsGet('react_best_avg',0)||'-')+'</b> 毫秒'))+' · 已玩 <b>'+KIT.plays()+'</b> 局';
 }
+resize();
 onResize();syncDiff();updMini();setHud();run();
 })();
 </script>

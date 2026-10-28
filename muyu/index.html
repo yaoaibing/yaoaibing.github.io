@@ -346,6 +346,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在这台手机上敲出了 '+total+' 点功德,连击 '+combo+'!心情不好来敲两下 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='总功德 <b>'+fmt(KIT.best())+'</b> · 已修行 <b>'+KIT.plays()+'</b> 次'}
+resize();
 onResize();updMini();run();
 })();
 </script>

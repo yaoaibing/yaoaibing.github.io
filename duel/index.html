@@ -357,6 +357,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我们打了 '+matches+' 场「'+NAME+'」,比分 '+leftS+':'+rightS+'!来一决高下 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='已对战 <b>'+KIT.best()+'</b> 场 · 随时开黑'}
+resize();
 onResize();updMini();run();
 })();
 </script>

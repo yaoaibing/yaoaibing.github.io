@@ -346,6 +346,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的舒尔特方格用时 '+((ms+penalty)/1000).toFixed(1)+' 秒,专注力挑战 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();shuffleGrid();run();
 })();
 </script>

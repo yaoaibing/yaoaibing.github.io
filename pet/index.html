@@ -409,6 +409,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的掌上宠物已经养成「'+st.n+''+st.em+'」,照顾值 '+save.care+'!来云养一只 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='照顾值 <b>'+KIT.best()+'</b> · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 loadSave();onResize();updMini();setHud();run();
 })();
 </script>

@@ -438,6 +438,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我的跳跳球弹到了 '+Math.floor(maxH/50)+' 米高!来比比谁跳得高 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 米 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>

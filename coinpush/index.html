@@ -379,6 +379,7 @@ $('sharebtn').addEventListener('click',function(){
   share('我在「'+NAME+'」推到了 '+coins+' 金币!街机回收了解一下 '+location.href.split('#')[0])});
 $('hubbtn').addEventListener('click',function(){location.href='/'});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 金币 · 已玩 <b>'+KIT.plays()+'</b> 局'}
+resize();
 onResize();updMini();run();
 })();
 </script>
