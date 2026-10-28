@@ -609,6 +609,7 @@ $('sharebtn').addEventListener('click', function () {
 $('hubbtn').addEventListener('click', function () { location.href = '/' });
 
 window.__T = {
+  step: function (n) { for (var i = 0; i < n; i++) update(1 / 60); },
   board: function () { return board.map(function (p) { return p ? (p.up ? RANK_CH[p.s][p.v] : '暗') : null; }); },
   tap: playerTap,
   tryMove: tryMove,

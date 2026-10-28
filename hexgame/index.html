@@ -474,6 +474,7 @@ $('sharebtn').addEventListener('click', function () {
 $('hubbtn').addEventListener('click', function () { location.href = '/' });
 
 window.__T = {
+  step: function (n) { for (var i = 0; i < n; i++) update(1 / 60); },
   board: function () { return board.slice(); },
   place: playerTap,
   connected: connected,
