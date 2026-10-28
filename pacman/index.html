@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>吃豆人 · 迷宫追逐 · 迷宫追逐</title>
+<meta name="description" content="吃豆人:滑动走迷宫吃豆,能量豆让幽灵变蓝反吃!幽灵越来越快,3 条命,吃光全场进下一关!">
+<meta property="og:title" content="吃豆人 · 迷宫追逐 · 迷宫追逐">
+<meta property="og:description" content="吃豆人:滑动走迷宫吃豆,能量豆让幽灵变蓝反吃!幽灵越来越快,3 条命,吃光全场进下一关!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0a1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#0a0a1e;
+  --panel:rgba(10,10,34,.94);
+  --ink:#e8e8ff;
+  --edge:#22226a;
+  --btn1:#ffe14d;
+  --btn2:#c9a400;
+  --btnink:#1a1600;
+  --glow:rgba(255,225,80,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 吃豆人 · 迷宫追逐 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">分<b id="hscore">0</b></span><span class="chip">命<b id="hlife">3</b></span><span class="chip">关<b id="hlevel">1</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">吃 豆 人<small>· 迷 宫 追 逐 ·</small></div>
+  <div class="howto">
+👻 在屏幕上<b>滑动</b>或按方向键控制吃豆人<br>🟡 吃光迷宫里的豆子进入下一关,幽灵会更快<br>⚡ 吃下能量豆,幽灵变蓝,这时可以反吃它们<br>💀 被正常幽灵碰到扣 1 条命,3 条命用完结束<br>⌨️ 键盘:方向键/WASD 移动
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 闯 关</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">追 逐 结 束</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="newbtn" type="button">↻ 新局</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='pacman_best',PLAY='pacman_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 吃豆人 · 迷宫追逐 ================== */
+var NAME = '吃豆人 · 迷宫追逐';
+var MAP = [
+  '###################',
+  '#........#........#',
+  '#.##.###.#.###.##.#',
+  '#o##.###.#.###.##o#',
+  '#.##.....#.....##.#',
+  '#....###...###....#',
+  '###.#...#.#...#.###',
+  '#...#.##...##.#...#',
+  '#.#.#.#####.#.#.#.#',
+  '....#.......#......',
+  '##.##.#####.##.##.#',
+  '#o.....#...#.....o#',
+  '#.#####.#.#####.#.#',
+  '#.................#',
+  '###################'
+];
+var H = MAP.length, W = MAP[0].length;
+var DIRS = [[0, -1], [-1, 0], [0, 1], [1, 0]];
+var GHOST_HOME = [[8, 7], [10, 7], [9, 7], [9, 5]];
+var GHOST_COLOR = ['#ff5b5b', '#ffb2e6', '#6fe3ff', '#ffb347'];
+var SCATTER = [[W - 1, 0], [0, 0], [W - 1, H - 1], [0, H - 1]];
+
+var state = 'start';
+var dots = [], dotsLeft = 0, score = 0, lives = 3, level = 1;
+var player = null, ghosts = [];
+var frightT = 0, combo = 0, gameT = 0, readyT = 0;
+var dyingT = 0, clearT = 0, flashT = 0;
+var BX = 0, BY = 0, CS = 20;
+var eatenGhosts = 0, startTime = 0;
+
+function layout() {
+  var top = Math.max(72, VH * .085);
+  var pad = VW < 360 ? 96 : 62;
+  var bottom = VH - pad;
+  CS = Math.floor(Math.min((VW - 16) / W, (bottom - top) / H));
+  if (CS < 10) CS = 10;
+  var bw = CS * W, bh = CS * H;
+  BX = Math.round((VW - bw) / 2);
+  BY = Math.round(top + Math.max(0, (bottom - top - bh) * .5));
+}
+function onResize() { layout(); }
+
+function wrapX(x) { return ((x % W) + W) % W; }
+function tileAt(x, y) { return MAP[y][wrapX(x)]; }
+function open(x, y) { return y >= 0 && y < H && tileAt(x, y) !== '#'; }
+function centerOf(x, y) { return { x: BX + (x + .5) * CS, y: BY + (y + .5) * CS }; }
+function entPos(e) {
+  var c = centerOf(e.gx, e.gy);
+  return { x: c.x + e.dir[0] * e.off, y: c.y + e.dir[1] * e.off };
+}
+function canGo(x, y, d) {
+  if (!d || (!d[0] && !d[1])) return false;
+  return open(x + d[0], y + d[1]);
+}
+function sameDir(a, b) { return a[0] === b[0] && a[1] === b[1]; }
+
+function makeEnt(x, y, d) {
+  return { gx: x, gy: y, dir: (d || [0, 0]).slice(), want: [0, 0], off: 0, st: 'normal', reviveT: 0 };
+}
+
+function buildDots() {
+  dots = [];
+  dotsLeft = 0;
+  for (var y = 0; y < H; y++) {
+    for (var x = 0; x < W; x++) {
+      var ch = MAP[y][x];
+      var v = ch === '.' ? 1 : ch === 'o' ? 2 : 0;
+      dots.push(v);
+      if (v) dotsLeft++;
+    }
+  }
+}
+function resetPositions() {
+  player = makeEnt(9, 11, [-1, 0]);
+  player.dir = [0, 0];
+  ghosts = GHOST_HOME.map(function (h, i) {
+    var g = makeEnt(h[0], h[1], [0, i === 1 ? 1 : -1]);
+    return g;
+  });
+  frightT = 0;
+  combo = 0;
+  gameT = 0;
+  readyT = 1.4;
+}
+function startGame() {
+  score = 0;
+  lives = 3;
+  level = 1;
+  eatenGhosts = 0;
+  startTime = 0;
+  buildDots();
+  resetPositions();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  syncHud();
+}
+function nextLevel() {
+  level++;
+  buildDots();
+  resetPositions();
+  state = 'play';
+  syncHud();
+}
+function loseLife() {
+  state = 'dying';
+  dyingT = 1.15;
+  tone(520, .16, 'sawtooth', .06, 130);
+}
+function gameOver() {
+  state = 'over';
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '<b>' + score + '</b> 分<br>' +
+    '到达第 ' + level + ' 关 · 反吃幽灵 ' + eatenGhosts + ' 只<br>' +
+    '历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = '能量豆留到被追时再吃,一口翻转全局';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+  tone(300, .18, 'triangle', .05, 200);
+  setTimeout(function () { tone(220, .24, 'triangle', .045, 150); }, 180);
+}
+
+function syncHud() {
+  $('hscore').textContent = score;
+  $('hlife').textContent = lives;
+  $('hlevel').textContent = level;
+}
+
+function setWant(dx, dy) {
+  if (state !== 'play') return;
+  if (!dx && !dy) return;
+  player.want = [dx, dy];
+  if (player.off > 0 && sameDir(player.dir, [-dx, -dy])) {
+    var nx = wrapX(player.gx + player.dir[0]), ny = player.gy + player.dir[1];
+    player.gx = nx;
+    player.gy = ny;
+    player.off = CS - player.off;
+    player.dir = [-dx, -dy];
+  }
+}
+
+function advance(e, dist, onCenter) {
+  var guard = 0;
+  while (dist > 0 && guard++ < 200) {
+    if (!e.dir[0] && !e.dir[1]) {
+      if (onCenter) onCenter(e);
+      if (!e.dir[0] && !e.dir[1]) break;
+    }
+    if (!canGo(e.gx, e.gy, e.dir)) {
+      e.dir = [0, 0];
+      e.off = 0;
+      if (onCenter) onCenter(e);
+      if (!e.dir[0] && !e.dir[1]) break;
+    }
+    var room = CS - e.off;
+    if (dist < room) {
+      e.off += dist;
+      dist = 0;
+    } else {
+      dist -= room;
+      e.gx = wrapX(e.gx + e.dir[0]);
+      e.gy = e.gy + e.dir[1];
+      e.off = 0;
+      if (onCenter) onCenter(e);
+      if (!canGo(e.gx, e.gy, e.dir)) e.dir = [0, 0];
+    }
+  }
+}
+
+function playerCenter(p) {
+  if (canGo(p.gx, p.gy, p.want)) p.dir = p.want.slice();
+  if (!canGo(p.gx, p.gy, p.dir)) p.dir = [0, 0];
+}
+
+function eatHere() {
+  if (state !== 'play') return;
+  if (player.off > CS * .32) return;
+  var k = player.gy * W + player.gx;
+  if (!dots[k]) return;
+  var kind = dots[k];
+  dots[k] = 0;
+  dotsLeft--;
+  if (kind === 1) {
+    score += 10;
+    if (dotsLeft % 3 === 0) tone(880, .025, 'square', .014);
+  } else {
+    score += 50;
+    frightT = 7;
+    combo = 0;
+    for (var i = 0; i < ghosts.length; i++) {
+      var g = ghosts[i];
+      if (g.st === 'normal') {
+        g.st = 'fright';
+        if (g.off > 0) {
+          var nx = wrapX(g.gx + g.dir[0]), ny = g.gy + g.dir[1];
+          g.gx = nx; g.gy = ny; g.off = CS - g.off; g.dir = [-g.dir[0], -g.dir[1]];
+        } else if (g.dir[0] || g.dir[1]) {
+          g.dir = [-g.dir[0], -g.dir[1]];
+        }
+      }
+    }
+    tone(660, .09, 'triangle', .05, 990);
+  }
+  syncHud();
+  if (dotsLeft <= 0) {
+    state = 'clearing';
+    clearT = 1.5;
+    score += 500 + level * 100;
+    syncHud();
+    tone(620, .1, 'triangle', .05, 880);
+    setTimeout(function () { tone(880, .14, 'triangle', .05, 1180); }, 120);
+  }
+}
+
+function ghostTarget(g, i) {
+  if (g.st === 'eaten') return { x: GHOST_HOME[i][0], y: GHOST_HOME[i][1] };
+  var scatter = (gameT % 26) < 7;
+  if (scatter) return { x: SCATTER[i][0], y: SCATTER[i][1] };
+  var px = player.gx, py = player.gy;
+  if (i === 0) return { x: px, y: py };
+  if (i === 1) return { x: wrapX(px + player.dir[0] * 4), y: py + player.dir[1] * 4 };
+  if (i === 2) {
+    var far = Math.abs(g.gx - px) + Math.abs(g.gy - py) > 9;
+    return far ? { x: px, y: py } : { x: 0, y: H - 1 };
+  }
+  return { x: wrapX(px + player.dir[0] * 2), y: py + player.dir[1] * 2 };
+}
+
+function ghostCenter(g, i) {
+  var hx = GHOST_HOME[i][0], hy = GHOST_HOME[i][1];
+  if (g.st === 'home') {
+    g.dir = [0, 0];
+    return;
+  }
+  if (g.st === 'eaten' && g.gx === hx && g.gy === hy) {
+    g.st = 'home';
+    g.reviveT = .9;
+    g.dir = [0, 0];
+    g.off = 0;
+    return;
+  }
+  var opts = [];
+  for (var d = 0; d < 4; d++) {
+    if (!canGo(g.gx, g.gy, DIRS[d])) continue;
+    if (sameDir(DIRS[d], [-g.dir[0], -g.dir[1]]) && g.dir[0] + g.dir[1] !== 0) continue;
+    opts.push(DIRS[d]);
+  }
+  if (!opts.length) {
+    opts = DIRS.filter(function (d) { return canGo(g.gx, g.gy, d); });
+  }
+  if (!opts.length) { g.dir = [0, 0]; return; }
+  var t = ghostTarget(g, i);
+  var best = null, bestVal = 0;
+  for (var j = 0; j < opts.length; j++) {
+    var nx = wrapX(g.gx + opts[j][0]), ny = g.gy + opts[j][1];
+    var dx = nx - t.x, dy = ny - t.y;
+    var val = dx * dx + dy * dy;
+    if (g.st === 'fright') val = -val;
+    if (!best || val < bestVal) { best = opts[j]; bestVal = val; }
+  }
+  g.dir = best;
+}
+
+function moveGhosts(dt) {
+  for (var i = 0; i < ghosts.length; i++) {
+    var g = ghosts[i];
+    if (g.st === 'home') {
+      g.reviveT -= dt;
+      if (g.reviveT <= 0) {
+        g.st = 'normal';
+        g.dir = [0, -1];
+        g.off = 0;
+      }
+      continue;
+    }
+    var speed;
+    if (g.st === 'eaten') speed = CS * 9;
+    else if (g.st === 'fright') speed = CS * 2.7;
+    else speed = CS * Math.min(6.4, 4.15 + level * .28);
+    var idx = i;
+    advance(g, speed * dt, function (e) { ghostCenter(e, idx); });
+  }
+}
+
+function checkCollisions() {
+  var p = entPos(player);
+  for (var i = 0; i < ghosts.length; i++) {
+    var g = ghosts[i];
+    if (g.st === 'eaten' || g.st === 'home') continue;
+    var q = entPos(g);
+    var dx = p.x - q.x, dy = p.y - q.y;
+    if (dx * dx + dy * dy > CS * CS * .5) continue;
+    if (g.st === 'fright') {
+      g.st = 'eaten';
+      g.reviveT = 0;
+      combo++;
+      var gain = 200 * Math.pow(2, Math.min(3, combo - 1));
+      score += gain;
+      eatenGhosts++;
+      flashT = .28;
+      syncHud();
+      tone(760, .07, 'square', .05, 1180);
+      setTimeout(function () { tone(1180, .08, 'square', .04, 1500); }, 70);
+    } else if (state === 'play') {
+      loseLife();
+      return;
+    }
+  }
+}
+
+function update(dt) {
+  if (flashT > 0) flashT -= dt;
+  if (state === 'play') {
+    gameT += dt;
+    if (readyT > 0) {
+      readyT -= dt;
+      syncHud();
+      return;
+    }
+    if (frightT > 0) {
+      frightT -= dt;
+      if (frightT <= 0) {
+        frightT = 0;
+        for (var i = 0; i < ghosts.length; i++) if (ghosts[i].st === 'fright') ghosts[i].st = 'normal';
+      }
+    }
+    advance(player, CS * Math.min(6, 5 + level * .12) * dt, playerCenter);
+    eatHere();
+    if (state !== 'play') return;
+    moveGhosts(dt);
+    checkCollisions();
+    syncHud();
+  } else if (state === 'dying') {
+    dyingT -= dt;
+    if (dyingT <= 0) {
+      lives--;
+      syncHud();
+      if (lives <= 0) gameOver();
+      else {
+        resetPositions();
+        state = 'play';
+      }
+    }
+  } else if (state === 'clearing') {
+    clearT -= dt;
+    if (clearT <= 0) nextLevel();
+  }
+}
+
+function drawMaze() {
+  for (var y = 0; y < H; y++) {
+    for (var x = 0; x < W; x++) {
+      if (MAP[y][x] !== '#') continue;
+      var px = BX + x * CS, py = BY + y * CS;
+      ctx.fillStyle = '#131b5e';
+      ctx.strokeStyle = '#3b57d8';
+      ctx.lineWidth = Math.max(1, CS * .07);
+      var inset = CS * .045;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(px + inset, py + inset, CS - inset * 2, CS - inset * 2, CS * .18);
+      else ctx.rect(px + inset, py + inset, CS - inset * 2, CS - inset * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+}
+function drawDots() {
+  var pulse = 1 + Math.sin(gameT * 5) * .16;
+  for (var y = 0; y < H; y++) {
+    for (var x = 0; x < W; x++) {
+      var v = dots[y * W + x];
+      if (!v) continue;
+      var c = centerOf(x, y);
+      if (v === 1) {
+        ctx.fillStyle = '#ffd9a8';
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, Math.max(1.3, CS * .1), 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#fff0b8';
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, CS * .26 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,240,184,.4)';
+        ctx.lineWidth = Math.max(1, CS * .06);
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, CS * .34 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+  }
+}
+function drawPlayer() {
+  var p = entPos(player);
+  var r = CS * .43;
+  if (state === 'dying') {
+    var k = Math.max(0, dyingT / 1.15);
+    r *= k;
+  }
+  var ang = Math.atan2(player.dir[1], player.dir[0]);
+  if (!player.dir[0] && !player.dir[1]) ang = 0;
+  var mouth = state === 'dying' ? .85 : .1 + .26 * (1 + Math.sin(gameT * 13)) / 2;
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(ang);
+  ctx.fillStyle = '#ffe14d';
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.arc(0, 0, r, mouth * Math.PI, (2 - mouth) * Math.PI);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = 'rgba(40,30,0,.85)';
+  ctx.beginPath();
+  ctx.arc(r * .1, -r * .42, Math.max(1.2, r * .11), 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+function drawGhost(g, i) {
+  var p = entPos(g);
+  var r = CS * .42;
+  var fright = g.st === 'fright';
+  var body = fright ? '#2f43ff' : GHOST_COLOR[i];
+  if (fright && frightT < 2 && Math.floor(frightT * 6) % 2 === 0) body = '#e8eaff';
+  if (g.st !== 'eaten' && g.st !== 'home') {
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y - r * .12, r, Math.PI, 0);
+    ctx.lineTo(p.x + r, p.y + r * .66);
+    for (var k = 0; k < 3; k++) {
+      var x0 = p.x + r - (k * 2 + 1) * r / 3;
+      var x1 = p.x + r - (k * 2 + 2) * r / 3;
+      ctx.quadraticCurveTo((x0 + x1) / 2, p.y + r * (k % 2 ? .3 : .98), x1, p.y + r * .66);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+  if (fright) {
+    var eyeY = p.y - r * .2;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(p.x - r * .33, eyeY, r * .18, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x + r * .33, eyeY, r * .18, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = Math.max(1, r * .12);
+    ctx.beginPath();
+    ctx.moveTo(p.x - r * .42, p.y + r * .3);
+    ctx.lineTo(p.x - r * .2, p.y + r * .14);
+    ctx.lineTo(p.x, p.y + r * .3);
+    ctx.lineTo(p.x + r * .2, p.y + r * .14);
+    ctx.lineTo(p.x + r * .42, p.y + r * .3);
+    ctx.stroke();
+    return;
+  }
+  var ex = g.dir[0] * r * .1, ey = g.dir[1] * r * .1;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(p.x - r * .3, p.y - r * .18, r * .24, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(p.x + r * .3, p.y - r * .18, r * .24, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#1a1a4a';
+  ctx.beginPath(); ctx.arc(p.x - r * .3 + ex, p.y - r * .18 + ey, r * .12, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(p.x + r * .3 + ex, p.y - r * .18 + ey, r * .12, 0, Math.PI * 2); ctx.fill();
+}
+
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#0a0a22');
+  bg.addColorStop(1, '#050512');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, VW, VH);
+
+  ctx.fillStyle = 'rgba(255,255,255,.03)';
+  ctx.fillRect(BX - 6, BY - 6, CS * W + 12, CS * H + 12);
+
+  drawMaze();
+  drawDots();
+  if (frightT > 0 && state === 'play') {
+    ctx.strokeStyle = 'rgba(90,130,255,.35)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(BX - 3, BY - 3, CS * W + 6, CS * H + 6);
+  }
+  ghosts.forEach(function (g, i) { drawGhost(g, i); });
+  if (state === 'play' || state === 'dying' || state === 'clearing') drawPlayer();
+
+  if (state === 'play' && readyT > 0) {
+    ctx.fillStyle = 'rgba(4,6,24,.62)';
+    ctx.fillRect(BX, BY + CS * H / 2 - CS * .9, CS * W, CS * 1.8);
+    ctx.fillStyle = '#ffe14d';
+    ctx.font = '900 ' + Math.round(CS * .9) + 'px "PingFang SC",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('准 备', BX + CS * W / 2, BY + CS * H / 2);
+  }
+  if (state === 'clearing') {
+    ctx.fillStyle = '#ffe14d';
+    ctx.font = '900 ' + Math.round(CS * .95) + 'px "PingFang SC",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('过 关!', BX + CS * W / 2, BY + CS * H / 2);
+  }
+  if (state === 'play' && readyT <= 0) {
+    ctx.fillStyle = 'rgba(220,230,255,.5)';
+    ctx.font = '600 ' + Math.max(11, Math.round(CS * .5)) + 'px "PingFang SC",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('滑动改变方向 · 吃光豆子过关', VW / 2, BY + CS * H + 12);
+  }
+  if (flashT > 0) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (flashT * .5) + ')';
+    ctx.fillRect(0, 0, VW, VH);
+  }
+}
+
+function swipeDir(dx, dy) {
+  if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
+  if (Math.abs(dx) >= Math.abs(dy)) setWant(dx > 0 ? 1 : -1, 0);
+  else setWant(0, dy > 0 ? 1 : -1);
+}
+
+var touchX = 0, touchY = 0, touching = false;
+cv.addEventListener('pointerdown', function (e) {
+  e.preventDefault();
+  touching = true;
+  touchX = e.clientX;
+  touchY = e.clientY;
+});
+cv.addEventListener('pointermove', function (e) {
+  if (!touching) return;
+  e.preventDefault();
+  var dx = e.clientX - touchX, dy = e.clientY - touchY;
+  if (Math.abs(dx) >= 18 || Math.abs(dy) >= 18) {
+    swipeDir(dx, dy);
+    touchX = e.clientX;
+    touchY = e.clientY;
+  }
+});
+cv.addEventListener('pointerup', function (e) {
+  if (!touching) return;
+  touching = false;
+  var dx = e.clientX - touchX, dy = e.clientY - touchY;
+  if (Math.abs(dx) < 18 && Math.abs(dy) < 18 && state === 'play') {
+    var p = entPos(player);
+    swipeDir(e.clientX - p.x, e.clientY - p.y);
+  }
+});
+cv.addEventListener('pointercancel', function () { touching = false; });
+window.addEventListener('keydown', function (e) {
+  var k = e.key;
+  if (k === 'ArrowLeft' || k === 'a' || k === 'A') setWant(-1, 0);
+  else if (k === 'ArrowRight' || k === 'd' || k === 'D') setWant(1, 0);
+  else if (k === 'ArrowUp' || k === 'w' || k === 'W') setWant(0, -1);
+  else if (k === 'ArrowDown' || k === 's' || k === 'S') setWant(0, 1);
+  else if (k === 'r' || k === 'R') startGame();
+});
+
+$('startbtn').addEventListener('click', startGame);
+$('againbtn').addEventListener('click', startGame);
+$('newbtn').addEventListener('click', startGame);
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」吃了 ' + score + ' 分,到第 ' + level + ' 关! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+
+window.__T = {
+  map: function () { return MAP.slice(); },
+  state: function () { return state; },
+  start: startGame,
+  step: function (n) { for (var i = 0; i < (n || 1); i++) update(1 / 60); },
+  score: function () { return score; },
+  lives: function () { return lives; },
+  level: function () { return level; },
+  player: function () {
+    var p = entPos(player);
+    return { gx: player.gx, gy: player.gy, dir: player.dir.slice(), want: player.want.slice(), off: player.off, x: p.x, y: p.y };
+  },
+  ghosts: function () {
+    return ghosts.map(function (g) {
+      var p = entPos(g);
+      return { gx: g.gx, gy: g.gy, dir: g.dir.slice(), st: g.st, x: p.x, y: p.y };
+    });
+  },
+  setWant: setWant,
+  setPlayer: function (x, y) {
+    player.gx = x; player.gy = y; player.off = 0; player.dir = [0, 0];
+  },
+  setGhost: function (i, x, y, st) {
+    ghosts[i].gx = x; ghosts[i].gy = y; ghosts[i].off = 0;
+    ghosts[i].dir = [0, 0];
+    ghosts[i].st = st || 'normal';
+  },
+  dotsLeft: function () { return dotsLeft; },
+  dotAt: function (x, y) { return dots[y * W + x]; },
+  eatAllBut: function (x, y) {
+    for (var i = 0; i < dots.length; i++) if (dots[i] === 1) dots[i] = 0;
+    dots[y * W + x] = 1;
+    dotsLeft = 1;
+  },
+  fright: function () { return frightT; },
+  setFright: function (v) { frightT = v; },
+  ready: function () { return readyT; },
+  setReady: function (v) { readyT = v; },
+  ghostsEaten: function () { return eatenGhosts; },
+  open: function (x, y) { return open(x, y); }
+};
+resize();
+layout();
+buildDots();
+resetPositions();
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='pacman'});
+  r.unshift({k:'pacman',n:'吃豆人 · 迷宫追逐',e:'👻'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['pacman_best','pacman_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['pacman']||0)){
+            B['pacman']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
