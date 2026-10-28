@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>我的战绩 · 各种游戏路口</title>
-<meta name="description" content="我的游戏战绩:50款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
+<meta name="description" content="我的游戏战绩:114款小游戏的最高分汇总、连续打卡日历、游玩次数统计。看看你最擅长哪一款!">
 <meta property="og:title" content="我的战绩 · 各种游戏路口">
-<meta property="og:description" content="50款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
+<meta property="og:description" content="114款游戏最高分汇总 + 连续打卡日历,看看你最擅长哪一款!">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#181030">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -127,7 +127,7 @@ function $(id){return document.getElementById(id)}
 function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
 function jp(k,d){try{return JSON.parse(lg(k,JSON.stringify(d)))||d}catch(e){return d}}
 
-/* 106 款游戏清单(与大厅卡片一致) */
+/* 114 款游戏清单(与大厅卡片一致) */
 var GAMES=[
   ['tictactoe','井字棋','⭕','board'],
   ['hanoi','汉诺塔','🗼','puzzle'],
@@ -185,6 +185,14 @@ var GAMES=[
   ['clock','认识时钟','⏰','puzzle'],
   ['scale','天平称重','⚖️','puzzle'],
   ['glider','滑翔伞','🪂','casual'],
+  ['reversi','黑白棋','⚫','board'],
+  ['yahtzee','快艇骰子','🎲','board'],
+  ['sudoku','数独','🔢','puzzle'],
+  ['idiomchain','成语接龙','🐉','puzzle'],
+  ['fruitmerge','水果合成','🍓','casual'],
+  ['jigsaw','拼图','🧩','casual'],
+  ['curling','冰壶','🥌','action'],
+  ['fruitninja','切水果','🍉','action'],
   ['golf','迷你高尔夫','⛳','casual'],
   ['bowling','保龄球','🎳','action'],
   ['tetris','俄罗斯方块','🧱','puzzle'],
@@ -205,7 +213,7 @@ var GAMES=[
   ['water','倒水大师','🧪','casual'],['bubble','捏泡泡纸','🫧','casual'],
   ['run','星夜跑酷','🏃','action'],['balloon','气球大作战','🎈','action'],['shousui','守岁大作战','🧨','action'],
   ['jump','跳一跳','🐸','action'],['match','糖果消消乐','🍬','puzzle'],['snake','蛇蛇争霸','🐍','puzzle'],
-  ['link','宠物连连看','🐱','puzzle'],['fc','FC游戏厅33合1','🕹️','puzzle'],
+  ['link','宠物连连看','🐱','puzzle'],['fc','FC游戏厅31合1','🕹️','puzzle'],
   ['diner','喵喵食堂','🍜','casual'],['moyu','摸鱼乐园','🐟','casual']
 ];
 var TOTAL=GAMES.length;
