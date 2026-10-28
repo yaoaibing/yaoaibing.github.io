@@ -37,6 +37,19 @@ header p{font-size:13px;color:#b8a8d8;margin-top:8px;letter-spacing:2px}
 .statbar{background:linear-gradient(95deg,#3a2a8e,#6a3adf);color:#fff;box-shadow:0 5px 0 #241548}
 .statbar:active{box-shadow:0 2px 0 #241548}
 
+/* 公告:全站只保留最新一条,更新时整段替换(文案 + 脚本里的公告编号) */
+.notice{display:flex;align-items:flex-start;gap:10px;margin:14px 0 0;padding:11px 38px 11px 13px;position:relative;
+  background:linear-gradient(105deg,rgba(255,212,92,.16),rgba(255,125,184,.10));
+  border:1px solid rgba(255,212,92,.34);border-radius:14px}
+.notice .nicon{font-size:17px;line-height:1.35}
+.notice .ntx{flex:1;font-size:12.5px;line-height:1.7;color:#efe6ff}
+.notice .ntx b{color:#ffd45c;margin-right:6px;letter-spacing:1px}
+.notice .ntx a{color:#9fd0ff;text-decoration:none;border-bottom:1px dashed rgba(159,208,255,.55)}
+.notice .nclose{position:absolute;right:7px;top:7px;width:25px;height:25px;border:0;border-radius:8px;
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-size:12px;line-height:1;cursor:pointer;font-family:inherit}
+.notice .nclose:active{transform:scale(.9)}
+@media (max-width:400px){.notice .ntx{font-size:12px}.notice{padding:10px 34px 10px 11px}}
+
 /* 搜索 */
 .searchbox{position:relative;margin:16px 0 0}
 .searchbox input{width:100%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;
@@ -241,6 +254,23 @@ footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-heigh
     <a class="guidebar" href="./guide/">📖 全游戏攻略</a>
     <a class="statbar" href="./stats/">📊 我的战绩</a>
   </div>
+
+  <!-- 公告:只保留最新一条,换公告时整段替换(下面的文案 + 脚本里的公告编号) -->
+  <section class="notice" id="notice" aria-label="最新公告">
+    <span class="nicon" aria-hidden="true">📣</span>
+    <div class="ntx"><b>第 13 批更新</b>新增 8 款游戏:黑白棋、快艇骰子、数独、成语接龙、水果合成、拼图、冰壶、切水果,全站 114 款,攻略同步更新。<a href="./guide/">看攻略 →</a></div>
+    <button class="nclose" id="nclose" type="button" aria-label="关闭公告">✕</button>
+  </section>
+  <script>
+  (function () {
+    var ANN = '2026-10-28-b13', n = document.getElementById('notice');
+    try { if (localStorage.getItem('__ann') === ANN) { n.style.display = 'none'; return; } } catch (e) {}
+    document.getElementById('nclose').addEventListener('click', function () {
+      n.style.display = 'none';
+      try { localStorage.setItem('__ann', ANN); } catch (e) {}
+    });
+  })();
+  </script>
 
   <div class="searchbox"><input id="q" type="search" placeholder="搜游戏:跑酷 / 扫雷 / 五子棋…(按 / 快速搜索)" autocomplete="off"></div>
 
