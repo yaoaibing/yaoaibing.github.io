@@ -79,12 +79,12 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .recent a:active{transform:scale(.96)}
 .recent a i{font-style:normal;font-size:17px}
 
-/* 卡片:图标磁贴 + 两行文字,一行一张,磁贴尺寸全站统一 */
+/* 卡片:左侧小图标磁贴 + 两行文字 + 右侧分类图标,三块各占独立网格列,文字不可能压到图标 */
 .grid,.secgrid{display:grid;grid-template-columns:1fr;gap:9px}
-@media (min-width:620px){.grid,.secgrid{grid-template-columns:1fr 1fr;gap:10px}}
-@media (min-width:1000px){.grid,.secgrid{grid-template-columns:repeat(3,1fr)}}
-.card{display:grid;grid-template-columns:46px 1fr;column-gap:11px;text-decoration:none;color:#fff;
-  border-radius:15px;padding:10px 12px;position:relative;overflow:hidden;align-items:center;
+@media (min-width:760px){.grid,.secgrid{grid-template-columns:1fr 1fr;gap:10px}}
+@media (min-width:1120px){.grid,.secgrid{grid-template-columns:repeat(3,1fr)}}
+.card{display:grid;grid-template-columns:38px minmax(0,1fr) auto 28px 30px;column-gap:9px;text-decoration:none;color:#fff;
+  border-radius:15px;padding:9px 11px;position:relative;overflow:hidden;align-items:center;
   border:1px solid rgba(255,255,255,.12);transition:transform .12s;animation:pop .28s both}
 .card.hide{display:none}
 .card:active{transform:scale(.98)}
@@ -92,22 +92,30 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .card:hover .em{transform:scale(1.07)}
 .card .em{transition:transform .18s}}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
-.card .em{grid-row:1/3;justify-self:start;width:46px;height:46px;font-size:25px;line-height:1;display:flex;
-  align-items:center;justify-content:center;background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.16);border-radius:13px}
-.card b{grid-column:2;min-width:0;font-size:14.5px;display:block;letter-spacing:.5px;padding-right:34px;
+.card .em{grid-column:1;grid-row:1/3;justify-self:start;width:38px;height:38px;font-size:21px;line-height:1;display:flex;
+  align-items:center;justify-content:center;background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.16);border-radius:11px}
+.card b{grid-column:2;min-width:0;font-size:14.5px;display:block;letter-spacing:.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card span.d{grid-column:2;min-width:0;font-size:11.5px;opacity:.75;display:block;margin-top:3px;line-height:1.5;padding-right:34px;
+.card span.d{grid-column:2;min-width:0;font-size:11.5px;opacity:.75;display:block;margin-top:3px;line-height:1.5;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .tag{position:absolute;top:10px;right:43px;font-size:9px;font-weight:800;letter-spacing:.5px;
+/* 右侧分类图标:用伪元素渲染,不进 textContent,不影响搜索命中 */
+.card:after{grid-column:4;grid-row:1/3;align-self:center;justify-self:center;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;line-height:1;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13)}
+.card[data-cat=action]:after{content:'⚡'}
+.card[data-cat=puzzle]:after{content:'🧠'}
+.card[data-cat=board]:after{content:'♟️'}
+.card[data-cat=casual]:after{content:'🫧'}
+.card .tag{grid-column:3;grid-row:1/3;align-self:center;justify-self:start;font-size:9px;font-weight:800;letter-spacing:.5px;
   background:rgba(0,0,0,.32);padding:2px 6px;border-radius:99px}
 .card .hot{background:#ff5a5a}
 .card .new{background:#22c55e}
-.card .tag~b{padding-right:70px}
-.big{grid-column:1/-1;grid-template-columns:60px 1fr;padding:13px 14px}
-.big .em{width:60px;height:60px;font-size:32px}
-.big>div{min-width:0}
-.big b{font-size:16px;padding-right:34px}
-.big span.d{font-size:12.5px;white-space:normal;padding-right:34px}
+.big{grid-column:1/-1;grid-template-columns:56px minmax(0,1fr) auto 34px 32px;padding:13px 14px}
+.big .em{width:56px;height:56px;font-size:30px;border-radius:15px}
+.big:after{width:34px;height:34px;font-size:17px;border-radius:11px}
+.big>div{min-width:0;grid-column:2;grid-row:1/3;align-self:center}
+.big b{font-size:16px}
+.big span.d{font-size:12.5px;white-space:normal}
 .g1{background:linear-gradient(150deg,#3a2a8e,#6a3adf)}
 .g2{background:linear-gradient(150deg,#8e2a4e,#df3a6a)}
 .g3{background:linear-gradient(150deg,#1d5c3a,#2aa868)}
@@ -242,8 +250,10 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
 .sech.col .chev{transform:rotate(-90deg)}
 .sech.col b{opacity:.7}
 .card.fav{border-color:rgba(255,212,92,.6);box-shadow:0 0 0 1px rgba(255,212,92,.3),0 6px 20px rgba(255,212,92,.14)}
-.favstar{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:10px;border:0;background:rgba(0,0,0,.3);
-  font-size:15px;line-height:1;color:rgba(255,255,255,.55);cursor:pointer;z-index:2;padding:0}
+.favstar{position:relative;grid-column:5;grid-row:1/3;align-self:center;justify-self:center;width:28px;height:30px;border-radius:9px;border:0;background:rgba(0,0,0,.3);
+  font-size:14px;line-height:1;color:rgba(255,255,255,.55);cursor:pointer;z-index:2;padding:0}
+/* 视觉小、手指命中区扩到 40×40,不占卡片宽度 */
+.favstar:after{content:'';position:absolute;left:-6px;right:-6px;top:-5px;bottom:-5px}
 .favstar.on{color:#ffd45c;background:rgba(255,212,92,.18)}
 #totop{position:fixed;right:14px;bottom:18px;z-index:9;border:0;width:42px;height:42px;border-radius:50%;
   background:rgba(255,255,255,.13);color:#fff;font-size:17px;border:1px solid rgba(255,255,255,.2);
@@ -260,11 +270,20 @@ h2:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,
   color:#eafff2;background:linear-gradient(95deg,#22c55e,#15803d);box-shadow:0 4px 0 #0d5c2c;cursor:pointer;font-family:inherit}
 #share:active{transform:translateY(2px);box-shadow:0 2px 0 #0d5c2c}
 footer{text-align:center;color:#8a7aa8;font-size:12px;margin-top:24px;line-height:1.9;letter-spacing:1px}
-@media (max-width:400px){.card .em{width:42px;height:42px;font-size:23px}.card b{font-size:14px;letter-spacing:0;white-space:normal;line-height:1.25}h1{font-size:28px}
+@media (max-width:400px){.card{grid-template-columns:34px minmax(0,1fr) auto 26px 28px;column-gap:7px;padding:9px 10px}
+  .card .em{width:34px;height:34px;font-size:19px;border-radius:10px}
+  .card:after{width:26px;height:26px;font-size:13px;border-radius:8px}
+  .favstar{width:28px;height:28px;font-size:13px}
+  .card b{font-size:14px;letter-spacing:0;white-space:normal;line-height:1.25}h1{font-size:28px}
   .card span.d{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.45}
-  .card .tag{right:38px;padding:2px 5px;font-size:8.5px}.card .tag~b{padding-right:56px}
+  .card .tag{padding:2px 5px;font-size:8.5px}
+  .big{grid-template-columns:46px minmax(0,1fr) auto 28px 28px;padding:12px 11px}
+  .big .em{width:46px;height:46px;font-size:25px}
+  .big:after{width:28px;height:28px;font-size:15px;border-radius:9px}
   .sech{letter-spacing:.5px;font-size:13.5px}}
+@media (min-width:760px){.wrap{max-width:860px}}
 @media (min-width:1000px){.wrap{max-width:960px}}
+@media (min-width:1120px){.wrap{max-width:1120px}}
 </style>
 </head>
 <body>
