@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>密室逃脱 · 十室之约 · 十室之约</title>
+<meta name="description" content="密室逃脱:一觉醒来锁在陌生老宅!搜地毯、翻抽屉、拼线索,集齐钥匙道具一路逃出十间房!动脑又解压,卡关了就四处点点看!">
+<meta property="og:title" content="密室逃脱 · 十室之约 · 十室之约">
+<meta property="og:description" content="密室逃脱:一觉醒来锁在陌生老宅!搜地毯、翻抽屉、拼线索,集齐钥匙道具一路逃出十间房!动脑又解压,卡关了就四处点点看!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#171008">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%9A%AA%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#171008;
+  --panel:rgba(26,18,10,.94);
+  --ink:#f2e6c8;
+  --edge:#4a3a18;
+  --btn1:#d8a85a;
+  --btn2:#98682a;
+  --btnink:#1a1004;
+  --glow:rgba(216,168,90,.4);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 密室逃脱 · 十室之约 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">房间<b id="hroom">1/10</b></span><span class="chip">道具<b id="hitem">0</b></span><span class="chip">提示<b id="hhint">3</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">密 室 逃 脱<small>· 十 室 之 约 ·</small></div>
+  <div class="howto">
+🚪 每间房有 3-4 个<b>可搜的地点</b>,点它们搜线索<br>🔑 搜到<b>钥匙/道具</b>自动入包,用它开对应的门<br>🧩 有些门要先解开<b>机关谜题</b>才能走<br>💡 卡住就用提示,每局 3 次,直接圈出关键地点<br>🏁 连过 10 间房即逃出生天!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">苏 醒</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">重 见 天 日</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 入 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="hintbtn" type="button">💡 提示</button><button class="padbtn" id="resetbtn" type="button">↺ 本房重搜</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='escape_best',PLAY='escape_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 密室逃脱 · 十室之约 ================== */
+var NAME = '密室逃脱 · 十室之约';
+var state = 'start';
+var room = 0;
+var items = [];                  /* 背包道具名 */
+var hints = 3;
+var searched = {};               /* 本房已搜标记 */
+var solved = {};                 /* 机关已解 */
+var lockUI = false;              /* 机关答题面板 */
+var score = 0, winT = 0, msg = '', msgT = 0, hintGlow = -1, hintT = 0;
+var elapsed = 0;
+
+/* 每房:标题,描述,地点(名称+结果),门(需要道具或机关) */
+var ROOMS = [
+  { t: '阁楼卧室', d: '你在陌生的阁楼醒来,门锁着,屋里只有旧地毯和一只木箱。',
+    spots: [['掀开地毯', '地毯下有一把<b>铜钥匙</b>!'], ['翻木箱', '一页日记:「灯亮之处,门自会开」'], ['敲墙壁', '咚咚,墙后是空的']],
+    door: { need: '铜钥匙', label: '点门离开(需要铜钥匙)' } },
+  { t: '走廊', d: '昏暗走廊尽头有扇铁门,门边挂着油画,角落立着花瓶。',
+    spots: [['看油画', '画框后面贴着一张纸条:「花瓶有底」'], ['摸花瓶', '瓶底藏着一把<b>铁钥匙</b>!'], ['检查门', '铁门锁着,需要铁钥匙']],
+    door: { need: '铁钥匙', label: '开铁门(需要铁钥匙)' } },
+  { t: '书房', d: '满墙的书,书桌上有个三位密码盒,便签写着:「书名暗示密码」。',
+    spots: [['翻《星空史》', '书里夹着纸条:「第二位是 7」'], ['翻《航海志》', '书里夹着纸条:「第一位是 3」'], ['翻《菜谱》', '书里夹着纸条:「第三位是 5」'], ['看密码盒', '输入 375 即可打开']],
+    lock: { code: '375', reward: '书房钥匙', options: ['375', '357', '573'], label: '密码盒(三位数字)' },
+    door: { need: '书房钥匙', label: '开书房门(需要书房钥匙)' } },
+  { t: '储物间', d: '杂物堆积,一口井在房间中央,井绳上系着什么东西。',
+    spots: [['拉井绳', '拉上来一个水桶,里面有<b>生锈的钥匙</b>!'], ['翻杂物堆', '一张旧照片,背后写着:「别信镜子」'], ['开储物柜', '只有灰尘']],
+    door: { need: '生锈的钥匙', label: '开储物间门(需要生锈的钥匙)' } },
+  { t: '镜子厅', d: '两面巨大的镜子相对而立,中央是雕花大门。照片说:别信镜子。',
+    spots: [['看左镜', '镜中你的身后有一扇门,回头却没有'], ['敲右镜', '镜子是空的,后面有空间!'], ['推中央门', '纹丝不动,似乎需要机关']],
+    lock: { code: 'right', reward: '暗门钥匙', options: ['左镜', '右镜'], codes: ['left', 'right'], label: '机关(哪面镜子后有暗门?)' },
+    door: { need: '暗门钥匙', label: '推暗门(需要暗门钥匙)' } },
+  { t: '温室', d: '满是花草的暖房,花丛里立着风向标,水池清澈见底。',
+    spots: [['搜花丛', '带刺的玫瑰下有一把<b>黄铜小钥匙</b>!'], ['看风向标', '指针停在「南」'], ['捞水池', '一枚硬币,上面刻着 1897']],
+    door: { need: '黄铜小钥匙', label: '开温室后门(需要黄铜小钥匙)' } },
+  { t: '琴房', d: '一架落满灰的钢琴,琴盖上摆着四尊小雕像,琴凳锁着。',
+    spots: [['按琴键', '高音区 C 被磨得发亮'], ['翻琴凳', '锁着,需要小钥匙'], ['看雕像', '四尊雕像面向东南西北,唯独"东"那尊是反的']],
+    lock: { code: 'east', reward: '黄铜大钥匙', options: ['北', '南', '东', '西'], codes: ['north', 'south', 'east', 'west'], label: '机关(哪尊雕像反了?)' },
+    door: { need: '琴凳钥匙', label: '开琴凳(需要琴凳钥匙)' },
+    after: '琴凳里是一把<b>黄铜大钥匙</b>!' },
+  { t: '餐厅', d: '长桌摆着烛台,桌上刻着一行小字:「烛光尽头是出口」,墙角有暗格。',
+    spots: [['点烛台', '烛台底座写着 1897,正好是硬币上的年份!'], ['看刻字', '「烛光尽头是出口」'], ['摸暗格', '暗格弹开,里面是<b>银钥匙</b>!']],
+    door: { need: '银钥匙', label: '开餐厅门(需要银钥匙)' } },
+  { t: '地下室', d: '霉味扑鼻,一台老式电闸挂在墙上,保险丝断了三根。配电箱需要四位数密码。',
+    spots: [['查电闸', '三根保险丝都熔断了'], ['搜工具架', '找到<b>保险丝</b> x3!'], ['看配电箱', '面板提示:年份-1000']],
+    lock: { code: '897', reward: '电闸钥匙', options: ['797', '897', '997'], label: '配电箱(提示:年份-1000)' },
+    door: { need: '电闸钥匙', label: '合闸开门(需要电闸钥匙)' } },
+  { t: '出口之门', d: '最后一扇门,门上刻着:「旅程的意义在于推门而出的那一刻」。',
+    spots: [['检查门缝', '门没有锁!只是锈住了'], ['深呼吸', '你感到一丝自由的空气'], ['回头看', '十间房的灯,一盏盏亮起']],
+    door: { need: '', label: '推门!(无需钥匙,直接推开)' } }
+];
+
+function layout() { }
+function onResize() { }
+
+function resetGame() {
+  room = 0; items = []; hints = 3;
+  searched = {}; solved = {}; elapsed = 0; lockUI = false;
+  score = 0; msg = ''; msgT = 0;
+  syncHud();
+}
+function startGame() {
+  resetGame();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  syncHud();
+}
+function hasItem(n) { return items.indexOf(n) >= 0; }
+function syncHud() {
+  $('hroom').textContent = (room + 1) + '/10';
+  $('hitem').textContent = items.length;
+  $('hhint').textContent = hints;
+}
+function endGame() {
+  state = 'over';
+  winT = 1;
+  score = 1500 - hints * 50;
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '逃出全部 10 间密室!<br>' +
+    '用了 ' + hints + ' 次提示 · 用时 ' + Math.round(elapsed) + ' 秒<br>' +
+    '本局得分 <b>' + score + '</b><br>逃脱大师!<br>' +
+    '历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = '进房先把所有地点点一遍,线索不会藏太深';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+  tone(700, .35, 'sine', .07, 1300);
+}
+function searchSpot(i) {
+  if (state !== 'play') return;
+  var key = room + ':' + i;
+  var R = ROOMS[room];
+  searched[key] = 1;
+  var res = R.spots[i][1];
+  var m = res.match(/<b>(.*?)<\/b>/);
+  if (m && !hasItem(m[1])) {
+    items.push(m[1]);
+    res = res.replace('<b>', '「').replace('</b>', '」已入包!');
+    msg = '获得「' + m[1] + '」!'; msgT = 1.6;
+    tone(620, .14, 'sine', .055);
+  } else {
+    msg = '没什么新的发现'; msgT = 1;
+    tone(320, .06, 'sine', .035);
+  }
+  syncHud();
+}
+function openDoor() {
+  if (state !== 'play') return;
+  var R = ROOMS[room];
+  if (R.lock && !solved[room]) {
+    lockUI = true;
+    msg = R.lock.label; msgT = 2;
+    return;
+  }
+  if (R.door.need && !hasItem(R.door.need)) {
+    msg = '门锁着,还缺「' + R.door.need + '」'; msgT = 1.6;
+    tone(200, .1, 'square', .04);
+    return;
+  }
+  tone(540, .18, 'sine', .06, 800);
+  if (room >= ROOMS.length - 1) { endGame(); return; }
+  room++;
+  searched = {}; msg = ''; lockUI = false;
+  syncHud();
+}
+function lockBtns() {
+  var R = ROOMS[room];
+  var n = R.lock.options.length;
+  var bw = Math.min(120, (VW - 40 - (n - 1) * 10) / n);
+  var total = n * bw + (n - 1) * 10;
+  var x0 = (VW - total) / 2;
+  var out = [], i;
+  for (i = 0; i < n; i++) {
+    out.push({ x: x0 + i * (bw + 10), y: VH * .52, w: bw, h: 44, i: i });
+  }
+  return out;
+}
+function tapLock(i) {
+  var R = ROOMS[room];
+  var opt = R.lock.options[i];
+  var val = R.lock.codes ? R.lock.codes[i] : opt;
+  if (val === R.lock.code) {
+    solved[room] = 1;
+    lockUI = false;
+    if (!hasItem(R.lock.reward)) items.push(R.lock.reward);
+    msg = '机关解开!获得「' + R.lock.reward + '」';
+    msgT = 2;
+    tone(680, .2, 'sine', .06, 1000);
+    syncHud();
+  } else {
+    msg = '不对,再想想'; msgT = 1.2;
+    tone(200, .1, 'square', .04);
+  }
+}
+function useHint() {
+  if (state !== 'play' || hints <= 0) return;
+  hints--;
+  hintGlow = 0; hintT = 2.4;
+  msg = '提示:优先搜没有搜过的地点,门需要背包里的道具';
+  msgT = 2.2;
+  tone(500, .1, 'sine', .05);
+  syncHud();
+}
+function update(dt) {
+  if (msgT > 0) msgT -= dt;
+  if (hintT > 0) hintT -= dt;
+  if (winT > 0) winT -= dt;
+  if (state !== 'play') return;
+  elapsed += dt;
+}
+function rr(x, y, w, h, rad) {
+  var k = Math.min(rad, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + k, y);
+  ctx.arcTo(x + w, y, x + w, y + h, k);
+  ctx.arcTo(x + w, y + h, x, y + h, k);
+  ctx.arcTo(x, y + h, x, y, k);
+  ctx.arcTo(x, y, x + w, y, k);
+  ctx.closePath();
+}
+function wrapText(text, x, y, maxW, lh) {
+  /* 逐字换行(中文) */
+  var line = '', yy = y, i;
+  for (i = 0; i < text.length; i++) {
+    var test = line + text[i];
+    if (ctx.measureText(test).width > maxW && line) {
+      ctx.fillText(line, x, yy);
+      line = text[i]; yy += lh;
+    } else line = test;
+  }
+  if (line) ctx.fillText(line, x, yy);
+  return yy + lh;
+}
+function btns() {
+  var R = ROOMS[room];
+  var out = [];
+  var y = VH * .40;
+  var i;
+  for (i = 0; i < R.spots.length; i++) {
+    out.push({ t: R.spots[i][0], x: VW / 2 - 130, y: y, w: 260, h: 40, kind: 'spot', idx: i });
+    y += 48;
+  }
+  out.push({ t: R.door.label, x: VW / 2 - 130, y: y + 8, w: 260, h: 44, kind: 'door', idx: -1 });
+  return out;
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#1d1509');
+  bg.addColorStop(1, '#0b0704');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  drawEm('🕯️', VW * .16, 66, 34);
+  drawEm('🚪', VW * .84, 66, 34);
+
+  var R = ROOMS[room];
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = '900 19px "PingFang SC",sans-serif';
+  ctx.fillStyle = '#ffd782';
+  ctx.fillText('第 ' + (room + 1) + ' 室 · ' + R.t, VW / 2, 56);
+  ctx.font = '600 13.5px "PingFang SC",sans-serif';
+  ctx.fillStyle = 'rgba(242,230,200,.85)';
+  wrapText(R.d, VW / 2, 100, VW - 56, 22);
+
+  var bs = btns(), i;
+  for (i = 0; i < bs.length; i++) {
+    var b = bs[i];
+    var glow = hintT > 0 && b.kind === 'spot' && i === hintGlow;
+    ctx.fillStyle = b.kind === 'door' ? 'rgba(216,168,90,.3)' : (searched[room + ':' + i] ? 'rgba(255,255,255,.05)' : 'rgba(216,168,90,.14)');
+    rr(b.x, b.y, b.w, b.h, 10); ctx.fill();
+    ctx.strokeStyle = glow ? 'rgba(255,220,90,.95)' : b.kind === 'door' ? 'rgba(216,168,90,.7)' : 'rgba(216,168,90,.35)';
+    ctx.lineWidth = glow ? 2.5 : 1.5;
+    rr(b.x, b.y, b.w, b.h, 10); ctx.stroke();
+    ctx.font = (b.kind === 'door' ? '800 ' : '700 ') + '13.5px "PingFang SC",sans-serif';
+    ctx.fillStyle = b.kind === 'door' ? '#ffd782' : 'rgba(242,230,200,.92)';
+    ctx.fillText(b.t + (b.kind === 'spot' && searched[room + ':' + i] ? ' ✓' : ''), VW / 2, b.y + b.h / 2);
+  }
+  /* 背包 */
+  ctx.font = '700 12px "PingFang SC",sans-serif';
+  ctx.fillStyle = 'rgba(242,230,200,.75)';
+  ctx.fillText('背包: ' + (items.join('、') || '(空)'), VW / 2, VH - 74);
+  if (msgT > 0) {
+    ctx.font = '700 13px "PingFang SC",sans-serif';
+    ctx.fillStyle = 'rgba(255,215,130,.95)';
+    var clean = msg.replace(/<b>|<\/b>/g, '');
+    ctx.fillText(clean, VW / 2, VH - 46);
+  }
+  /* 机关答题面板 */
+  if (lockUI) {
+    ctx.fillStyle = 'rgba(10,6,2,.82)';
+    ctx.fillRect(0, 0, VW, VH);
+    ctx.font = '800 15px "PingFang SC",sans-serif';
+    ctx.fillStyle = '#ffd782';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(R.lock.label, VW / 2, VH * .42);
+    var lbs = lockBtns(), i2;
+    for (i2 = 0; i2 < lbs.length; i2++) {
+      var b2 = lbs[i2];
+      ctx.fillStyle = 'rgba(216,168,90,.3)';
+      rr(b2.x, b2.y, b2.w, b2.h, 10); ctx.fill();
+      ctx.strokeStyle = 'rgba(216,168,90,.7)'; ctx.lineWidth = 1.5;
+      rr(b2.x, b2.y, b2.w, b2.h, 10); ctx.stroke();
+      ctx.font = '800 15px "PingFang SC",sans-serif';
+      ctx.fillStyle = '#f2e6c8';
+      ctx.fillText(R.lock.options[i2], b2.x + b2.w / 2, b2.y + b2.h / 2);
+    }
+    ctx.font = '600 12px "PingFang SC",sans-serif';
+    ctx.fillStyle = 'rgba(242,230,200,.6)';
+    ctx.fillText('点一个答案试试', VW / 2, VH * .52 + 66);
+  }
+}
+cv.addEventListener('pointerdown', function (e) {
+  e.preventDefault();
+  if (state !== 'play') return;
+  if (lockUI) {
+    var lbs = lockBtns(), li;
+    for (li = 0; li < lbs.length; li++) {
+      var lb = lbs[li];
+      if (e.clientX >= lb.x && e.clientX <= lb.x + lb.w && e.clientY >= lb.y && e.clientY <= lb.y + lb.h) {
+        tapLock(li);
+        return;
+      }
+    }
+    return;
+  }
+  var bs = btns(), i;
+  for (i = 0; i < bs.length; i++) {
+    var b = bs[i];
+    if (e.clientX >= b.x && e.clientX <= b.x + b.w && e.clientY >= b.y && e.clientY <= b.y + b.h) {
+      if (b.kind === 'spot') searchSpot(i);
+      else openDoor();
+      return;
+    }
+  }
+});
+window.addEventListener('keydown', function (e) {
+  if (e.target && e.target.tagName === 'BUTTON') return;
+  if (e.key === 'h' || e.key === 'H') { e.preventDefault(); useHint(); }
+  if (e.key === 'r' || e.key === 'R') { e.preventDefault(); resetGame(); }
+});
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', startGame);
+$('againbtn').addEventListener('click', startGame);
+$('hintbtn').addEventListener('click', useHint);
+$('resetbtn').addEventListener('click', function () {
+  searched = {}; msg = '本房已重置'; msgT = 1; hintGlow = -1;
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」逃出了第 ' + (room + 1) + ' 间密室! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/' });
+
+window.__T = {
+  room: function () { return room; },
+  items: function () { return items.slice(); },
+  search: searchSpot,
+  openDoor: openDoor,
+  hint: useHint,
+  hintsLeft: function () { return hints; },
+  hasItem: hasItem,
+  state: function () { return state; }
+};
+resize();
+resetGame();
+$('padbar').classList.add('hide');
+updMini();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='escape'});
+  r.unshift({k:'escape',n:'密室逃脱 · 十室之约',e:'🚪'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['escape_best','escape_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['escape']||0)){
+            B['escape']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
