@@ -337,7 +337,6 @@ function finishPic(){
 }
 function gameOver(){
   state='over';
-  $('stitle')&&0;
   $('ostats').innerHTML='完成 <b>'+done+'</b> 幅画作<br>当前这幅「'+pics()[pic].n+'」涂了 '+pct()+'%'+
     '<br>历史最高:'+KIT.best()+' 幅<br>已玩 '+KIT.plays()+' 局';
   $('mini2').innerHTML='每幅画的配色自动保存,随时回来继续';
