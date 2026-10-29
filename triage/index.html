@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>急诊分诊 · 抢救室门口</title>
+<meta name="description" content="急诊分诊:伤员一个接一个抬到门口,看心率、血氧、血压和意识定等级!红是立刻进抢救,黄是留观,绿是回家,判错或让人等太久都算事故!">
+<meta property="og:title" content="急诊分诊 · 抢救室门口">
+<meta property="og:description" content="急诊分诊:伤员一个接一个抬到门口,看心率、血氧、血压和意识定等级!红是立刻进抢救,黄是留观,绿是回家,判错或让人等太久都算事故!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#10161c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%9A%91%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#10161c;
+  --panel:rgba(16,24,32,.94);
+  --ink:#e4eef6;
+  --edge:#2c4454;
+  --btn1:#f06a6a;
+  --btn2:#a82828;
+  --btnink:#fff2f2;
+  --glow:rgba(240,106,106,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 急诊分诊 · 抢救室门口 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">得分<b id="hscore">0</b></span><span class="chip">事故<b id="hlives">0</b></span><span class="chip">待诊<b id="hleft">18</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">急 诊 分 诊<small>· 抢 救 室 门 口 ·</small></div>
+  <div class="howto">
+🚑 每位伤员一块<b>体征卡</b>:心率/血氧/血压/意识<br>🔴 两项以上危险 = <b>一级</b>,直接进抢救<br>🟡 恰好一项危险 = <b>二级</b>,留观<br>🟢 全部平稳 = <b>三级</b>,去门诊<br>⏱ 每人有倒计时,判错或超时都算一次事故!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">接 班 !</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">今 班 结 束</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 接 一 班</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="redbtn" type="button">🔴 一级</button><button class="padbtn" id="yelbtn" type="button">🟡 二级</button><button class="padbtn" id="grnbtn" type="button">🟢 三级</button><button class="padbtn" id="newbtn" type="button">↻ 重接</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='triage_best',PLAY='triage_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 急诊分诊 · 抢救室门口 ================== */
+var NAME = '急诊分诊 · 抢救室门口';
+var state = 'start';
+/* lv: 1 红(立即) 2 黄(十分钟内) 3 绿(可等待) */
+var CASES = [
+  { n: '男 54 岁', s: '胸骨后撕裂样剧痛, 大汗淋漓', hr: 122, o2: 94, bp: '78/40', lv: 1, why: '疑似主动脉夹层, 血压在往下掉' },
+  { n: '女 8 岁', s: '误吞一枚硬币 2 小时, 能吃饭不咳', hr: 96, o2: 99, bp: '100/62', lv: 3, why: '无气道梗阻表现, 可等内镜排期' },
+  { n: '男 67 岁', s: '突然右半边身子无力, 说话漏字', hr: 88, o2: 97, bp: '165/95', lv: 1, why: '卒中溶栓时间窗, 一分钟都不能等' },
+  { n: '女 24 岁', s: '右踝扭伤 1 小时, 自己走进来', hr: 82, o2: 99, bp: '118/70', lv: 3, why: '能负重行走, 大概率是轻度韧带伤' },
+  { n: '男 45 岁', s: '上腹持续绞痛伴呕吐, 面色发白', hr: 96, o2: 98, bp: '110/70', lv: 2, why: '痛得厉害但循环稳定, 要尽快止痛查因' },
+  { n: '女 30 岁', s: '哮喘发作, 说不出整句话', hr: 110, o2: 91, bp: '104/66', lv: 1, why: '血氧掉到 91 加上不能成句, 重度发作' },
+  { n: '男 70 岁', s: '慢性咳嗽加重 1 周, 不发热', hr: 76, o2: 95, bp: '132/80', lv: 3, why: '血氧正常无喘, 可以排队' },
+  { n: '女 19 岁', s: '食指刀割伤, 压迫后已止血', hr: 78, o2: 99, bp: '112/72', lv: 3, why: '出血控制住了, 无肌腱断裂征' },
+  { n: '男 8 岁', s: '高热 39.6 度伴寒战, 精神发蔫', hr: 138, o2: 97, bp: '104/64', lv: 2, why: '儿童高热心率快, 要降温查感染' },
+  { n: '女 55 岁', s: '一小时内呕血三大口, 头昏', hr: 130, o2: 93, bp: '84/52', lv: 1, why: '上消化道大出血合并休克' },
+  { n: '男 33 岁', s: '车祸后左小腿畸形剧痛, 能对话', hr: 92, o2: 98, bp: '120/76', lv: 2, why: '疑似骨折, 循环稳定但要固定镇痛' },
+  { n: '女 62 岁', s: '头晕 3 天, 走路稳, 无呕吐', hr: 72, o2: 97, bp: '140/85', lv: 3, why: '慢性头晕无神经体征' },
+  { n: '男 2 岁', s: '突发高热抽搐约 2 分钟, 现嗜睡', hr: 152, o2: 93, bp: '94/58', lv: 1, why: '惊厥后意识还没清醒, 先保气道' },
+  { n: '女 40 岁', s: '老偏头痛又发作, 怕光', hr: 76, o2: 98, bp: '130/80', lv: 3, why: '与既往发作完全一样, 无新症状' },
+  { n: '男 28 岁', s: '右手食指离断, 已加压包扎', hr: 88, o2: 99, bp: '128/82', lv: 2, why: '断指再植要赶时间, 但人没有休克' },
+  { n: '女 76 岁', s: '滑倒后髋部疼, 站不起来', hr: 60, o2: 97, bp: '138/78', lv: 2, why: '疑似股骨颈骨折, 需影像与镇痛' },
+  { n: '男 50 岁', s: '心前区压榨样疼 20 分钟不缓解', hr: 104, o2: 95, bp: '146/92', lv: 1, why: '典型心梗表现, 立刻心电图' },
+  { n: '女 16 岁', s: '经期腹痛, 无呕吐, 自己走进来', hr: 80, o2: 99, bp: '106/66', lv: 3, why: '生命体征全平, 止痛即可' },
+  { n: '男 60 岁', s: '服降糖药后心慌出汗手抖', hr: 108, o2: 97, bp: '132/84', lv: 2, why: '低血糖发作, 意识还清楚要尽快补糖' },
+  { n: '女 35 岁', s: '蜂蜇后全身风团, 声音发哑', hr: 112, o2: 94, bp: '96/58', lv: 1, why: '声哑提示喉头水肿, 过敏性急救' },
+  { n: '男 42 岁', s: '腰痛 3 个月, 无腿麻无发热', hr: 70, o2: 98, bp: '126/78', lv: 3, why: '慢性腰痛无红旗征' },
+  { n: '女 27 岁', s: '孕 34 周阴道流水, 胎动正常', hr: 84, o2: 98, bp: '112/70', lv: 2, why: '疑似胎膜早破, 要监测感染' },
+  { n: '男 65 岁', s: '突然咳出数口鲜血, 呼吸急促', hr: 118, o2: 88, bp: '102/64', lv: 1, why: '中量咯血加血氧 88, 气道风险' },
+  { n: '女 45 岁', s: '手指麻木 2 个月, 夜里加重', hr: 68, o2: 98, bp: '118/72', lv: 3, why: '腕管综合征样表现, 可门诊' },
+  { n: '男 12 岁', s: '吃饭卡喉, 能大声咳嗽发声', hr: 92, o2: 97, bp: '108/66', lv: 2, why: '部分梗阻还能咳, 但要盯紧' }
+];
+var SHIFT = 18;
+var LIFE0 = 3;
+var deck = [], idx = 0, t = 0, limit = 12, score = 0, lives = LIFE0, streak = 0, good = 0;
+var fb = '', fbT = 0, fbOk = true;
+/* cool: 判完到下一位之间的空档。用帧钟倒计时, 不用 setTimeout——
+ * 标签页被节流时定时器会晚于倒计时到达, 已判过的病例会被再扣一次命 */
+var cool = 0;
+
+function layout() { }
+function onResize() { layout(); }
+function shuffle(a) {
+  for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t2 = a[i]; a[i] = a[j]; a[j] = t2 }
+  return a;
+}
+function newDeck() {
+  deck = shuffle(CASES.slice(0));
+  idx = 0;
+  limit = 12;
+  t = limit;
+}
+function cur() { return deck[idx]; }
+function resetGame() {
+  score = 0; lives = LIFE0; streak = 0; good = 0;
+  fb = ''; fbT = 0; cool = 0;
+  newDeck();
+  syncHud();
+}
+function startGame() {
+  resetGame();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  syncHud();
+}
+function endGame(win) {
+  state = 'over';
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  var rank = lives <= 0 ? '被主任叫去谈话' : good >= 17 ? '护士长点名表扬' : good >= 13 ? '分诊靠谱' : good >= 9 ? '还在练眼力' : '全靠直觉';
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '判对 <b>' + good + ' / ' + SHIFT + ' 位</b><br>' +
+    '本局得分 <b>' + score + '</b><br>' + (win ? '顺利下班' : '抢救室爆满, 撑不住了') + '<br>' + rank + '<br>' +
+    '历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = '先看血压和血氧, 再看疼得多厉害';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+  tone(win ? 880 : 160, .3, 'sine', .06, win ? 1320 : 80);
+}
+function syncHud() {
+  $('hscore').textContent = score;
+  $('hlives').textContent = LIFE0 - lives;
+  $('hleft').textContent = SHIFT - idx;
+}
+function next() {
+  idx++;
+  limit = Math.max(6, 12 - idx * .3);
+  t = limit;
+  if (idx >= SHIFT) { endGame(true); return }
+  syncHud();
+}
+function judge(choice) {
+  if (state !== 'play' || fbT > 0 || cool > 0) return;
+  var c = cur();
+  if (!c) return;
+  if (choice === c.lv) {
+    var gain = 100 + Math.round(t / limit * 60) + streak * 10;
+    score += gain; good++; streak++;
+    fb = '判对 +' + gain + ' · ' + c.why;
+    fbOk = true;
+    tone(760, .1, 'triangle', .05, 1140);
+  } else {
+    lives = Math.max(0, lives - 1); streak = 0;
+    fb = '判错! 应为' + ['一级红', '二级黄', '三级绿'][c.lv - 1] + ' · ' + c.why;
+    fbOk = false;
+    noise(.16, .07);
+    tone(200, .18, 'square', .05, 110);
+  }
+  fbT = 1.5;
+  cool = 1.5;
+  syncHud();
+}
+function advance() {
+  if (state !== 'play') return;
+  if (lives <= 0) { endGame(false); return }
+  next();
+}
+function wrap(txt, per) {
+  var out = [];
+  for (var i = 0; i < txt.length; i += per) out.push(txt.slice(i, i + per));
+  return out;
+}
+function update(dt) {
+  if (fbT > 0) fbT -= dt;
+  if (cool > 0) {
+    cool -= dt;
+    if (cool <= 0) { cool = 0; advance() }
+    return;
+  }
+  if (state !== 'play') return;
+  t -= dt;
+  if (t <= 0) {
+    var c = cur();
+    lives = Math.max(0, lives - 1); streak = 0;
+    fb = '等太久! ' + (c ? c.why : '');
+    fbOk = false;
+    fbT = 1.5;
+    cool = 1.5;
+    noise(.2, .08);
+    tone(180, .22, 'sawtooth', .05, 90);
+    syncHud();
+  }
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#0f1a22'); bg.addColorStop(1, '#070e14');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  var pad = 14, w = VW - pad * 2;
+  var top = Math.max(92, VH * .14);
+  var cardH = Math.min(232, VH * .40);
+  var c = cur();
+  /* 当前患者卡 */
+  ctx.fillStyle = 'rgba(255,255,255,.06)';
+  rr(pad, top, w, cardH, 16); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 2;
+  rr(pad, top, w, cardH, 16); ctx.stroke();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.font = '900 19px "PingFang SC",sans-serif';
+  ctx.fillStyle = '#fff';
+  ctx.fillText(c ? c.n : '—', pad + 14, top + 28);
+  ctx.font = '600 15px "PingFang SC",sans-serif';
+  ctx.fillStyle = 'rgba(220,240,255,.92)';
+  var ls = c ? wrap(c.s, Math.max(10, Math.floor((w - 34) / 15))) : [];
+  for (var i = 0; i < ls.length; i++) ctx.fillText(ls[i], pad + 14, top + 58 + i * 22);
+  /* 生命体征 */
+  var vy = top + 58 + ls.length * 22 + 18;
+  var col = Math.floor(w / 3) - 8;
+  for (i = 0; i < 3; i++) {
+    var x = pad + 8 + i * (col + 8);
+    ctx.fillStyle = 'rgba(255,255,255,.05)';
+    rr(x, vy, col, 56, 10); ctx.fill();
+    ctx.textAlign = 'center';
+    ctx.font = '600 11px "PingFang SC",sans-serif';
+    ctx.fillStyle = 'rgba(200,220,240,.6)';
+    ctx.fillText(['心率 次/分', '血氧 %', '血压 mmHg'][i], x + col / 2, vy + 15);
+    ctx.font = '900 22px "PingFang SC",sans-serif';
+    ctx.fillStyle = i === 0 ? vitalColor(c ? c.hr : 80, 50, 120) : (i === 1 ? vitalColor(c ? c.o2 : 98, 92, 96, true) : '#eaf4ff');
+    ctx.fillText(i === 0 ? (c ? c.hr : '-') : (i === 1 ? (c ? c.o2 : '-') : (c ? c.bp : '-')), x + col / 2, vy + 38);
+  }
+  /* 倒计时 */
+  var by2 = top + cardH + 16;
+  ctx.fillStyle = 'rgba(255,255,255,.1)';
+  rr(pad, by2, w, 12, 6); ctx.fill();
+  var k = clamp(t / limit, 0, 1);
+  ctx.fillStyle = k > .5 ? 'rgba(110,230,160,.9)' : (k > .22 ? 'rgba(240,200,80,.9)' : 'rgba(240,110,110,.95)');
+  rr(pad, by2, Math.max(2, w * k), 12, 6); ctx.fill();
+  /* 候诊队列 */
+  var qy = by2 + 30;
+  ctx.textAlign = 'left';
+  ctx.font = '600 12px "PingFang SC",sans-serif';
+  ctx.fillStyle = 'rgba(200,220,240,.55)';
+  ctx.fillText('后面还在排:', pad, qy + 8);
+  for (i = 1; i <= 2; i++) {
+    var nx = deck[idx + i];
+    if (!nx) break;
+    var qx = pad + 76 + (i - 1) * ((w - 84) / 2);
+    var qw = (w - 84) / 2 - 6;
+    ctx.fillStyle = 'rgba(255,255,255,.05)';
+    rr(qx, qy - 4, qw, 40, 9); ctx.fill();
+    ctx.save();
+    ctx.beginPath(); ctx.rect(qx, qy - 4, qw, 40); ctx.clip();
+    ctx.textAlign = 'center';
+    ctx.font = '600 12px "PingFang SC",sans-serif';
+    ctx.fillStyle = 'rgba(225,240,255,.75)';
+    ctx.fillText(nx.n, qx + qw / 2, qy + 8);
+    ctx.font = '600 11px "PingFang SC",sans-serif';
+    ctx.fillStyle = 'rgba(200,220,240,.55)';
+    ctx.fillText(nx.s.slice(0, 12), qx + qw / 2, qy + 25);
+    ctx.restore();
+  }
+  /* 反馈条 */
+  if (fbT > 0) {
+    var fh = 52;
+    var fyy = VH - 136;
+    ctx.fillStyle = fbOk ? 'rgba(60,180,110,.92)' : 'rgba(200,70,70,.92)';
+    rr(pad, fyy, w, fh, 12); ctx.fill();
+    ctx.textAlign = 'center';
+    var per = Math.max(14, Math.floor((w - 24) / 12.5));
+    var fl = wrap(fb, per);
+    ctx.font = '700 12.5px "PingFang SC",sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(fl[0] || '', VW / 2, fyy + (fl.length > 1 ? 15 : fh / 2));
+    if (fl.length > 1) ctx.fillText(fl[1], VW / 2, fyy + 34);
+  } else {
+    ctx.textAlign = 'center';
+    ctx.font = '600 12.5px "PingFang SC",sans-serif';
+    ctx.fillStyle = 'rgba(190,225,245,.5)';
+    ctx.fillText('按红黄绿三档给这位患者定级', VW / 2, VH - 106);
+  }
+  /* 生命 */
+  ctx.textAlign = 'left';
+  ctx.font = '14px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,.8)';
+  ctx.fillText('连续判对 ' + streak, pad, VH - 46);
+}
+function vitalColor(v, low, high, reverse) {
+  if (reverse) return v < low ? 'rgba(255,120,120,1)' : 'rgba(140,240,180,1)';
+  return (v < low || v > high) ? 'rgba(255,120,120,1)' : 'rgba(140,240,180,1)';
+}
+function rr(x, y, w, h, rad) {
+  var k = Math.min(rad, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + k, y);
+  ctx.arcTo(x + w, y, x + w, y + h, k);
+  ctx.arcTo(x + w, y + h, x, y + h, k);
+  ctx.arcTo(x, y + h, x, y, k);
+  ctx.arcTo(x, y, x + w, y, k);
+  ctx.closePath();
+}
+window.addEventListener('keydown', function (e) {
+  if (e.target && e.target.tagName === 'BUTTON') return;
+  if (e.key === '1') { e.preventDefault(); judge(1) }
+  if (e.key === '2') { e.preventDefault(); judge(2) }
+  if (e.key === '3') { e.preventDefault(); judge(3) }
+  if (e.key === 'r' || e.key === 'R') { e.preventDefault(); startGame() }
+});
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', startGame);
+$('againbtn').addEventListener('click', startGame);
+$('newbtn').addEventListener('click', startGame);
+$('redbtn').addEventListener('click', function () { judge(1) });
+$('yelbtn').addEventListener('click', function () { judge(2) });
+$('grnbtn').addEventListener('click', function () { judge(3) });
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」一个班次判对 ' + good + ' / ' + SHIFT + ' 位患者,拿了 ' + score + ' 分! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/' });
+
+window.__T = {
+  state: function () { return state; },
+  score: function () { return score; },
+  lives: function () { return lives; },
+  good: function () { return good; },
+  left: function () { return SHIFT - idx; },
+  streak: function () { return streak; },
+  cur: function () { return cur(); },
+  trueLevel: function () { return cur() ? cur().lv : 0; },
+  wait: function () { return t; },
+  judge: judge,
+  skip: function () { idx++; t = limit; },
+  cases: function () { return CASES.length; },
+  step: function (n) { for (var i = 0; i < n; i++) update(1 / 60); },
+  forceEnd: function () { endGame(false); }
+};
+resize();
+resetGame();
+$('padbar').classList.add('hide');
+updMini();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='triage'});
+  r.unshift({k:'triage',n:'急诊分诊 · 抢救室门口',e:'🚑'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['triage_best','triage_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['triage']||0)){
+            B['triage']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
