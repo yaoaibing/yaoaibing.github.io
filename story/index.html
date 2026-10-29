@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>迷雾列车 · 文字冒险</title>
+<meta name="description" content="迷雾列车:登上末班车的文字冒险!没有始发站的旧车票、没有脸的列车员、倒转的怀表……你的每个选择都改写终点,勇气/理智/物资三条属性,六个结局等你探索!">
+<meta property="og:title" content="迷雾列车 · 文字冒险">
+<meta property="og:description" content="迷雾列车:登上末班车的文字冒险!没有始发站的旧车票、没有脸的列车员、倒转的怀表……你的每个选择都改写终点,勇气/理智/物资三条属性,六个结局等你探索!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#12101a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#12101a;
+  --panel:rgba(18,16,26,.94);
+  --ink:#e8e4f5;
+  --edge:#322a50;
+  --btn1:#9a8ac8;
+  --btn2:#584898;
+  --btnink:#0e0a1c;
+  --glow:rgba(154,138,200,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 迷雾列车 · 文字冒险 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">勇气<b id="hc">5</b></span><span class="chip">理智<b id="hs">5</b></span><span class="chip">物资<b id="hm">5</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">迷 雾 列 车<small>· 文 字 冒 险 ·</small></div>
+  <div class="howto">
+📖 读一段故事,<b>点选项</b>推进剧情<br>💪 选择会增减<b>勇气/理智/物资</b><br>🔒 有些选项<b>属性不够</b>点不了,绕路变强再来<br>🎞 结局有 <b>6 种</b>:从平凡到隐藏真结局<br>🔁 通关后换条路走,收集全部结局!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">登 上 列 车</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">旅 途 终 章</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 踏 旅 途</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='story_best',PLAY='story_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 迷雾列车 · 文字冒险 ================== */
+var NAME = '迷雾列车 · 文字冒险';
+var state = 'start';
+var node = 's1', courage = 5, sense = 5, supply = 5;
+var flags = {}, ending = null, msg = '', msgT = 0;
+var FX = 0, FY = 0, FW = 0;
+var CHOICE_Y = 0, CHOICE_H = 0;
+
+/* t=文本 ch=选项(需/加成/去向) E=结局 */
+var NODES = {
+  s1: { t: '雾夜。末班车进站,车厢里亮着昏黄的灯。你手里攥着一张没有印始发站的旧车票,检票口没有人拦你。', ch: [
+    { t: '上车', go: 's2', fx: { c: 1 } },
+    { t: '把票撕掉,回家', go: 'E1' }
+  ] },
+  s2: { t: '车厢空无一人,坐垫冰凉。列车启动时,车票在你掌心自燃,灰烬没有落下,而是在空中拼出两个字:别睡。', ch: [
+    { t: '去找列车员', go: 's3', fx: { c: 1 } },
+    { t: '实在太困,先睡一会', go: 's4', fx: { s: -1, m: -2 } }
+  ] },
+  s3: { t: '列车员转过身——制服笔挺,却没有脸。他递给你一枚黄铜怀表,声音像从很远的地方传来:「到站之前,别让它停下。」', ch: [
+    { t: '接过怀表', go: 's5', fx: { c: 1 } },
+    { t: '后退,拒绝伸手', go: 's5', fx: { s: 1 } }
+  ] },
+  s4: { t: '你睡着了。梦里有人在雾里一遍遍喊你的名字,声音很近,近得像贴着耳朵。你惊醒时,车窗外的雾浓得化不开,背包轻了许多。', ch: [
+    { t: '起身,往前走', go: 's5' }
+  ] },
+  s5: { t: '前方可餐车的灯是暖的。桌上居然摆着一杯还冒热气的茶,杯垫压着一张字条:「喝下,或翻后厨。」', ch: [
+    { t: '喝下热茶', go: 's7', fx: { m: 1 } },
+    { t: '翻找后厨', go: 's6', fx: { c: 1 } }
+  ] },
+  s6: { t: '后厨的抽屉里藏着一张手绘路线图:终点画着一个圈,写着「雾散站——用真心换船票」。你把地图折好收进内袋。', ch: [
+    { t: '去往最后一节车厢', go: 's7' }
+  ], fx: { map: 1 } },
+  s7: { t: '最后一节车厢的门缝里透出微光。一个七八岁的孩子抱膝坐在角落,声音发抖:「我的鞋掉在站台了……没有鞋,下不了车。」', ch: [
+    { t: '脱下自己的鞋给他', go: 's8', fx: { m: -1, kind: 1 } },
+    { t: '蹲下来,问他的名字', go: 's8', fx: { s: 1 } }
+  ] },
+  s8: { t: '列车驶进一条长得反常的隧道。所有的灯同时熄灭,只剩怀表发出微光——指针开始倒着走。', ch: [
+    { t: '打开怀表看个究竟', go: 's9', need: 'c6', fx: { c: 1 } },
+    { t: '合上怀表,摸黑前进', go: 's10' }
+  ] },
+  s9: { t: '表盘的玻璃后面,不是指针在动,是一双你自己的眼睛。它们盯着你,缓缓看向同一个方向——表盘上浮出三个字:雾散站。', ch: [
+    { t: '记住这个站名', go: 's11', fx: { know: 1 } }
+  ] },
+  s10: { t: '黑暗里,一只冰凉的手握住了你的手。它没有恶意,也没有温度,只是安静地牵着,直到隧道尽头的光出现,才悄悄松开。', ch: [
+    { t: '轻声说谢谢', go: 's11', fx: { m: 1 } },
+    { t: '猛地抽回手', go: 's11', fx: { s: -1 } }
+  ] },
+  s11: { t: '车厢里渐渐坐满了乘客——全是穿旧式校服的学生。列车开始减速,他们齐齐起身,朝你整齐地鞠躬:「下车吧,到了。」', ch: [
+    { t: '跟着他们下车', go: 's12', fx: { c: 1 } },
+    { t: '原地不动,守住行李', go: 's13', fx: { s: 1 } }
+  ] },
+  s12: { t: '站台破败,站牌倒挂在铁架上。你眯起眼——「雾散」两个字,倒过来念,还是「雾散」。身后,列车门正在缓缓合拢。', ch: [
+    { t: '冲回去追车', go: 's14', fx: { c: 1 } },
+    { t: '留在站台探索', go: 's15', fx: { m: 1 } }
+  ] },
+  s13: { t: '学生们没有强迫你。他们散成一层薄雾,退回车顶。列车继续减速——这一次,你听见了真实的、粗粝的汽笛声。', ch: [
+    { t: '望向窗外', go: 's14' }
+  ] },
+  s14: { t: '你冲上尾厢的瞬间,车门在身后合拢。那个孩子站在你身后,穿着你的鞋,冲你笑:「谢谢你还回来。下一站,他们不敢不停。」', ch: [
+    { t: '点头,握紧怀表', go: 's16', fx: { c: 1 } }
+  ] },
+  s15: { t: '站台的旧柜子里,躺着一张崭新的车票。票面上印的目的地一栏,写的不是地名——是你的名字。字迹还没干。', ch: [
+    { t: '收好车票,回到车厢', go: 's16', fx: { ticket: 1, m: 1 } }
+  ] },
+  s16: { t: '列车驶上一座雾中铁桥,桥下是翻涌的云海,像一片倒悬的海。广播沙沙作响:「前方到站——曾经。」', ch: [
+    { t: '去驾驶室', go: 's17', fx: { c: 1 } },
+    { t: '跳车,跳进云海', go: 'E2' }
+  ] },
+  s17: { t: '驾驶室空无一人。操纵台上只有一个锁孔,形状和你的怀表一模一样,旁边的铜牌刻着:「物归原主,雾自散。」', ch: [
+    { t: '插入怀表', go: 'E3', fx: { c: 1 } },
+    { t: '砸碎锁孔', go: 's19' }
+  ] },
+  s19: { t: '锁孔碎裂的瞬间,列车嘶吼着加速,浓雾从每一道缝隙灌进车厢。你听见无数细小的声音在念你的名字,越来越近。', ch: [
+    { t: '握紧最后一点清醒', go: 'ENDCHECK' }
+  ] }
+};
+var ENDINGS = {
+  E1: { t: '你把票撕碎,回了家。日子照旧。只是每逢大雾,你总会想起那列亮着昏黄灯光的车,想起那句「别睡」。【结局:安好的遗憾 · 普通】', rank: '普通' },
+  E2: { t: '你纵身跃入云海。下坠很长,长得你有时间想起所有事。云托住了你——像很多只手。【结局:坠入云端 · 奇遇】', rank: '奇遇' },
+  E3: { t: '怀表插入锁孔,列车缓缓停下。雾散了。窗外是清晨,是你家楼下熟悉的早点摊。你下了车,怀表不再走动。【结局:回家 · 温暖】', rank: '温暖' },
+  E4: { t: '怀表转动,雾散尽头立着一座崭新的车站,出站口写着你的名字。那个孩子朝你挥手——原来「用真心换船票」,换的是回家的资格。【真结局:雾散站 · 隐藏】', rank: '隐藏真结局' },
+  E5: { t: '你握住最后的清醒,雾停在你面前一步。列车员没有脸的脸,对你点了点头——制服落在了你的肩上。【结局:新列车员 · 神秘】', rank: '神秘' },
+  E6: { t: '你在剧烈的晃动中失去意识。醒来时,列车正停在一个陌生小站,你什么都不记得了,只有口袋里多了一枚停摆的怀表。【结局:失忆 · 普通】', rank: '普通' }
+};
+
+function layout() {
+  FX = VW * .08;
+  FW = VW * .84;
+  FY = VH * .3;
+  CHOICE_Y = VH * .6;
+  CHOICE_H = Math.min(74, VH * .1);
+}
+function onResize() { layout(); }
+function resetMatch() {
+  node = 's1'; courage = 5; sense = 5; supply = 5;
+  flags = {}; ending = null; msg = ''; msgT = 0;
+  layout();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  syncHud();
+}
+function syncHud() {
+  $('hc').textContent = courage;
+  $('hs').textContent = sense;
+  $('hm').textContent = supply;
+}
+function nodeOf(id) {
+  if (NODES[id]) return NODES[id];
+  if (id === 'ENDCHECK') {
+    if (flags.map && flags.ticket && flags.kind) return { t: '', ch: [{ t: '……', go: 'E4' }] };
+    if (sense >= 7) return { t: '', ch: [{ t: '……', go: 'E5' }] };
+    return { t: '', ch: [{ t: '……', go: 'E6' }] };
+  }
+  return ENDINGS[id] ? { t: ENDINGS[id].t, end: 1 } : null;
+}
+function choose(ci) {
+  if (state !== 'play') return;
+  var n = nodeOf(node);
+  if (!n || n.end) return;
+  var c = n.ch[ci];
+  if (!c) return;
+  if (c.need === 'c6' && courage < 6) {
+    msg = '勇气不足(需要 6)……你缩回了手'; msgT = 1.4;
+    tone(240, .08, 'square', .03, 180);
+    return;
+  }
+  if (c.fx) {
+    if (c.fx.c) courage += c.fx.c;
+    if (c.fx.s) sense += c.fx.s;
+    if (c.fx.m) supply += c.fx.m;
+    if (c.fx.map) flags.map = 1;
+    if (c.fx.ticket) flags.ticket = 1;
+    if (c.fx.kind) flags.kind = 1;
+    if (c.fx.know) flags.know = 1;
+  }
+  node = c.go;
+  tone(420 + courage * 12, .05, 'sine', .03);
+  if (nodeOf(node) && nodeOf(node).end) {
+    finish();
+  }
+  syncHud();
+}
+function finish() {
+  state = 'over';
+  ending = node;
+  var e = ENDINGS[node];
+  var scoreMap = { 隐藏真结局: 900, 神秘: 600, 奇遇: 500, 温暖: 450, 普通: 250 };
+  var score = (scoreMap[e.rank] || 250) + courage * 10 + sense * 10;
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '<b>「' + e.rank + '」</b><br>勇气 ' + courage + ' · 理智 ' + sense + ' · 物资 ' + supply +
+    '<br>本局得分 <b>' + score + '</b><br>历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局<br>' +
+    '<span style="font-size:12px">六个结局,换一条路再坐一次车</span>';
+  $('mini2').innerHTML = '高勇气开怀表见「雾散站」,真心换船票藏真结局';
+  $('over').classList.remove('hide');
+  tone(640, .14, 'triangle', .06, 900);
+}
+function update(dt) {
+  if (msgT > 0) msgT -= dt;
+}
+function wrap(text, x, y, width, lineH, color, size) {
+  ctx.font = '600 ' + size + 'px "PingFang SC",sans-serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  var line = '', yy = y;
+  for (var i = 0; i < text.length; i++) {
+    var test = line + text[i];
+    if (ctx.measureText(test).width > width && line) {
+      ctx.fillText(line, x, yy);
+      line = text[i]; yy += lineH;
+    } else line = test;
+  }
+  if (line) ctx.fillText(line, x, yy);
+  return yy + lineH;
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#12101a'); bg.addColorStop(1, '#08070e');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  /* 车窗雾气 */
+  ctx.fillStyle = 'rgba(180,180,220,.05)';
+  for (var i = 0; i < 4; i++) {
+    ctx.fillRect(FX - 6, VH * .06 + i * 30, FW + 12, 18);
+  }
+  var n = nodeOf(node);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  /* 章节号 */
+  ctx.fillStyle = 'rgba(154,138,200,.55)';
+  ctx.font = '600 11px "PingFang SC",sans-serif';
+  ctx.fillText(ending ? '— 结 局 —' : '迷雾列车 · 你的选择决定终点', VW / 2, VH * .12);
+  /* 正文 */
+  if (n && n.t) wrap(n.t, FX, FY, FW, 26, 'rgba(232,228,245,.92)', 14.5);
+  /* 选项 */
+  if (n && n.ch && !n.end) {
+    for (var ci = 0; ci < n.ch.length; ci++) {
+      var c = n.ch[ci];
+      var y = CHOICE_Y + ci * (CHOICE_H + 12);
+      var locked = c.need === 'c6' && courage < 6;
+      ctx.fillStyle = locked ? 'rgba(255,255,255,.05)' : 'rgba(154,138,200,.2)';
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(FX, y, FW, CHOICE_H, 14);
+      else ctx.rect(FX, y, FW, CHOICE_H);
+      ctx.fill();
+      ctx.strokeStyle = locked ? 'rgba(255,255,255,.1)' : 'rgba(154,138,200,.55)';
+      ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = locked ? 'rgba(255,255,255,.35)' : '#e8e0ff';
+      ctx.font = '900 14.5px "PingFang SC",sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText((locked ? '🔒 ' : '▸ ') + c.t, FX + 18, y + CHOICE_H / 2);
+      ctx.textAlign = 'center';
+    }
+  }
+  if (msgT > 0) {
+    ctx.fillStyle = 'rgba(255,180,150,.95)';
+    ctx.font = '600 12.5px "PingFang SC",sans-serif';
+    ctx.fillText(msg, VW / 2, CHOICE_Y - 20);
+  }
+}
+cv.addEventListener('pointerdown', function (e) {
+  e.preventDefault();
+  if (state !== 'play') return;
+  var n = nodeOf(node);
+  if (!n || !n.ch || n.end) return;
+  for (var ci = 0; ci < n.ch.length; ci++) {
+    var y = CHOICE_Y + ci * (CHOICE_H + 12);
+    if (e.clientY > y && e.clientY < y + CHOICE_H && e.clientX > FX && e.clientX < FX + FW) { choose(ci); return; }
+  }
+});
+cv.addEventListener('pointercancel', function () { });
+window.addEventListener('keydown', function (e) {
+  var n = nodeOf(node);
+  if (!n || !n.ch) return;
+  var k = +e.key;
+  if (k >= 1 && k <= n.ch.length) choose(k - 1);
+});
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', resetMatch);
+$('againbtn').addEventListener('click', resetMatch);
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」走出了' + (ending ? '一个' : '') + '自己的结局! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+window.__T = {
+  state: function () { return state; },
+  start: resetMatch,
+  step: function (k) { for (var i = 0; i < (k || 1); i++) update(1 / 60); },
+  score: function () { return 0; },
+  node: function () { return node; },
+  stats: function () { return { c: courage, s: sense, m: supply, f: flags }; },
+  choose: choose,
+  ending: function () { return ending; }
+};
+resize();
+layout();
+$('padbar').classList.add('hide');
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='story'});
+  r.unshift({k:'story',n:'迷雾列车 · 文字冒险',e:'📖'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['story_best','story_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['story']||0)){
+            B['story']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
