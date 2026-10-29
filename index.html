@@ -931,7 +931,8 @@ document.getElementById('tabs').addEventListener('click',function(e){
   [].slice.call(this.children).forEach(function(x){x.classList.toggle('on',x===b)});
   cat=b.getAttribute('data-cat')||'all';
   /* 切换分类/收藏＝换浏览模式:清掉搜索词,否则会出现「0 款」却还列着跨类命中的卡片 */
-  if(kw){kw='';$('q').value='';}
+  clearTimeout(tmr);
+  kw='';$('q').value='';
   if(cat!=='all')onlyOpen(cat);
   apply();
 });
