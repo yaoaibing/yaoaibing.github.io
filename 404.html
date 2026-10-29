@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>页面走丢了 · 各种游戏路口</title>
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#181030">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;min-height:100vh;color:#fff;
+  background:linear-gradient(180deg,#241548 0%,#181030 45%,#100a20 100%);padding:44px 16px 40px}
+.wrap{max-width:620px;margin:0 auto;text-align:center}
+.code{font-size:64px;font-weight:900;letter-spacing:6px;line-height:1;
+  background:linear-gradient(92deg,#ffd45c,#ff7db8,#7db8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:21px;font-weight:900;letter-spacing:2px;margin:14px 0 8px}
+p{font-size:13.5px;line-height:1.85;color:#b8a8d8}
+.hint{margin-top:10px;font-size:12.5px;color:#8f7fbf}
+.quick{display:flex;gap:10px;margin:22px auto 0;max-width:460px;flex-wrap:wrap}
+.quick a,.quick button{flex:1;min-width:130px;text-align:center;text-decoration:none;font-weight:900;font-size:14px;
+  letter-spacing:1px;padding:13px 10px;border-radius:999px;border:0;font-family:inherit;cursor:pointer;line-height:1.2}
+.quick a:active,.quick button:active{transform:translateY(3px)}
+.a1{background:linear-gradient(95deg,#ffd45c,#ff9d4a);color:#4a2808;box-shadow:0 5px 0 #9a5a10}
+.a2{background:linear-gradient(95deg,#3a2a8e,#6a3adf);color:#fff;box-shadow:0 5px 0 #241548}
+.a3{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22)!important;box-shadow:0 5px 0 #0d0819}
+h2{font-size:14px;font-weight:900;letter-spacing:2px;color:#d8caf8;margin:32px 0 12px}
+.picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+@media (min-width:560px){.picks{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.picks a{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-size:12.5px;font-weight:800;
+  padding:11px 10px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  min-width:0}
+.picks a:active{transform:scale(.97)}
+.picks a i{font-style:normal;font-size:17px;flex:none}
+.picks a span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#fix{display:none;margin-top:16px;font-size:13px;color:#ffd45c;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="code">404</div>
+  <h1>这个路口没有游戏</h1>
+  <p>地址可能拼错了,或者那款游戏已经改名。<br>下面三条路都能回到正轨。</p>
+  <div id="fix"></div>
+  <div class="quick">
+    <a class="a1" href="/">🏠 回大厅</a>
+    <a class="a2" href="/guide/">📖 全部攻略</a>
+    <a class="a3" href="/stats/">🏆 我的战绩</a>
+  </div>
+  <div class="quick" style="margin-top:10px">
+    <button class="a2" id="rnd" type="button">🎲 随机来一局</button>
+  </div>
+  <h2>先玩这几款</h2>
+  <div class="picks">
+    <a href="/xiangqi/"><i>帅</i><span>中国象棋</span></a>
+    <a href="/tanks/"><i>🪖</i><span>坦克大战</span></a>
+    <a href="/pacman/"><i>👻</i><span>吃豆人</span></a>
+    <a href="/klotski/"><i>🟥</i><span>曹操逃生</span></a>
+    <a href="/sudoku/"><i>🔢</i><span>数独</span></a>
+    <a href="/2048/"><i>🔢</i><span>2048</span></a>
+    <a href="/tetris/"><i>🧱</i><span>俄罗斯方块</span></a>
+    <a href="/fruitninja/"><i>🍉</i><span>切水果</span></a>
+  </div>
+</div>
+<script>
+var MAP={"2048":{"n":"2048","e":"🔢"},"laser":{"n":"激光迷宫","e":"🔦"},"dive":{"n":"跳水表演","e":"🤿"},"cashier":{"n":"收银员","e":"💵"},"bee":{"n":"蜜蜂酿蜜","e":"🐝"},"moto":{"n":"飞车特技","e":"🏍️"},"clock":{"n":"认识时钟","e":"⏰"},"scale":{"n":"天平称重","e":"⚖️"},"glider":{"n":"滑翔伞","e":"🪂"},"chess":{"n":"国际象棋","e":"♞"},"uno":{"n":"优诺","e":"🃏"},"battleship":{"n":"海战棋","e":"🚢"},"airhockey":{"n":"空气曲棍球","e":"🏒"},"baseball":{"n":"棒球","e":"⚾"},"sorting":{"n":"快递分拣","e":"📦"},"lightsout":{"n":"点灯谜题","e":"💡"},"farm":{"n":"开心农场","e":"🌾"},"xiangqi":{"n":"中国象棋","e":"帅"},"morris":{"n":"九子棋","e":"⭕"},"tanks":{"n":"坦克大战","e":"🪖"},"pacman":{"n":"吃豆人","e":"👻"},"volleyball":{"n":"沙滩排球","e":"🏐"},"archery":{"n":"射箭挑战","e":"🏹"},"klotski":{"n":"曹操逃生","e":"🟥"},"pipes":{"n":"管道大师","e":"🔧"},"reversi":{"n":"黑白棋","e":"⚫"},"yahtzee":{"n":"快艇骰子","e":"🎲"},"sudoku":{"n":"数独","e":"🔢"},"idiomchain":{"n":"成语接龙","e":"🐉"},"fruitmerge":{"n":"水果合成","e":"🍓"},"jigsaw":{"n":"拼图","e":"🧩"},"curling":{"n":"冰壶","e":"🥌"},"fruitninja":{"n":"切水果","e":"🍉"},"stroop":{"n":"颜色陷阱","e":"🔷"},"coinpush":{"n":"推金币","e":"💰"},"emojiriddle":{"n":"表情猜谜","e":"🤔"},"penalty":{"n":"点球大战","e":"⚽"},"wire":{"n":"剪炸弹","e":"✂️"},"skipstone":{"n":"打水漂","e":"🌊"},"monte":{"n":"三张牌","e":"🎴"},"schulte":{"n":"舒尔特方格","e":"🔟"},"gold":{"n":"黄金矿工","e":"🪙"},"maze":{"n":"重力迷宫","e":"🧭"},"poem":{"n":"诗词填空","e":"🎋"},"hidden":{"n":"隐藏物品","e":"🌄"},"drawn":{"n":"画线救援","e":"✏️"},"tonepin":{"n":"音感测试","e":"🎼"},"slalom":{"n":"极速滑雪","e":"⛷️"},"duel":{"n":"双人反应对决","e":"🆚"},"popstar":{"n":"消灭星星","e":"⭐"},"duopong":{"n":"双人乒乓","e":"🏓"},"muyu":{"n":"敲木鱼","e":"🙏"},"flash":{"n":"瞬间记忆","e":"👁️"},"fireworks":{"n":"烟花秀","e":"🎆"},"balance":{"n":"钢丝平衡","e":"🎪"},"aim":{"n":"幽灵猎人","e":"👻"},"toss":{"n":"套圈圈","e":"🧺"},"rhythm":{"n":"节奏敲击","e":"🎵"},"rope":{"n":"跳绳挑战","e":"🪢"},"idiom":{"n":"成语填空","e":"📜"},"trivia":{"n":"脑力问答","e":"❓"},"scratch":{"n":"幸运刮刮乐","e":"🎫"},"pet":{"n":"掌上宠物","e":"🐣"},"idle":{"n":"挂机矿场","e":"⛏️"},"swing":{"n":"峡谷摆荡","e":"🧗"},"bulls":{"n":"猜数字","e":"🔢"},"make24":{"n":"24点","e":"🃏"},"spotdiff":{"n":"找不同","e":"🔍"},"rps":{"n":"石头剪刀布","e":"✊"},"doodle":{"n":"跳跳球","e":"🟢"},"basketball":{"n":"投篮大师","e":"🏀"},"spy":{"n":"谁是卧底","e":"🕵️"},"coloring":{"n":"填色小画家","e":"🎨"},"tictactoe":{"n":"井字棋","e":"⭕"},"hanoi":{"n":"汉诺塔","e":"🗼"},"matchstick":{"n":"火柴算式","e":"🔥"},"wheel":{"n":"幸运大转盘","e":"🎡"},"reaction":{"n":"手速大挑战","e":"⚡"},"crossy":{"n":"过马路小鸡快跑","e":"🐔"},"jenga":{"n":"层层叠","e":"🏗️"},"claw":{"n":"夹娃娃机","e":"🧸"},"golf":{"n":"迷你高尔夫","e":"⛳"},"bowling":{"n":"保龄球","e":"🎳"},"tetris":{"n":"俄罗斯方块","e":"🧱"},"zuma":{"n":"祖玛","e":"🔮"},"pinball":{"n":"弹珠台","e":"🎰"},"memory":{"n":"记忆翻牌","e":"🃏"},"mole":{"n":"打地鼠","e":"🔨"},"pong":{"n":"乒乓对决","e":"🏓"},"slingshot":{"n":"弹弓小鸟","e":"🐦"},"fish":{"n":"钓鱼达人","e":"🎣"},"parking":{"n":"停车场华容道","e":"🚗"},"ice":{"n":"冰面滑行","e":"🧊"},"tangram":{"n":"七巧板","e":"🧩"},"ludo":{"n":"飞行棋","e":"🎲"},"checkers":{"n":"国际跳棋","e":"♟️"},"blackjack":{"n":"21点","e":"🃏"},"bomb":{"n":"炸弹人","e":"💣"},"billiards":{"n":"台球","e":"🎱"},"darts":{"n":"飞镖","e":"🎯"},"flow":{"n":"连线不交叉","e":"🚇"},"euler":{"n":"一笔画","e":"🎨"},"mind":{"n":"密码破译","e":"🔐"},"piano":{"n":"钢琴块","e":"🎹"},"solitaire":{"n":"纸牌接龙","e":"🃏"},"knife":{"n":"飞刀挑战","e":"🗡️"},"tower":{"n":"塔防保卫战","e":"🏰"},"stairs":{"n":"是男人就下一百层","e":"🪜"},"fifteen":{"n":"数字华容道","e":"🧩"},"nono":{"n":"数织","e":"🔢"},"mahjong":{"n":"麻将消消乐","e":"🀄"},"connect":{"n":"四子棋","e":"🔴"},"hexa":{"n":"六边形消除","e":"🧱"},"brick":{"n":"弹球打砖块","e":"🏐"},"plane":{"n":"雷霆战机","e":"🚀"},"mine":{"n":"扫雷英雄","e":"💣"},"box":{"n":"推箱子","e":"📦"},"gomoku":{"n":"五子棋","e":"⚫"},"jungle":{"n":"斗兽棋","e":"🦁"},"water":{"n":"倒水大师","e":"🧪"},"bubble":{"n":"捏泡泡纸","e":"🫧"},"run":{"n":"星夜跑酷","e":"🏃"},"balloon":{"n":"气球大作战","e":"🎈"},"shousui":{"n":"守岁大作战","e":"🧨"},"jump":{"n":"跳一跳","e":"🐸"},"match":{"n":"糖果消消乐","e":"🍬"},"snake":{"n":"蛇蛇争霸","e":"🐍"},"link":{"n":"宠物连连看","e":"🐱"},"fc":{"n":"FC游戏厅","e":"🕹️"},"diner":{"n":"喵喵食堂","e":"🍜"},"moyu":{"n":"摸鱼乐园","e":"🐟"},"wordfind":{"n":"词海寻宝","e":"🔡"},"ddz":{"n":"斗地主","e":"👑"},"dotsbox":{"n":"点格棋","e":"🔲"},"domino":{"n":"多米诺","e":"⚄"},"badminton":{"n":"羽毛球","e":"🏸"},"lander":{"n":"登月着陆","e":"🌙"},"hongbao":{"n":"红包雨","e":"🧧"},"lines":{"n":"彩球连线","e":"🔵"},"block10":{"n":"方块1010","e":"🟪"},"typing":{"n":"打字达人","e":"⌨️"},"cannon":{"n":"炮王争霸","e":"💥"},"hurdle":{"n":"跨栏高手","e":"🚧"},"traffic":{"n":"红绿灯","e":"🚦"},"train":{"n":"拉火车","e":"🚂"},"spider":{"n":"蜘蛛纸牌","e":"🕷️"},"robo":{"n":"机器人编程","e":"🤖"},"freecell":{"n":"空当接龙","e":"♠️"},"simon":{"n":"记忆节拍","e":"🎛️"},"elevator":{"n":"电梯调度","e":"🛗"},"escape":{"n":"密室逃脱","e":"🚪"},"skydive":{"n":"极限跳伞","e":"🦸"},"digger":{"n":"地心探险","e":"🚜"},"cutrope":{"n":"割绳子","e":"🍬"},"ninja":{"n":"忍者跳跳","e":"🥷"},"hexgame":{"n":"六贯棋","e":"⬡"},"banqi":{"n":"暗棋","e":"🔲"},"shuffleboard":{"n":"沙狐球","e":"🥌"},"cups":{"n":"三仙归洞","e":"🥤"},"flappy":{"n":"笨鸟先飞","e":"🐤"},"bingo":{"n":"宾果","e":"🔢"},"graze":{"n":"弹幕地狱","e":"🌀"},"snowrace":{"n":"雪地漂移","e":"🏎️"},"tron":{"n":"光轨大战","e":"🏍️"},"crossword":{"n":"填字风云","e":"📝"},"memduel":{"n":"翻牌对决","e":"🎴"},"defend":{"n":"导弹拦截","e":"🚀"},"stonks":{"n":"股神时刻","e":"📈"},"pixelart":{"n":"像素画家","e":"🎨"},"fireman":{"n":"灭火英雄","e":"🚒"},"endgame":{"n":"象棋残局","e":"♔"},"alchemy":{"n":"炼金实验室","e":"⚗️"},"rings":{"n":"转盘对色","e":"💠"},"dicerace":{"n":"骰子竞速","e":"🎲"},"sneak":{"n":"潜行大盗","e":"🥷"},"icebreak":{"n":"破冰救鹅","e":"🐧"},"brave":{"n":"勇者登塔","e":"🗡️"},"combine":{"n":"合字成词","e":"🀄"},"weightlift":{"n":"举重神力","e":"🏋️"},"spintop":{"n":"陀螺对战","e":"🌀"},"airgun":{"n":"打气球","e":"🎯"},"sevens":{"n":"数七挑战","e":"7️⃣"},"pancake":{"n":"煎饼排序","e":"🥞"},"sequence":{"n":"数列推理","e":"🔢"},"memorypath":{"n":"记忆轨迹","e":"🧠"},"logic":{"n":"逻辑电路","e":"🔌"},"surf":{"n":"极限冲浪","e":"🏄"},"climb":{"n":"攀岩高手","e":"🧗"},"fencing":{"n":"击剑大师","e":"🤺"},"portal":{"n":"传送门","e":"🌀"},"trampoline":{"n":"蹦床翻转","e":"🤸"},"jumpman":{"n":"冒险跳跳","e":"🍄"},"oldmaid":{"n":"抽鬼牌","e":"👼"},"stack":{"n":"疯狂堆塔","e":"🏗️"}};
+var KEYS=["laser","dive","cashier","bee","moto","clock","scale","glider","chess","uno","battleship","airhockey","baseball","sorting","lightsout","farm","xiangqi","morris","tanks","pacman","volleyball","archery","klotski","pipes","reversi","yahtzee","sudoku","idiomchain","fruitmerge","jigsaw","curling","fruitninja","stroop","coinpush","emojiriddle","penalty","wire","skipstone","monte","schulte","gold","maze","poem","hidden","drawn","tonepin","slalom","duel","popstar","duopong","muyu","flash","fireworks","balance","aim","toss","rhythm","rope","idiom","trivia","scratch","pet","idle","swing","bulls","make24","spotdiff","rps","doodle","basketball","spy","coloring","tictactoe","hanoi","matchstick","wheel","reaction","crossy","jenga","claw","golf","bowling","tetris","zuma","pinball","memory","mole","pong","slingshot","fish","parking","ice","tangram","ludo","checkers","blackjack","bomb","billiards","darts","flow","euler","mind","piano","solitaire","knife","tower","stairs","fifteen","nono","mahjong","connect","hexa","brick","plane","mine","box","gomoku","jungle","water","bubble","run","balloon","shousui","jump","match","snake","link","fc","diner","moyu","2048","wordfind","ddz","dotsbox","domino","badminton","lander","hongbao","lines","block10","typing","cannon","hurdle","traffic","train","spider","robo","freecell","simon","elevator","escape","skydive","digger","cutrope","ninja","hexgame","banqi","shuffleboard","cups","flappy","bingo","graze","snowrace","tron","crossword","memduel","defend","stonks","pixelart","fireman","endgame","alchemy","rings","dicerace","sneak","icebreak","brave","combine","weightlift","spintop","airgun","sevens","pancake","sequence","memorypath","logic","surf","climb","fencing","portal","trampoline","jumpman","oldmaid","stack"];
+document.getElementById('rnd').addEventListener('click',function(){
+  location.href='/'+KEYS[Math.floor(Math.random()*KEYS.length)]+'/';
+});
+/* 路径纠错:大小写写错、多了 index.html 或子路径都送到正确地址 */
+(function(){
+  var raw=location.pathname.replace(/^\/+/, '').split('?')[0].split('#')[0];
+  var seg=raw.split('/').filter(Boolean);
+  if(!seg.length)return;
+  var first=seg[0].toLowerCase();
+  var last=seg[seg.length-1].replace(/\.(html?|php|aspx?)$/i, '').toLowerCase();
+  var hit=null;
+  if(MAP[first])hit=first;
+  else if(MAP[last])hit=last;
+  else for(var i=0;i<KEYS.length;i++){
+    if(KEYS[i].length>=4&&(first.indexOf(KEYS[i])===0||last.indexOf(KEYS[i])===0)){hit=KEYS[i];break;}
+  }
+  if(hit&&(hit!==seg[0]||seg.length>1)){
+    var el=document.getElementById('fix');
+    el.style.display='block';
+    el.textContent='正在带你去 '+(MAP[hit]?MAP[hit].n:hit)+' …';
+    location.replace('/'+hit+'/');
+  }
+})();
+</script>
+</body>
+</html>

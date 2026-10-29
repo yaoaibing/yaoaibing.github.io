@@ -388,7 +388,7 @@ function draw() {
   }
   /* 色板 */
   var pw = (VW - 40) / 7;
-  for (i = 1; i <= 7; i++) {
+  for (var i = 1; i <= 7; i++) {
     var px2 = 20 + (i - 1) * pw;
     var py = VH - 150;
     ctx.fillStyle = PALETTE[i];
