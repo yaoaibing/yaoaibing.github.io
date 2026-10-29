@@ -323,7 +323,7 @@ function rr(x, y, w, h, rad) { var k = Math.min(rad, w / 2, h / 2); ctx.beginPat
 function draw() {
   var bg = ctx.createLinearGradient(0, 0, 0, VH); bg.addColorStop(0, '#0e1020'); bg.addColorStop(1, '#060814');
   ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
-  var r, c;
+  var r, c, i;
   for (r = 0; r < ROWS; r++) for (c = 0; c < COLS; c++) {
     var x = BX + c * CS, y = BY + r * CS;
     ctx.fillStyle = grid[idx(c, r)] === 1 ? 'rgba(80,100,160,.3)' : 'rgba(255,255,255,.04)';
