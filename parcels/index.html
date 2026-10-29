@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>快递分拣 · 夜班仓库</title>
+<meta name="description" content="快递分拣:夜班仓库里包裹沿传送带涌来,看清区标,在扫码区按对东/西/北三个分拣口!漏件扣 40,分错扣 30,连对越赚越多,60 秒分满 14 件就能下班!">
+<meta property="og:title" content="快递分拣 · 夜班仓库">
+<meta property="og:description" content="快递分拣:夜班仓库里包裹沿传送带涌来,看清区标,在扫码区按对东/西/北三个分拣口!漏件扣 40,分错扣 30,连对越赚越多,60 秒分满 14 件就能下班!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0e1a1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%A6%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#0e1a1e;
+  --panel:rgba(14,26,30,.94);
+  --ink:#d8ecef;
+  --edge:#1e3a42;
+  --btn1:#48c8b8;
+  --btn2:#188878;
+  --btnink:#04140f;
+  --glow:rgba(72,200,184,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 快递分拣 · 夜班仓库 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">分拣<b id="hdone">0/14</b></span><span class="chip">时间<b id="htime">60s</b></span><span class="chip">连对<b id="hstk">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">快 递 分 拣<small>· 夜 班 仓 库 ·</small></div>
+  <div class="howto">
+📦 包裹带着<b>区标</b>沿传送带涌来<br>🔍 进<b>扫码区</b>(虚线框)才能分拣<br>👆 按对应按钮:<b>🏠东 🏢西 🏭北</b><br>❌ 分错 -30,漏出传送带 -40,连对越赚越多<br>⏱ 60 秒分满 14 件下班,传送带越来越快!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">上 工 分 拣</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">下 班 了</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">明 晚 再 来</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="z0" type="button">🏠 东区</button><button class="padbtn" id="z1" type="button">🏢 西区</button><button class="padbtn" id="z2" type="button">🏭 北区</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='parcels_best',PLAY='parcels_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 快递分拣 · 夜班仓库 ================== */
+var NAME = '快递分拣 · 夜班仓库';
+var state = 'start';
+var done = 0, TARGET = 14, streak = 0, score = 0, missN = 0;
+var SHIFT = 60, timeLeft = SHIFT;
+var pkgs = [], spawnT = .5, time = 0;
+var msg = '', msgT = 0;
+var ZONES = [
+  { name: '东', color: '#e85858', em: '🏠' },
+  { name: '西', color: '#58a8e8', em: '🏢' },
+  { name: '北', color: '#e8c058', em: '🏭' }
+];
+var BELT_Y = 0, BELT_H = 74, SCAN0 = 0, SCAN1 = 0, EXIT_X = 0;
+
+function layout() {
+  BELT_Y = VH * .38;
+  BELT_H = 74;
+  SCAN0 = VW * .16;
+  SCAN1 = VW * .42;
+  EXIT_X = VW * .1;
+}
+function onResize() { layout(); }
+function resetMatch() {
+  done = 0; streak = 0; score = 0; missN = 0; timeLeft = SHIFT;
+  pkgs = []; spawnT = .4; time = 0;
+  msg = '看包裹上的区标,亮灯前按对分拣口!'; msgT = 2;
+  layout();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  syncHud();
+}
+function syncHud() {
+  $('hdone').textContent = done + '/' + TARGET;
+  $('htime').textContent = Math.ceil(timeLeft) + 's';
+  $('hstk').textContent = streak;
+}
+function frontPkg() {
+  var best = null;
+  for (var i = 0; i < pkgs.length; i++) {
+    var p = pkgs[i];
+    if (p.x > SCAN0 - 6 && p.x < SCAN1 && (!best || p.x < best.x)) best = p;
+  }
+  return best;
+}
+function sortTo(z) {
+  if (state !== 'play') return;
+  var p = frontPkg();
+  if (!p) {
+    msg = '扫描区没有包裹!'; msgT = .8;
+    tone(300, .05, 'square', .025);
+    return;
+  }
+  pkgs.splice(pkgs.indexOf(p), 1);
+  if (p.zone === z) {
+    done++; streak++;
+    score += 100 + streak * 10;
+    msg = ZONES[z].name + '区 ✓ +' + (100 + (streak - 1) * 10); msgT = .8;
+    tone(520 + streak * 18, .07, 'triangle', .045, 760);
+    syncHud();
+    if (done >= TARGET) timeLeft = Math.min(timeLeft, .6);
+  } else {
+    streak = 0;
+    score = Math.max(0, score - 30);
+    msg = '分错区了!该发' + ZONES[p.zone].name + '区'; msgT = 1.1;
+    tone(220, .1, 'sawtooth', .045, 150);
+    syncHud();
+  }
+}
+function matchOver(win) {
+  state = 'over';
+  if (win) score += 250;
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '<b>' + (win ? '夜班达标,下班!' : '还差 ' + (TARGET - done) + ' 件…') + '</b><br>' +
+    '分拣 <b>' + done + '</b> 件 · 漏件 ' + missN + '<br>本局得分 <b>' + score + '</b><br>' +
+    '历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = '眼睛提前看下一个包裹,别盯着手上这件';
+  $('over').classList.remove('hide');
+  tone(win ? 640 : 260, .14, 'triangle', .06, win ? 900 : 180);
+}
+function update(dt) {
+  time += dt;
+  if (msgT > 0) msgT -= dt;
+  if (state !== 'play') return;
+  timeLeft -= dt;
+  if (timeLeft <= 0) { matchOver(done >= TARGET); return; }
+  var speed = 62 + done * 3.2;
+  spawnT -= dt;
+  if (spawnT <= 0) {
+    pkgs.push({ x: VW + 34, zone: rnd(3), r: frnd() * 6 });
+    spawnT = Math.max(.75, 1.5 - done * .05) * (.8 + frnd() * .4);
+  }
+  for (var i = pkgs.length - 1; i >= 0; i--) {
+    pkgs[i].x -= speed * dt;
+    if (pkgs[i].x < EXIT_X - 26) {
+      pkgs.splice(i, 1);
+      missN++;
+      streak = 0;
+      score = Math.max(0, score - 40);
+      msg = '漏件!-40'; msgT = .9;
+      tone(200, .1, 'sawtooth', .045, 130);
+      syncHud();
+    }
+  }
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#0e1a1e'); bg.addColorStop(1, '#081013');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  /* 仓库顶灯 */
+  ctx.fillStyle = 'rgba(255,230,170,.06)';
+  for (var li = 0; li < 3; li++) {
+    ctx.beginPath();
+    ctx.moveTo(VW * (.2 + li * .3), 0);
+    ctx.lineTo(VW * (.2 + li * .3) - 70, VH * .3);
+    ctx.lineTo(VW * (.2 + li * .3) + 70, VH * .3);
+    ctx.fill();
+  }
+  /* 传送带 */
+  ctx.fillStyle = '#1c2a30';
+  ctx.fillRect(0, BELT_Y, VW, BELT_H);
+  ctx.fillStyle = '#0b1216';
+  ctx.fillRect(0, BELT_Y + BELT_H - 10, VW, 10);
+  ctx.fillStyle = 'rgba(120,160,180,.25)';
+  for (var r2 = 0; r2 < VW / 26; r2++) {
+    var rx = (r2 * 26 - (time * 62) % 26 + VW) % VW;
+    ctx.beginPath(); ctx.arc(rx, BELT_Y + BELT_H - 14, 5, 0, Math.PI * 2); ctx.fill();
+  }
+  /* 扫描区 */
+  ctx.fillStyle = 'rgba(72,200,184,.08)';
+  ctx.fillRect(SCAN0, BELT_Y - 8, SCAN1 - SCAN0, BELT_H + 16);
+  ctx.strokeStyle = 'rgba(72,200,184,.6)'; ctx.lineWidth = 2;
+  ctx.setLineDash([7, 7]);
+  ctx.strokeRect(SCAN0, BELT_Y - 8, SCAN1 - SCAN0, BELT_H + 16);
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(72,200,184,.85)';
+  ctx.font = '600 10.5px "PingFang SC",sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('扫码区', (SCAN0 + SCAN1) / 2, BELT_Y - 20);
+  /* 出口方向 */
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  for (var ar = 0; ar < 3; ar++) {
+    ctx.beginPath();
+    ctx.moveTo(EXIT_X - 10 + ar * 10, BELT_Y + BELT_H / 2 - 8);
+    ctx.lineTo(EXIT_X - 2 + ar * 10, BELT_Y + BELT_H / 2);
+    ctx.lineTo(EXIT_X - 10 + ar * 10, BELT_Y + BELT_H / 2 + 8);
+    ctx.fill();
+  }
+  /* 包裹 */
+  for (var i = 0; i < pkgs.length; i++) {
+    var p = pkgs[i], z = ZONES[p.zone];
+    ctx.save();
+    ctx.translate(p.x, BELT_Y + BELT_H / 2 + Math.sin(time * 9 + p.r * 7) * 1.5);
+    ctx.rotate(Math.sin(time * 2 + p.r * 9) * .04);
+    ctx.fillStyle = '#a07848';
+    ctx.fillRect(-20, -19, 40, 38);
+    ctx.strokeStyle = 'rgba(60,40,20,.6)'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(-20, -19, 40, 38);
+    ctx.beginPath(); ctx.moveTo(-20, -4); ctx.lineTo(20, -4); ctx.moveTo(0, -4); ctx.lineTo(0, 19); ctx.stroke();
+    ctx.fillStyle = z.color;
+    ctx.fillRect(-13, -16, 26, 15);
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 12px "PingFang SC",sans-serif';
+    ctx.fillText(z.name, 0, -8);
+    drawEm(z.em, 0, 8, 20);
+    ctx.restore();
+  }
+  /* 三个分拣口标牌 */
+  for (i = 0; i < 3; i++) {
+    var zx = VW / 2 + (i - 1) * VW * .27;
+    ctx.fillStyle = ZONES[i].color;
+    ctx.globalAlpha = .2;
+    ctx.beginPath();
+    ctx.moveTo(zx - 34, VH - 108);
+    ctx.lineTo(zx + 34, VH - 108);
+    ctx.lineTo(zx, VH - 84);
+    ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 1;
+    drawEm(ZONES[i].em, zx, VH - 116, 22);
+  }
+  if (msgT > 0) {
+    ctx.fillStyle = 'rgba(255,235,180,.95)';
+    ctx.font = '600 14px "PingFang SC",sans-serif';
+    ctx.fillText(msg, VW / 2, VH - 146);
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.42)';
+  ctx.font = '600 11.5px "PingFang SC",sans-serif';
+  if (state === 'play' && done === 0 && timeLeft > SHIFT - 2.5) {
+    ctx.fillText('包裹进虚线框后,按对应颜色的分拣口按钮', VW / 2, VH * .3);
+  }
+}
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', resetMatch);
+$('againbtn').addEventListener('click', resetMatch);
+$('z0').addEventListener('click', function () { sortTo(0); });
+$('z1').addEventListener('click', function () { sortTo(1); });
+$('z2').addEventListener('click', function () { sortTo(2); });
+window.addEventListener('keydown', function (e) {
+  if (e.key === '1' || e.key === 'ArrowLeft') sortTo(0);
+  else if (e.key === '2' || e.key === 'ArrowUp') sortTo(1);
+  else if (e.key === '3' || e.key === 'ArrowRight') sortTo(2);
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」一晚分了 ' + done + ' 件快递! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+window.__T = {
+  state: function () { return state; },
+  start: resetMatch,
+  step: function (k) { for (var i = 0; i < (k || 1); i++) update(1 / 60); },
+  score: function () { return score; },
+  done: function () { return done; },
+  pkgs: function () { return pkgs.length; },
+  front: function () { var p = frontPkg(); return p ? p.zone : -1; },
+  sort: sortTo
+};
+resize();
+layout();
+$('padbar').classList.add('hide');
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='parcels'});
+  r.unshift({k:'parcels',n:'快递分拣 · 夜班仓库',e:'📦'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['parcels_best','parcels_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['parcels']||0)){
+            B['parcels']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
