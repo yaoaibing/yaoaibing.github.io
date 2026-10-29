@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>直线加速 · 千米冲锋</title>
+<meta name="description" content="直线加速:一脚油门一千米的改装车对决!盯住转速表,指针进绿区(68-92%)瞬间换挡拿到完美加速,换早掉转、断油受罚,六挡冲过千米线,和 AI 比谁快到!">
+<meta property="og:title" content="直线加速 · 千米冲锋">
+<meta property="og:description" content="直线加速:一脚油门一千米的改装车对决!盯住转速表,指针进绿区(68-92%)瞬间换挡拿到完美加速,换早掉转、断油受罚,六挡冲过千米线,和 AI 比谁快到!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#101018">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8F%8E%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#101018;
+  --panel:rgba(16,16,24,.94);
+  --ink:#e0e0f0;
+  --edge:#2c2c40;
+  --btn1:#7ce87c;
+  --btn2:#2c9c48;
+  --btnink:#04140a;
+  --glow:rgba(124,232,124,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 直线加速 · 千米冲锋 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">挡位<b id="hgear">1/6</b></span><span class="chip">时速<b id="hspd">0km/h</b></span><span class="chip">完美<b id="hsft">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">直 线 加 速<small>· 千 米 冲 锋 ·</small></div>
+  <div class="howto">
+🏁 3-2-1 起步,<b>转速自动攀升</b><br>⚙️ 指针进<b>绿区(68-92%)</b>点换挡=完美加速<br>📉 换早了<b>掉转</b>,拖到 100% 直接<b>断油受罚</b><br>🏎 六挡全部换完冲过千米线<br>⏱ 和 AI 比冲线时间,完美换挡越多越快!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">发 车</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">冲 线</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 跑 一 场</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="shiftbtn" type="button">⚙️ 换挡</button><button class="padbtn" id="diffbtn" type="button">🎚 普通</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='drag_best',PLAY='drag_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 直线加速 · 千米冲锋 ================== */
+var NAME = '直线加速 · 千米冲锋';
+var state = 'start';
+var gear = 1, GEARS = 6, rpm = 0, spd = 0, dist = 0, aiDist = 0;
+var perfectN = 0, earlyN = 0, redN = 0, finishT = 0, myTime = 0, aiTime = 0;
+var phase = 'count', phaseT = 3.2, time = 0, msg = '', msgT = 0, boostFx = 0, redFx = 0;
+var diff = 1, DIFF_CN = ['简单', '普通', '困难'];
+var RPM_UP = [55, 62, 70, 80, 92, 108];
+
+function layout() { }
+function onResize() { }
+function resetMatch() {
+  gear = 1; rpm = 0; spd = 0; dist = 0; aiDist = 0;
+  perfectN = 0; earlyN = 0; redN = 0; time = 0; finishT = 0;
+  myTime = 0; aiTime = 0; boostFx = 0; redFx = 0;
+  phase = 'count'; phaseT = 3.2;
+  msg = ''; msgT = 0;
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  $('diffbtn').textContent = '🎚 ' + DIFF_CN[diff];
+  syncHud();
+}
+function syncHud() {
+  $('hgear').textContent = gear + '/' + GEARS;
+  $('hspd').textContent = Math.round(spd * 3.6 * 6) + 'km/h';
+  $('hsft').textContent = perfectN;
+}
+function shift() {
+  if (state !== 'play' || phase !== 'race' || gear >= GEARS) return;
+  if (rpm >= 68 && rpm <= 92) {
+    perfectN++;
+    boostFx = .4;
+    spd += 14;
+    msg = '完美换挡!'; msgT = .7;
+    tone(660, .08, 'triangle', .05, 920);
+  } else if (rpm < 68) {
+    earlyN++;
+    spd = Math.max(0, spd - 5);
+    msg = '换早了,掉转!'; msgT = .7;
+    tone(280, .07, 'square', .03, 220);
+  }
+  gear++;
+  rpm = Math.max(0, rpm - 55);
+  syncHud();
+  if (gear > GEARS - 1 + 1) { }
+}
+function finish() {
+  if (state !== 'play') return;
+  myTime = time;
+  state = 'ai';
+  msg = '冲线!等待 AI 成绩…'; msgT = 9;
+  tone(700, .12, 'triangle', .06, 950);
+}
+function matchOver(win) {
+  state = 'over';
+  var score = win ? 600 + Math.round((aiTime - myTime) * 40) + perfectN * 50 : Math.round(perfectN * 60 + 100);
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '<b>' + (win ? '冠军!' : '惜败') + '</b><br>' +
+    '你的成绩 <b>' + myTime.toFixed(2) + '</b> 秒 · AI ' + aiTime.toFixed(2) + ' 秒<br>' +
+    '完美换挡 ' + perfectN + ' 次 · 难度 ' + DIFF_CN[diff] + '<br>' +
+    '本局得分 <b>' + score + '</b><br>历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = win ? '绿区换挡是命,数着拍子踩' : '指针进绿区再换,红区宁可等半拍';
+  $('over').classList.remove('hide');
+  tone(win ? 640 : 260, .14, 'triangle', .06, win ? 900 : 180);
+}
+function update(dt) {
+  time += dt;
+  if (msgT > 0) msgT -= dt;
+  if (boostFx > 0) boostFx -= dt;
+  if (redFx > 0) redFx -= dt;
+  if (state === 'play') {
+    if (phase === 'count') {
+      phaseT -= dt;
+      if (phaseT <= 0) { phase = 'race'; msg = '转进绿区就换挡!'; msgT = 1.2; }
+      return;
+    }
+    /* 我的赛车 */
+    rpm += RPM_UP[gear - 1] * dt;
+    if (rpm >= 100) {
+      rpm = 62; redN++;
+      spd = Math.max(0, spd - 8);
+      redFx = .35;
+      msg = '断油了!'; msgT = .6;
+      tone(180, .1, 'sawtooth', .04, 120);
+    }
+    spd += (4 + gear * 3.2) * dt;
+    dist += spd * dt;
+    syncHud();
+    if (dist >= 1000) { dist = 1000; finish(); }
+  } else if (state === 'ai') {
+    /* AI 冲刺过程可视化 */
+    var aiSpd = 52 + diff * 9 + Math.sin(time * 2) * 6;
+    aiDist += aiSpd * dt;
+    aiTime = time;
+    if (aiDist >= 1000) {
+      aiDist = 1000;
+      matchOver(myTime < aiTime);
+    }
+  }
+}
+function drawCar(y, color, k, me) {
+  var x = 30 + k * (VW - 120);
+  ctx.fillStyle = 'rgba(0,0,0,.3)';
+  ctx.beginPath(); ctx.ellipse(x + 24, y + 16, 30, 5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y - 10, 48, 20, 8);
+  else ctx.rect(x, y - 10, 48, 20);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(210,240,255,.8)';
+  ctx.fillRect(x + 12, y - 7, 16, 8);
+  ctx.fillStyle = '#1a1e26';
+  ctx.beginPath(); ctx.arc(x + 12, y + 11, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 37, y + 11, 6, 0, Math.PI * 2); ctx.fill();
+  if (me && boostFx > 0) {
+    ctx.fillStyle = 'rgba(255,180,80,' + (boostFx * 2).toFixed(2) + ')';
+    ctx.beginPath();
+    ctx.moveTo(x, y); ctx.lineTo(x - 22 - frnd() * 12, y - 5); ctx.lineTo(x, y + 10);
+    ctx.fill();
+  }
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#101018'); bg.addColorStop(1, '#08080e');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  /* 赛道 */
+  var ty = VH * .34;
+  ctx.fillStyle = '#26262e';
+  ctx.fillRect(0, ty, VW, VH * .3);
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  for (var m2 = 0; m2 <= 10; m2++) {
+    var mx = 30 + m2 / 10 * (VW - 100);
+    ctx.fillRect(mx, ty + VH * .15 - 1, 2, 12);
+    if (m2 % 2 === 0) {
+      ctx.font = '600 9px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillStyle = 'rgba(255,255,255,.35)';
+      ctx.fillText(m2 * 100 + 'm', mx, ty + VH * .15 + 14);
+    }
+  }
+  ctx.fillStyle = '#e8e8f0';
+  ctx.fillRect(VW - 66, ty, 5, VH * .3);
+  /* 车辆 */
+  drawCar(ty + 14, '#ff8a5c', aiDist / 1000, false);
+  drawCar(ty + VH * .3 - 42, '#4fa8e8', dist / 1000, true);
+  /* 仪表 */
+  var gx = VW / 2, gy = VH * .78, gr = Math.min(70, VW * .17);
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 9;
+  ctx.beginPath(); ctx.arc(gx, gy, gr, Math.PI * .75, Math.PI * 2.25); ctx.stroke();
+  var zoneCol = rpm >= 92 ? '#ff6a5a' : rpm >= 68 ? '#7ce87c' : '#ffd45c';
+  ctx.strokeStyle = zoneCol;
+  ctx.beginPath(); ctx.arc(gx, gy, gr, Math.PI * .75, Math.PI * .75 + (rpm / 100) * Math.PI * 1.5); ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 ' + Math.round(gr * .38) + 'px "PingFang SC",sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(Math.round(rpm) + '%', gx, gy);
+  ctx.fillStyle = 'rgba(255,255,255,.6)';
+  ctx.font = '600 11px "PingFang SC",sans-serif';
+  ctx.fillText('挡位 ' + gear + ' · 绿区 68-92 换挡', gx, gy + gr * .55);
+  /* 倒计时 */
+  if (phase === 'count') {
+    ctx.fillStyle = 'rgba(255,245,200,.95)';
+    ctx.font = '900 52px "PingFang SC",sans-serif';
+    ctx.fillText(Math.ceil(phaseT), VW / 2, VH * .16);
+  }
+  if (redFx > 0) {
+    ctx.fillStyle = 'rgba(255,80,60,' + (redFx * .5).toFixed(2) + ')';
+    ctx.fillRect(0, 0, VW, VH);
+  }
+  if (msgT > 0) {
+    ctx.fillStyle = 'rgba(255,235,180,.95)';
+    ctx.font = '600 14px "PingFang SC",sans-serif';
+    ctx.fillText(msg, VW / 2, VH * .1);
+  }
+}
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', resetMatch);
+$('againbtn').addEventListener('click', resetMatch);
+$('shiftbtn').addEventListener('click', shift);
+$('diffbtn').addEventListener('click', function () {
+  diff = (diff + 1) % 3;
+  $('diffbtn').textContent = '🎚 ' + DIFF_CN[diff];
+});
+window.addEventListener('keydown', function (e) {
+  if (e.key === ' ' || e.key === 'ArrowUp') { e.preventDefault(); shift(); }
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」跑出了 ' + (myTime ? myTime.toFixed(2) : '?') + ' 秒! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+window.__T = {
+  state: function () { return state; },
+  start: resetMatch,
+  step: function (k) { for (var i = 0; i < (k || 1); i++) update(1 / 60); },
+  score: function () { return Math.round(perfectN * 60 + 100); },
+  gear: function () { return gear; },
+  rpm: function () { return rpm; },
+  dist: function () { return dist; },
+  setRpm: function (v) { rpm = v; },
+  shift: shift,
+  phase: function () { return phase; },
+  setDiff: function (d) { diff = d % 3; }
+};
+resize();
+$('padbar').classList.add('hide');
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='drag'});
+  r.unshift({k:'drag',n:'直线加速 · 千米冲锋',e:'🏎️'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['drag_best','drag_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['drag']||0)){
+            B['drag']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
