@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>填字风云 · 成语盘 · 成语盘</title>
+<meta name="description" content="填字风云:交错的成语盘上挖空了关键字,根据上下成语推断填入!每盘 3-4 个成语互相咬合,8 盘由易到难,中文功底大检验!">
+<meta property="og:title" content="填字风云 · 成语盘 · 成语盘">
+<meta property="og:description" content="填字风云:交错的成语盘上挖空了关键字,根据上下成语推断填入!每盘 3-4 个成语互相咬合,8 盘由易到难,中文功底大检验!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#161008">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%9D%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#161008;
+  --panel:rgba(24,16,10,.94);
+  --ink:#f2e6c8;
+  --edge:#4a3a18;
+  --btn1:#d8a85a;
+  --btn2:#98682a;
+  --btnink:#1a1004;
+  --glow:rgba(216,168,90,.4);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;backdrop-filter:blur(6px)}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px)}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 填字风云 · 成语盘 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">盘面<b id="hlv">1/8</b></span><span class="chip">空格<b id="hblank">0</b></span><span class="chip">对<b id="hright">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">填 字 风 云<small>· 成 语 盘 ·</small></div>
+  <div class="howto">
+📝 棋盘上横竖交错的成语<b>挖掉了关键字</b><br>👆 点一个空格,再从候选字里<b>点一个字</b>填入<br>✅ 填错不锁死,可以换字重填<br>💡 提示直接亮出一个正确字<br>🏁 空格全部填对即破盘,共 8 盘!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">开 始 填 字</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">全 盘 破 解</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 盘</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="hintbtn" type="button">💡 提示</button><button class="padbtn" id="newbtn" type="button">⏭ 下一盘</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='crossword_best',PLAY='crossword_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 填字风云 · 成语盘 ================== */
+var NAME = '填字风云 · 成语盘';
+var state = 'start';
+var level = 0, right = 0, hints = 3;
+var grid = [];                   /* N*N: null=黑格 or {ch, blank:bool} */
+var N = 5;
+var sel = -1;
+var opts = [];
+var hintUsed = 0;
+var winT = 0, msg = '', msgT = 0;
+var CS = 0, BX = 0, BY = 0;
+
+/* 每盘:5x5 布局,横竖成语;blanks 列表 [行,列];候选自动生成 */
+var PUZZLES = [
+  { words: [[0, 0, 'h', '一鸣惊人'], [2, 0, 'h', '人山人海']], blanks: [[0, 2], [2, 2]] },
+  { words: [[0, 1, 'v', '一见如故'], [2, 0, 'h', '故弄玄虚'], [3, 3, 'v', '虚张声势']], blanks: [[2, 1], [3, 3]] },
+  { words: [[0, 0, 'h', '水滴石穿'], [2, 2, 'v', '穿针引线'], [4, 0, 'h', '线人先觉']], blanks: [[0, 2], [3, 2], [4, 1]] },
+  { words: [[1, 0, 'h', '画龙点睛'], [0, 2, 'v', '睛明手快'], [3, 3, 'h', '快马加鞭']], blanks: [[1, 3], [2, 2], [4, 3]] },
+  { words: [[0, 0, 'h', '开天辟地'], [2, 1, 'v', '地利人和'], [2, 3, 'h', '和风细雨']], blanks: [[0, 3], [2, 1], [3, 3]] },
+  { words: [[0, 1, 'v', '一帆风顺'], [3, 0, 'h', '顺水推舟'], [1, 3, 'h', '舟车劳顿']], blanks: [[0, 1], [3, 1], [2, 3]] },
+  { words: [[0, 0, 'h', '金石为开'], [2, 0, 'v', '开心见诚'], [2, 3, 'h', '诚心诚意'], [4, 1, 'v', '意气风发']], blanks: [[0, 1], [2, 0], [3, 3], [4, 1]] },
+  { words: [[1, 0, 'h', '守株待兔'], [0, 2, 'v', '兔死狐悲'], [3, 2, 'v', '悲欢离合'], [3, 0, 'h', '合情合理']], blanks: [[1, 2], [2, 2], [3, 2], [3, 0], [4, 0]] }
+];
+var CHARS = '一鸣惊人山人海故弄玄虚张声势水滴石穿针引线先觉画龙点睛明手快马加鞭开天辟地利人和风细雨帆顺水推舟车劳顿金为开心见诚意气合悲欢离情尺寸功成梅花香苦寒来';
+
+function layout() {
+  CS = Math.floor((VW - 24) / N) - 4;
+  BX = Math.round((VW - CS * N - 16) / 2);
+  BY = Math.max(120, VH * .16);
+}
+function onResize() { loadLevel(level); }
+
+function loadLevel(n) {
+  var P = PUZZLES[n];
+  grid = [];
+  var i, j;
+  for (i = 0; i < N; i++) {
+    grid.push([]);
+    for (j = 0; j < N; j++) grid[i].push(null);
+  }
+  P.words.forEach(function (w) {
+    var r0 = w[0], c0 = w[1], dir = w[2], word = w[3];
+    for (var k = 0; k < word.length; k++) {
+      var r = dir === 'v' ? r0 + k : r0;
+      var c = dir === 'h' ? c0 + k : c0;
+      grid[r][c] = { ch: word[k], blank: false };
+    }
+  });
+  P.blanks.forEach(function (b2) {
+    grid[b2[0]][b2[1]].blank = true;
+  });
+  sel = -1;
+  opts = [];
+  syncHud();
+}
+function resetGame() {
+  level = 0; right = 0; hints = 3;
+  loadLevel(0);
+}
+function startGame() {
+  resetGame();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  syncHud();
+}
+function endGame() {
+  state = 'over';
+  winT = 1;
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  var rank = score >= 2000 ? '填字宗师' : score >= 1200 ? '成语达人' : score >= 600 ? '略有小成' : '多读成语';
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '破解 <b>' + level + '/8</b> 盘<br>' +
+    '本局得分 <b>' + score + '</b><br>' + rank + '<br>' +
+    '历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = '先填两个成语共享的交叉字';
+  $('padbar').classList.add('hide');
+  $('over').classList.remove('hide');
+  tone(760, .3, 'sine', .07, 1200);
+}
+var score = 0;
+function blankCount() {
+  var n = 0, i, j;
+  for (i = 0; i < N; i++) for (j = 0; j < N; j++) if (grid[i][j] && grid[i][j].blank) n++;
+  return n;
+}
+function syncHud() {
+  $('hlv').textContent = (level + 1) + '/8';
+  $('hblank').textContent = blankCount();
+  $('hright').textContent = right;
+}
+function selectBlank(r, c) {
+  sel = r * N + c;
+  /* 候选:正确字 + 5 个干扰(从本盘其他字与随机汉字池) */
+  var s = new Set([grid[r][c].ch]);
+  var i;
+  grid.forEach(function (row) {
+    row.forEach(function (cell) { if (cell && s.size < 6) s.add(cell.ch); });
+  });
+  while (s.size < 6) s.add(CHARS[rnd(CHARS.length)]);
+  opts = [];
+  s.forEach(function (v) { opts.push(v); });
+  for (i = opts.length - 1; i > 0; i--) {
+    var j = rnd(i + 1), t = opts[i]; opts[i] = opts[j]; opts[j] = t;
+  }
+  tone(360, .05, 'triangle', .035);
+}
+function fill(ch) {
+  if (sel < 0) return;
+  var r = Math.floor(sel / N), c = sel % N;
+  if (ch === grid[r][c].ch) {
+    grid[r][c].blank = false;
+    right++;
+    score += 50;
+    tone(620, .1, 'sine', .055);
+    msg = '「' + ch + '」填对了!'; msgT = 1.2;
+    sel = -1; opts = [];
+    syncHud();
+    if (blankCount() === 0) {
+      msg = '破盘!下一盘…'; msgT = 1.4;
+      tone(720, .2, 'sine', .06, 1150);
+      if (level >= PUZZLES.length - 1) { endGame(); return; }
+      setTimeout(function () {
+        if (state !== 'play') return;
+        level++;
+        loadLevel(level);
+      }, 900);
+    }
+  } else {
+    msg = '「' + ch + '」不对,换一个'; msgT = 1;
+    tone(200, .08, 'square', .035);
+  }
+}
+function useHint() {
+  if (state !== 'play' || hints <= 0) return;
+  var i, j, foundB = false;
+  for (i = 0; i < N && !foundB; i++) for (j = 0; j < N; j++) {
+    if (grid[i][j] && grid[i][j].blank) {
+      grid[i][j].blank = false;
+      right++;
+      score += 0;
+      hints--;
+      foundB = true;
+      msg = '提示已填入一个空';
+      msgT = 1.4;
+      tone(520, .1, 'sine', .05);
+      sel = -1; opts = [];
+      syncHud();
+      if (blankCount() === 0) {
+        msg = '破盘!下一盘…'; msgT = 1.4;
+        if (level >= PUZZLES.length - 1) { endGame(); return; }
+        setTimeout(function () { if (state === 'play') { level++; loadLevel(level); } }, 900);
+      }
+      return;
+    }
+  }
+}
+function update(dt) {
+  if (msgT > 0) msgT -= dt;
+  if (winT > 0) winT -= dt;
+}
+function rr(x, y, w, h, rad) {
+  var k = Math.min(rad, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + k, y);
+  ctx.arcTo(x + w, y, x + w, y + h, k);
+  ctx.arcTo(x + w, y + h, x, y + h, k);
+  ctx.arcTo(x, y + h, x, y, k);
+  ctx.arcTo(x, y, x + w, y, k);
+  ctx.closePath();
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#1c1408');
+  bg.addColorStop(1, '#0d0805');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  var i, j;
+  for (i = 0; i < N; i++) for (j = 0; j < N; j++) {
+    var x = BX + j * (CS + 4);
+    var y = BY + i * (CS + 4);
+    var cell = grid[i][j];
+    if (!cell) {
+      ctx.fillStyle = 'rgba(0,0,0,.35)';
+      rr(x, y, CS, CS, 5); ctx.fill();
+      continue;
+    }
+    var isSel = sel === i * N + j;
+    ctx.fillStyle = cell.blank ? (isSel ? 'rgba(216,168,90,.4)' : 'rgba(216,168,90,.16)') : 'rgba(242,230,200,.92)';
+    rr(x, y, CS, CS, 6); ctx.fill();
+    ctx.strokeStyle = cell.blank ? 'rgba(232,180,90,.7)' : 'rgba(232,180,90,.35)';
+    ctx.lineWidth = isSel ? 2 : 1;
+    rr(x, y, CS, CS, 6); ctx.stroke();
+    ctx.font = '900 ' + Math.round(CS * .52) + 'px "PingFang SC",sans-serif';
+    ctx.fillStyle = cell.blank ? 'rgba(242,230,200,.35)' : '#4a3010';
+    ctx.fillText(cell.blank ? '？' : cell.ch, x + CS / 2, y + CS / 2 + 1);
+  }
+  /* 候选字 */
+  if (opts.length) {
+    var ow = Math.min(52, (VW - 50 - opts.length * 5) / opts.length);
+    for (i = 0; i < opts.length; i++) {
+      var ox = 25 + i * (ow + 5);
+      var oy = VH * .62;
+      ctx.fillStyle = 'rgba(216,168,90,.3)';
+      rr(ox, oy, ow, ow, 8); ctx.fill();
+      ctx.strokeStyle = 'rgba(232,180,90,.6)'; ctx.lineWidth = 1.5;
+      rr(ox, oy, ow, ow, 8); ctx.stroke();
+      ctx.font = '900 ' + Math.round(ow * .5) + 'px "PingFang SC",sans-serif';
+      ctx.fillStyle = '#f2e6c8';
+      ctx.fillText(opts[i], ox + ow / 2, oy + ow / 2);
+    }
+  }
+  ctx.font = '600 12.5px "PingFang SC",sans-serif';
+  ctx.fillStyle = msgT > 0 ? 'rgba(255,220,120,.95)' : 'rgba(242,230,200,.55)';
+  ctx.fillText(msg || '点空格选字填入!', VW / 2, VH - 50);
+}
+cv.addEventListener('pointerdown', function (e) {
+  e.preventDefault();
+  if (state !== 'play') return;
+  /* 候选字 */
+  if (opts.length && sel >= 0) {
+    var ow = Math.min(52, (VW - 50 - opts.length * 5) / opts.length);
+    var oy = VH * .62;
+    var i;
+    for (i = 0; i < opts.length; i++) {
+      var ox = 25 + i * (ow + 5);
+      if (e.clientX >= ox && e.clientX <= ox + ow && e.clientY >= oy && e.clientY <= oy + ow) {
+        fill(opts[i]);
+        return;
+      }
+    }
+  }
+  var c = Math.floor((e.clientX - BX) / (CS + 4));
+  var r = Math.floor((e.clientY - BY) / (CS + 4));
+  if (c < 0 || c >= N || r < 0 || r >= N) return;
+  var lx = e.clientX - BX - c * (CS + 4), ly = e.clientY - BY - r * (CS + 4);
+  if (lx > CS || ly > CS) return;
+  if (grid[r][c] && grid[r][c].blank) selectBlank(r, c);
+});
+window.addEventListener('keydown', function (e) {
+  if (e.target && e.target.tagName === 'BUTTON') return;
+  if (e.key === 'h' || e.key === 'H') { e.preventDefault(); useHint(); }
+  if (e.key === 'r' || e.key === 'R') { e.preventDefault(); resetGame(); }
+});
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', startGame);
+$('againbtn').addEventListener('click', startGame);
+$('newbtn').addEventListener('click', startGame);
+$('hintbtn').addEventListener('click', useHint);
+$('newbtn').addEventListener('click', function () {
+  if (state === 'play' && level < PUZZLES.length - 1) { level++; loadLevel(level); }
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」破解了 ' + level + '/8 个成语盘! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/' });
+
+window.__T = {
+  grid: function () { return grid.map(function (row) { return row.map(function (c) { return c ? (c.blank ? '？' : c.ch) : null; }); }); },
+  blanks: blankCount,
+  select: function (r, c) { if (grid[r][c] && grid[r][c].blank) selectBlank(r, c); },
+  fill: fill,
+  hint: useHint,
+  level: function () { return level; },
+  setLevel: function (n) { level = n; loadLevel(n); },
+  state: function () { return state; }
+};
+resize();
+resetGame();
+$('padbar').classList.add('hide');
+updMini();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='crossword'});
+  r.unshift({k:'crossword',n:'填字风云 · 成语盘',e:'📝'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['crossword_best','crossword_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['crossword']||0)){
+            B['crossword']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
