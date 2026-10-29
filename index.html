@@ -899,6 +899,10 @@ function apply(){
     favH.setAttribute('aria-expanded',String(!fold.fav))}
   hit=viewFav?favHit:hit;
   $('empty').style.display=hit?'none':'block';
+  /* 搜索/看收藏时收起今日推荐与接着玩,否则无关卡片会混进结果里 */
+  var quiet=!!kw||viewFav;
+  $('recwrap').style.display=quiet?'none':($('rec').children.length?'block':'none');
+  $('recentwrap').style.display=quiet?'none':($('recent').children.length?'block':'none');
   $('listlbl').textContent=kw?'🔍 搜索「'+kw+'」· '+hit+' 款'
     :(viewAll?'🎮 全部游戏':viewFav?'⭐ 我的收藏':CATNAME[cat]||'🎮 全部游戏');
   var fa=$('foldall');
@@ -926,6 +930,8 @@ document.getElementById('tabs').addEventListener('click',function(e){
   var b=e.target.closest('.tab');if(!b||b.id==='dice')return;
   [].slice.call(this.children).forEach(function(x){x.classList.toggle('on',x===b)});
   cat=b.getAttribute('data-cat')||'all';
+  /* 切换分类/收藏＝换浏览模式:清掉搜索词,否则会出现「0 款」却还列着跨类命中的卡片 */
+  if(kw){kw='';$('q').value='';}
   if(cat!=='all')onlyOpen(cat);
   apply();
 });
