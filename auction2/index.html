@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>黑石拍卖 · 夜场加映</title>
+<meta name="description" content="黑石拍卖:夜场加映,规矩升级!每件拍品有公开底价,低于底价拍了也流拍;新增「一口价」直购通道,现金够就能跳过竞价锁定心水之物;三 AI 各怀鬼胎,1000 两本金,夜场见真章!">
+<meta property="og:title" content="黑石拍卖 · 夜场加映">
+<meta property="og:description" content="黑石拍卖:夜场加映,规矩升级!每件拍品有公开底价,低于底价拍了也流拍;新增「一口价」直购通道,现金够就能跳过竞价锁定心水之物;三 AI 各怀鬼胎,1000 两本金,夜场见真章!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#120e10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%95%AF%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#120e10;
+  --panel:rgba(18,14,16,.94);
+  --ink:#ece0f0;
+  --edge:#3c2c44;
+  --btn1:#b898c8;
+  --btn2:#785898;
+  --btnink:#120a16;
+  --glow:rgba(184,152,200,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 黑石拍卖 · 夜场加映 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">拍品<b id="hitem">1/6</b></span><span class="chip">现金<b id="hcash">1000</b></span><span class="chip">利润<b id="hprofit">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">黑 石 拍 卖<small>· 夜 场 加 映 ·</small></div>
+  <div class="howto">
+🕯️ 夜场规矩:每件有<b>公开底价</b><br>🔨 落槌价<b>低于底价 = 流拍</b>,谁买都不算<br>💎 <b>一口价</b>=底价 2.2 倍,现金够直接锁定<br>🤖 三位新对手:夜枭/苍鹫/野猪公,估价各异<br>🏆 转手按真实价值结算,六件后比净利润!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">进 场 竞 拍</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">夜 场 收 官</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 竞 一 场</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="bid25" type="button">+25 两</button><button class="padbtn" id="bid100" type="button">+100 两</button><button class="padbtn" id="buynow" type="button">💎 一口价</button><button class="padbtn" id="passbtn" type="button">🚫 弃权</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='auction2_best',PLAY='auction2_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 黑石拍卖 · 夜场加映 ================== */
+var NAME = '黑石拍卖 · 夜场加映';
+var state = 'start';
+var itemN = 0, ITEMS = 6;
+var items = [], cur = 0, bid = 0, leader = -1, passStreak = 0;
+var myCash = 1000, myProfit = 0, myWon = 0;
+var ais = [], turn = 0, turnT = 0;
+var sold = false, soldT = 0, msg = '', msgT = 0, time = 0;
+var ITEM_DEFS = [
+  { em: '🗡️', name: '无名古剑', base: 460 },
+  { em: '👑', name: '流亡王冠', base: 540 },
+  { em: '📜', name: '先王手谕', base: 380 },
+  { em: '🗿', name: '黑石神像', base: 600 },
+  { em: '🕯️', name: '永燃烛台', base: 320 },
+  { em: '🪞', name: '占卜魔镜', base: 480 }
+];
+var AI_NAMES = ['🐺 夜枭', '🦅 苍鹫', '🐗 野猪公'];
+
+function layout() { }
+function onResize() { }
+function resetMatch() {
+  itemN = 0; myCash = 1000; myProfit = 0; myWon = 0;
+  time = 0; msg = ''; msgT = 0; sold = false; soldT = 0;
+  ais = [];
+  for (var i = 0; i < 3; i++) ais.push({ name: AI_NAMES[i], cash: 900, est: 0 });
+  items = [];
+  var pool = ITEM_DEFS.slice();
+  for (i = 0; i < ITEMS; i++) {
+    var d = pool.splice(rnd(pool.length), 1)[0];
+    items.push({
+      em: d.em, name: d.name,
+      v: Math.round(d.base * (.72 + frnd() * .55)),
+      reserve: Math.round(d.base * (.5 + frnd() * .25))
+    });
+  }
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  startItem();
+}
+function startItem() {
+  cur = itemN;
+  bid = 30;
+  leader = -1;
+  passStreak = 0;
+  turn = rnd(4);
+  sold = false;
+  for (var i = 0; i < 3; i++) ais[i].est = Math.round(items[cur].v * (.55 + frnd() * .8));
+  msg = '夜场 ' + (itemN + 1) + '/' + ITEMS + ':' + items[cur].name + '(底价 ' + items[cur].reserve + ')';
+  msgT = 1.8;
+  turnT = .8;
+  syncHud();
+}
+function syncHud() {
+  $('hitem').textContent = (itemN + 1) + '/' + ITEMS;
+  $('hcash').textContent = myCash;
+  $('hprofit').textContent = myProfit;
+}
+function mePass() {
+  if (state !== 'play' || sold || turn !== 0) return;
+  nextTurn(true);
+}
+function meBid(inc) {
+  if (state !== 'play' || sold || turn !== 0) return;
+  var nb = bid + inc;
+  if (nb > myCash) { msg = '现金不够!'; msgT = 1; tone(240, .06, 'square', .03); return; }
+  myCash -= nb - bid;
+  bid = nb;
+  leader = 0;
+  passStreak = 0;
+  msg = '你出价 ' + bid; msgT = .8;
+  tone(520, .06, 'triangle', .04, 700);
+  nextTurn(false);
+}
+function buyNow() {
+  if (state !== 'play' || sold) return;
+  var it = items[cur];
+  var price = Math.round(it.reserve * 2.2);
+  if (myCash < price) { msg = '一口价 ' + price + ',现金不够'; msgT = 1; tone(240, .06, 'square', .03); return; }
+  myCash -= price;
+  myWon++;
+  var profit = it.v - price;
+  myProfit += profit;
+  myCash += it.v;
+  sold = true;
+  soldT = 1.7;
+  msg = '一口价 ' + price + ' 直接拿下!(' + (profit >= 0 ? '+' : '') + profit + ')';
+  msgT = 1.7;
+  tone(660, .12, 'triangle', .05, 920);
+  syncHud();
+}
+function nextTurn(iPassed) {
+  if (iPassed) passStreak++; else passStreak = 0;
+  if (leader >= 0 && passStreak >= 3) { sell(); return; }
+  if (leader < 0 && passStreak >= 4) {
+    sold = true; soldT = 1.4;
+    msg = '无人出价,流拍'; msgT = 1.4;
+    tone(240, .08, 'square', .03);
+    return;
+  }
+  turn = (turn + 1) % 4;
+  if (turn === 0) { msg = '轮到你了'; msgT = .8; return; }
+  var ai = ais[turn - 1];
+  if (ai.cash < bid + 25) { nextTurn(true); return; }
+  turnT = .9 + frnd() * .6;
+}
+function aiAct() {
+  var ai = ais[turn - 1];
+  var gap = ai.est - bid;
+  var p = clamp(gap / 160, .08, .92);
+  if (bid + 25 > ai.cash) p = 0;
+  if (frnd() < p) {
+    var inc = gap > 150 ? 100 : 25;
+    ai.cash -= inc;
+    bid += inc;
+    leader = turn;
+    passStreak = 0;
+    msg = ai.name + ' 出价 ' + bid; msgT = .9;
+    tone(360, .05, 'square', .03, 420);
+    nextTurn(false);
+  } else {
+    nextTurn(true);
+  }
+}
+function sell() {
+  sold = true;
+  soldT = 1.7;
+  var it = items[cur];
+  if (bid < it.reserve) {
+    msg = '未达底价 ' + it.reserve + ',流拍!';
+    tone(240, .09, 'square', .03);
+  } else if (leader === 0) {
+    var profit = it.v - bid;
+    myProfit += profit;
+    myWon++;
+    myCash += it.v;
+    msg = '落槌!以 ' + bid + ' 买下(' + (profit >= 0 ? '赚 ' + profit : '亏 ' + (-profit)) + ')';
+    tone(640, .1, 'triangle', .05, 860);
+  } else {
+    msg = AI_NAMES[leader - 1] + ' 以 ' + bid + ' 拍得';
+    tone(300, .09, 'square', .03);
+  }
+  syncHud();
+}
+function update(dt) {
+  time += dt;
+  if (msgT > 0) msgT -= dt;
+  if (state !== 'play') return;
+  if (sold) {
+    soldT -= dt;
+    if (soldT <= 0) {
+      itemN++;
+      if (itemN >= ITEMS) { matchOver(); return; }
+      startItem();
+    }
+    return;
+  }
+  if (turn !== 0) {
+    turnT -= dt;
+    if (turnT <= 0) aiAct();
+  }
+}
+function matchOver() {
+  state = 'over';
+  var score = Math.max(0, myProfit) + myWon * 30;
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  var rank = myProfit >= 500 ? '夜场之王!' : myProfit >= 200 ? '鉴宝行家' : myProfit >= 0 ? '小有斩获' : '黑石吃人';
+  $('ostats').innerHTML = '<b>' + rank + '</b><br>拍得 <b>' + myWon + '</b> 件 · 总利润 <b>' + myProfit + '</b><br>' +
+    '本局得分 <b>' + score + '</b><br>历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = myProfit >= 0 ? '低于底价必然流拍,一口价只在必拿时用' : '底价之上才有利润,别被气氛烧昏头';
+  $('over').classList.remove('hide');
+  tone(640, .14, 'triangle', .06, 900);
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#120e10'); bg.addColorStop(1, '#080608');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  ctx.fillStyle = 'rgba(200,150,220,.05)';
+  ctx.fillRect(0, 0, VW, VH * .16);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  var it = items[Math.min(cur, ITEMS - 1)];
+  if (it) {
+    drawEm(it.em, VW / 2, VH * .22, 70);
+    ctx.fillStyle = '#e8d8f0';
+    ctx.font = '900 17px "PingFang SC",sans-serif';
+    ctx.fillText(it.name, VW / 2, VH * .315);
+    ctx.fillStyle = 'rgba(184,152,200,.85)';
+    ctx.font = '600 12px "PingFang SC",sans-serif';
+    ctx.fillText('底价 ' + it.reserve + ' 两 · 真实价值自己估', VW / 2, VH * .355);
+  }
+  ctx.fillStyle = '#c8a8ff';
+  ctx.font = '900 ' + Math.round(Math.min(44, VW * .11)) + 'px "PingFang SC",sans-serif';
+  ctx.fillText(bid + ' 两', VW / 2, VH * .46);
+  ctx.fillStyle = 'rgba(232,216,240,.75)';
+  ctx.font = '600 12.5px "PingFang SC",sans-serif';
+  var ld = leader === 0 ? '🙂 你' : (leader > 0 ? AI_NAMES[leader - 1] : '无人出价');
+  ctx.fillText('领先:' + ld, VW / 2, VH * .52);
+  for (var i = 0; i < 3; i++) {
+    var x = VW * (.2 + i * .3);
+    var active = turn === i + 1 && !sold;
+    ctx.fillStyle = active ? 'rgba(200,168,255,.18)' : 'rgba(255,255,255,.06)';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x - VW * .13, VH * .59, VW * .26, VH * .12, 12);
+    else ctx.rect(x - VW * .13, VH * .59, VW * .26, VH * .12);
+    ctx.fill();
+    drawEm(['🐺', '🦅', '🐗'][i], x - VW * .08, VH * .65, 25);
+    ctx.fillStyle = 'rgba(232,216,240,.85)';
+    ctx.font = '600 11px "PingFang SC",sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(AI_NAMES[i].slice(2), x - VW * .02, VH * .625);
+    ctx.fillText('💰 ' + ais[i].cash, x - VW * .02, VH * .685);
+    ctx.textAlign = 'center';
+  }
+  ctx.fillStyle = 'rgba(150,230,160,.85)';
+  ctx.font = '900 14px "PingFang SC",sans-serif';
+  ctx.fillText('💰 现金 ' + myCash + ' · 一口价 ' + (it ? Math.round(it.reserve * 2.2) : '—'), VW / 2, VH * .775);
+  if (msgT > 0) {
+    ctx.fillStyle = 'rgba(255,235,180,.95)';
+    ctx.font = '600 13.5px "PingFang SC",sans-serif';
+    ctx.fillText(msg, VW / 2, VH - 40);
+  }
+}
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', resetMatch);
+$('againbtn').addEventListener('click', resetMatch);
+$('bid25').addEventListener('click', function () { meBid(25); });
+$('bid100').addEventListener('click', function () { meBid(100); });
+$('buynow').addEventListener('click', buyNow);
+$('passbtn').addEventListener('click', mePass);
+window.addEventListener('keydown', function (e) {
+  if (e.key === '1') meBid(25);
+  else if (e.key === '2') meBid(100);
+  else if (e.key === '3') buyNow();
+  else if (e.key === '4' || e.key === ' ') mePass();
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」夜场净赚 ' + myProfit + ' 两! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+window.__T = {
+  state: function () { return state; },
+  start: resetMatch,
+  step: function (k) { for (var i = 0; i < (k || 1); i++) update(1 / 60); },
+  score: function () { return Math.max(0, myProfit) + myWon * 30; },
+  profit: function () { return myProfit; },
+  item: function () { return itemN + 1; },
+  bid: function () { return bid; },
+  value: function () { return items[Math.min(cur, ITEMS - 1)].v; },
+  reserve: function () { return items[Math.min(cur, ITEMS - 1)].reserve; },
+  bidNow: function (inc) { meBid(inc); },
+  buyNow: buyNow,
+  pass: mePass,
+  cash: function () { return myCash; }
+};
+resize();
+$('padbar').classList.add('hide');
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='auction2'});
+  r.unshift({k:'auction2',n:'黑石拍卖 · 夜场加映',e:'🕯️'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['auction2_best','auction2_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['auction2']||0)){
+            B['auction2']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
