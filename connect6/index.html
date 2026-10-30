@@ -335,7 +335,8 @@ function playerPut(k) {
   placed++;
   tone(520, .05, 'triangle', .035, 680);
   if (checkWin(1)) { matchOver(true); return; }
-  if (placed >= 2) {
+  var need = (countStones() <= 1) ? 1 : 2;
+  if (placed >= need) {
     placed = 0;
     myTurn = false;
     syncHud();

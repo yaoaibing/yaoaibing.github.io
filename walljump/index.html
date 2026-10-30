@@ -259,7 +259,7 @@ function resetMatch() {
 function syncHud() {
   $('hhigh').textContent = Math.round(climb / 10) + 'm';
   $('hsc').textContent = score;
-  $('hdoom').textContent = Math.max(0, Math.round((y - doomY) / 10)) + 'm';
+  $('hdoom').textContent = Math.max(0, Math.round((doomY - y) / 10)) + 'm';
 }
 function leap() {
   if (state !== 'play' || airborne) return;
