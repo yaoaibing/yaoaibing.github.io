@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>速攻牌战 · 一牌定音</title>
+<meta name="description" content="速攻牌战:手牌只有一张,打出去就是一切!攻击直伤、防御攒盾、蓄力加成——对手 1.5-3.4 秒撞你一次,⚠️重击预警必须拿盾硬接,八轮定胜负的极简牌战!">
+<meta property="og:title" content="速攻牌战 · 一牌定音">
+<meta property="og:description" content="速攻牌战:手牌只有一张,打出去就是一切!攻击直伤、防御攒盾、蓄力加成——对手 1.5-3.4 秒撞你一次,⚠️重击预警必须拿盾硬接,八轮定胜负的极简牌战!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="undefined">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%E2%9A%94%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:undefined;
+  --panel:undefined;
+  --ink:undefined;
+  --edge:undefined;
+  --btn1:undefined;
+  --btn2:undefined;
+  --btnink:#ffffff;
+  --glow:undefined;
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 速攻牌战 · 一牌定音 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">你<b id="hhp">20/20</b></span><span class="chip">对手<b id="hmhp">20/20</b></span><span class="chip">轮次<b id="hrd">0/8</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">undefined<small>· undefined ·</small></div>
+  <div class="howto">
+🃏 手牌<b>只有一张</b>,自动发牌<br>⚔️ 攻击牌直伤 · 🛡 防御牌攒盾<br>🔥 蓄力牌加成<b>下一张攻击</b><br>👹 对手 1.5-3.4 秒撞一次<br>🏆 打空对手 20 血!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">undefined</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">undefined</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 来 一 局</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"><button class="padbtn" id="usebtn" type="button">🃏 出牌</button></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='blitzcard_best',PLAY='blitzcard_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 速攻牌战 · 一牌定音 ================== */
+var NAME = '速攻牌战 · 一牌定音';
+var state = 'start';
+var hp = 20, maxhp = 20, mhp = 20, round = 0, ROUNDS = 8;
+var card = null, mTele = 0, block = 0, combo = 0, comboT = 0;
+var msg = '', msgT = 0, time = 0, fxT = 0, fxC = '#fff';
+
+function drawCard(x, y, w, h, c, dark) {
+  ctx.fillStyle = dark ? 'rgba(255,244,214,.7)' : 'rgba(255,244,214,.95)';
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, 10);
+  else ctx.rect(x, y, w, h);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#2a2018';
+  ctx.font = '900 ' + Math.round(h * .2) + 'px "PingFang SC",sans-serif';
+  ctx.fillText(c.t, x + w / 2, y + h * .32);
+  ctx.font = '900 ' + Math.round(h * .3) + 'px "PingFang SC",sans-serif';
+  ctx.fillText(c.v, x + w / 2, y + h * .62);
+}
+function newCard() {
+  var k = rnd(3);
+  if (k === 0) card = { t: '⚔️ 攻击', v: 2 + rnd(6), kind: 0 };
+  else if (k === 1) card = { t: '🛡️ 防御', v: 2 + rnd(5), kind: 1 };
+  else card = { t: '🔥 蓄力', v: 2 + rnd(4), kind: 2 };
+}
+function resetMatch() {
+  hp = 20; maxhp = 20; mhp = 20; round = 0;
+  block = 0; combo = 0; comboT = 0;
+  msg = ''; msgT = 0; time = 0;
+  newCard();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  $('padbar').classList.remove('hide');
+  syncHud();
+}
+function syncHud() {
+  $('hhp').textContent = Math.max(0, hp) + '/' + maxhp;
+  $('hmhp').textContent = Math.max(0, mhp) + '/' + 20;
+  $('hrd').textContent = round + '/' + ROUNDS;
+}
+function matchOver(win) {
+  state = 'over';
+  var score = win ? 500 + hp * 10 : Math.round(mhp * 4);
+  KIT.addPlay(); KIT.streak();
+  var rec = KIT.setBest(score);
+  $('onewrec').style.display = rec ? 'block' : 'none';
+  $('ostats').innerHTML = '<b>' + (win ? '牌战全胜!' : '力竭…') + '</b><br>' +
+    '你 ' + Math.max(0, hp) + ' : ' + Math.max(0, mhp) + ' 对手<br>' +
+    '本局得分 <b>' + score + '</b><br>历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局';
+  $('mini2').innerHTML = win ? '蓄力牌别攒超过一张,节奏会断' : '对手重击预警时,烂防御牌也要用';
+  $('over').classList.remove('hide');
+  tone(win ? 640 : 260, .14, 'triangle', .06, win ? 900 : 180);
+}
+function settle(kind) {
+  if (state !== 'play' || !card) return;
+  round++;
+  var hitFx = '#fff';
+  if (card.kind === 0) { /* 攻击牌 */
+    mhp -= card.v + combo;
+    hitFx = '#ff8a5c';
+    msg = '打 ' + (card.v + combo) + '!'; msgT = .8;
+    tone(500, .06, 'square', .04, 700);
+  } else if (card.kind === 1) { /* 防御牌 */
+    block = card.v;
+    hitFx = '#68b8f8';
+    msg = '护盾 ' + block + ' 点'; msgT = .8;
+    tone(380, .05, 'sine', .03);
+  } else { /* 蓄力牌 */
+    combo += card.v;
+    hitFx = '#ffd45c';
+    msg = '蓄力 +' + card.v + '(下次攻击加成)'; msgT = .9;
+    tone(560, .05, 'triangle', .035);
+  }
+  fxT = .25; fxC = hitFx;
+  newCard();
+  syncHud();
+  if (mhp <= 0) { mhp = 0; matchOver(true); return; }
+}
+function update(dt) {
+  time += dt;
+  if (msgT > 0) msgT -= dt;
+  if (fxT > 0) fxT -= dt;
+  if (comboT > 0) comboT -= dt;
+  if (state !== 'play') return;
+  mTele -= dt;
+  if (mTele <= 0) {
+    var big = rnd(3) === 0;
+    var dmg = big ? 4 + rnd(4) : 2 + rnd(3);
+    if (block > 0) {
+      var absorbed = Math.min(block, dmg);
+      block -= absorbed;
+      dmg -= absorbed;
+      msg = '护盾挡了 ' + absorbed; msgT = .8;
+    }
+    if (dmg > 0) {
+      hp -= dmg;
+      msg = '被击中 -' + dmg; msgT = .8;
+      tone(220, .09, 'sawtooth', .045, 140);
+    }
+    mTele = (2 + rnd(1.4)) * (big ? 1.2 : 1);
+    syncHud();
+    if (hp <= 0) { hp = 0; matchOver(false); return; }
+  }
+  if (round >= ROUNDS) {
+    matchOver(hp > 10);
+  }
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#1c1420'); bg.addColorStop(1, '#0e0a12');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  drawEm('👹', VW / 2, VH * .14, 46);
+  if (mTele < .5 && mTele > 0) {
+    ctx.fillStyle = 'rgba(255,120,90,.9)';
+    ctx.font = '900 13px "PingFang SC",sans-serif';
+    ctx.fillText('⚠️ 重击将至!', VW / 2, VH * .09);
+  }
+  var bw = VW - 80;
+  ctx.fillStyle = 'rgba(255,255,255,.12)';
+  ctx.fillRect(40, VH * .22, bw, 10);
+  ctx.fillRect(40, VH * .52, bw, 10);
+  ctx.fillStyle = '#e85858';
+  ctx.fillRect(40, VH * .22, bw * Math.max(0, mhp) / 20, 10);
+  ctx.fillStyle = '#7ce87c';
+  ctx.fillRect(40, VH * .52, bw * Math.max(0, hp) / maxhp, 10);
+  if (block > 0) {
+    ctx.fillStyle = 'rgba(120,180,255,.9)';
+    ctx.font = '900 12px "PingFang SC",sans-serif';
+    ctx.fillText('🛡 ' + block, 40 + bw, VH * .52 + 5);
+  }
+  if (card) drawCard(VW / 2 - VW * .16, VH * .62, VW * .32, VH * .16, card);
+  if (fxT > 0) {
+    ctx.fillStyle = fxC;
+    ctx.font = '900 16px "PingFang SC",sans-serif';
+    ctx.fillText(fx, VW / 2, VH * .42);
+  }
+  if (msgT > 0) {
+    ctx.fillStyle = 'rgba(255,235,180,.95)';
+    ctx.font = '600 13.5px "PingFang SC",sans-serif';
+    ctx.fillText(msg, VW / 2, VH * .3 + 30);
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.42)';
+  ctx.font = '600 11px "PingFang SC",sans-serif';
+  if (state === 'play' && round === 0) ctx.fillText('看手牌类型:攻击打血/防御攒盾/蓄力加成,8 轮定胜负', VW / 2, VH * .86);
+}
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', resetMatch);
+$('againbtn').addEventListener('click', resetMatch);
+$('usebtn').addEventListener('click', settle);
+window.addEventListener('keydown', function (e) {
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); settle(); }
+});
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」牌战打到第 ' + round + ' 轮! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+window.__T = {
+  state: function () { return state; },
+  start: resetMatch,
+  step: function (k) { for (var i = 0; i < (k || 1); i++) update(1 / 60); },
+  score: function () { return Math.round(mhp * 4); },
+  round: function () { return round; },
+  hp: function () { return hp; },
+  mhp: function () { return mhp; },
+  card: function () { return card; },
+  settle: settle
+};
+resize();
+newCard();
+$('padbar').classList.add('hide');
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='blitzcard'});
+  r.unshift({k:'blitzcard',n:'速攻牌战 · 一牌定音',e:'⚔️'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['blitzcard_best','blitzcard_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['blitzcard']||0)){
+            B['blitzcard']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
