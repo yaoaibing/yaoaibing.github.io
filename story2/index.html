@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>迷雾列车 II · 返程</title>
+<meta name="description" content="迷雾列车 II:一年后雾又起,车票的始发站印着你的名字!登上返程列车,遇见去年的自己,带着孩子、怀表与地图,在四块结局牌前做出最终抉择,续写雾散站的真正传说!">
+<meta property="og:title" content="迷雾列车 II · 返程">
+<meta property="og:description" content="迷雾列车 II:一年后雾又起,车票的始发站印着你的名字!登上返程列车,遇见去年的自己,带着孩子、怀表与地图,在四块结局牌前做出最终抉择,续写雾散站的真正传说!">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#12101a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%9A%89%3C/text%3E%3C/svg%3E">
+<style>
+
+/* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
+:root{
+  --theme:#12101a;
+  --panel:rgba(18,16,26,.94);
+  --ink:#e8e4f5;
+  --edge:#322a50;
+  --btn1:#9a8ac8;
+  --btn2:#584898;
+  --btnink:#0e0a1c;
+  --glow:rgba(154,138,200,.42);
+  --gold:#ffd45c;
+  --hair:rgba(255,255,255,.22)
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;touch-action:none}
+
+/* ===== CORE · HUD ===== */
+#hud{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;
+  display:flex;justify-content:center;align-items:center;gap:10px;pointer-events:none}
+.chip{font-size:15px;font-weight:900;letter-spacing:1px;color:#fff;background:rgba(255,255,255,.1);
+  border:1px solid var(--hair);padding:5px 13px;border-radius:999px;}
+.chip b{font-size:19px;color:var(--gold);margin-left:4px}
+#mutebtn,#homebtn{position:fixed;z-index:8;border:0;width:36px;height:36px;border-radius:12px;font-size:15px;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--hair);}
+#mutebtn{top:calc(10px + env(safe-area-inset-top,0px));right:10px}
+#homebtn{top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+
+/* ===== CORE · 浮层 ===== */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--panel);color:#fff;text-align:center;padding:24px;backdrop-filter:blur(3px)}
+.screen.hide{display:none}
+.title{font-size:40px;font-weight:900;letter-spacing:5px;color:var(--ink);
+  text-shadow:0 3px 0 var(--edge),0 8px 26px var(--glow);line-height:1.15}
+.title small{display:block;font-size:14px;letter-spacing:9px;color:var(--gold);margin-top:9px;font-weight:700}
+.howto{font-size:13.5px;line-height:2.05;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 20px;max-width:430px;width:100%;margin:20px 0 22px;text-align:left}
+.howto b{color:var(--gold)}
+.bigbtn{border:0;border-radius:999px;padding:15px 50px;font-size:19px;font-weight:900;letter-spacing:4px;
+  color:var(--btnink);cursor:pointer;background:linear-gradient(180deg,var(--btn1),var(--btn2));
+  box-shadow:0 5px 0 var(--edge),0 10px 30px var(--glow);font-family:inherit}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.mini{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9}
+.mini b{color:var(--gold)}
+#ostats{font-size:15px;line-height:2.1;color:#eaf0ff;background:rgba(255,255,255,.06);border:1px solid var(--hair);
+  border-radius:16px;padding:14px 34px;margin-bottom:20px;min-width:230px}
+#ostats b{color:var(--gold);font-size:23px}
+#onewrec{color:#ff9d4a;font-weight:900;letter-spacing:2px;animation:bl 1s infinite;margin-bottom:10px}
+@keyframes bl{50%{opacity:.25}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.row .bigbtn{padding:13px 26px;font-size:15px;letter-spacing:1px}
+.ghost{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid var(--hair)}
+.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (max-height:640px){.title{font-size:32px}.howto{margin:14px 0 16px;line-height:1.85}}
+@media (max-width:349px){.title{font-size:30px;letter-spacing:3px}.howto{font-size:12.5px}.bigbtn{padding:14px 34px;font-size:17px}}
+
+
+
+#padbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+#padbar.hide{display:none}
+.padbtn{border:0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;font-family:inherit;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid var(--hair);backdrop-filter:blur(6px);cursor:pointer}
+.padbtn:active{transform:translateY(2px)}
+.padbtn.on{background:linear-gradient(180deg,var(--btn1),var(--btn2));box-shadow:0 3px 0 var(--edge)}
+@media (max-width:400px){
+  .chip{font-size:13px;padding:4px 9px}
+  .chip b{font-size:16px;margin-left:3px}
+  .padbtn{padding:10px 12px;font-size:13px}
+}
+
+/* ===== GAME · 迷雾列车 II · 返程 专属样式 ===== */
+
+</style>
+<!-- __hub_head__ -->
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud"><span class="chip">信赖<b id="ht">3</b></span><span class="chip">从容<b id="hs">3</b></span><span class="chip">行囊<b id="hm">0</b></span></div>
+<button id="mutebtn" type="button">♪</button>
+<button id="homebtn" type="button">🏠</button>
+
+<div id="start" class="screen">
+  <div class="title">迷 雾 列 车 II<small>· 返 程 ·</small></div>
+  <div class="howto">
+🚉 返程篇:一年后的你<b>主动回到</b>雾夜站台<br>💪 三属性换成<b>信赖/从容/行囊</b><br>🎒 收集<b>怀表+地图+孩子</b>三件信物<br>🚪 终点两块牌:<b>雾散</b>或<b>继续前行</b><br>🎞 四种结局,三信物齐备走真圆满!
+  </div>
+  <button class="bigbtn" id="startbtn" type="button">再 上 车</button>
+  <div class="mini" id="mini"></div>
+</div>
+
+<div id="over" class="screen hide">
+  <div class="title">返 程 终 章</div>
+  <div id="onewrec" style="display:none">🏆 新纪录!</div>
+  <div id="ostats"></div>
+  <div class="row">
+    <button class="bigbtn" id="againbtn" type="button">再 走 一 遍</button>
+    <button class="bigbtn ghost" id="sharebtn" type="button">📤 晒战绩</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="bigbtn ghost" id="hubbtn" type="button">🎮 换个游戏</button>
+  </div>
+  <div class="mini" id="mini2"></div>
+</div>
+
+<div id="padbar" class="hide"></div>
+<script>
+(function(){
+'use strict';
+/* ================== CORE · 公共库(全部游戏共用,勿修改) ================== */
+function $(id){return document.getElementById(id)}
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function frnd(){return Math.random()}
+function pick(a){return a[rnd(a.length)]}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* --- 音频:极简合成器,零依赖 --- */
+var AC=null,muted=lsGet('__mute','0')==='1';
+function actx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,dur,type,vol,slide){if(muted)return;var a=actx();if(!a)return;try{
+  var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+dur);
+  g.gain.setValueAtTime(vol||.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}}
+function noise(dur,vol){if(muted)return;var a=actx();if(!a)return;try{
+  var n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+document.addEventListener('pointerdown',function(){actx()},{passive:true});
+
+/* --- 画布:DPR 自适应 + 智能降级 --- */
+var cv=$('cv'),ctx=cv.getContext('2d',{alpha:false});
+var VW=0,VH=0,DPR=1,LOWEND=false;
+function resize(){
+  DPR=Math.min(LOWEND?1.25:2,window.devicePixelRatio||1);
+  VW=window.innerWidth;VH=window.innerHeight;
+  cv.width=Math.max(1,Math.floor(VW*DPR));cv.height=Math.max(1,Math.floor(VH*DPR));
+  cv.style.width=VW+'px';cv.style.height=VH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(typeof onResize==='function')onResize();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120)});
+
+/* --- 存档:最高分 + 连续打卡 + 局数(跨游戏共享) --- */
+var KIT=(function(){
+  var BEST='story2_best',PLAY='story2_plays';
+  function dstr(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  function bumpStreak(){
+    var today=dstr(new Date()),last=lsGet('__lastday',''),st=+lsGet('__streak','0');
+    if(last===today)return st;
+    var y=new Date(Date.now()-864e5);
+    st=(last===dstr(y))?st+1:1;
+    lsSet('__lastday',today);lsSet('__streak',st);return st;
+  }
+  return {
+    best:function(){return +lsGet(BEST,0)},
+    setBest:function(v){if(v>this.best()){lsSet(BEST,v);return true}return false},
+    plays:function(){return +lsGet(PLAY,0)},
+    addPlay:function(){lsSet(PLAY,this.plays()+1)},
+    streak:bumpStreak,
+    streakNow:function(){return +lsGet('__streak','0')}
+  };
+})();
+
+/* --- 分享:复制战绩文案 --- */
+function share(txt){
+  var isWX=/micromessenger/i.test(navigator.userAgent);
+  if(isWX){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+  function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制吧:\n'+txt)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+  function fb(){try{
+    var t=document.createElement('textarea');t.value=txt;
+    t.style.cssText='position:absolute;left:-9999px';document.body.appendChild(t);t.select();
+    var ok=document.execCommand('copy');document.body.removeChild(t);done(!!ok)}catch(e){done(false)}}
+}
+
+/* --- 主循环:固定步长累加,低端机自动降帧 --- */
+var raf=0,prev=0,acc=0,STEP=1000/60,slow=0;
+function tick(t){
+  raf=requestAnimationFrame(tick);
+  if(!prev){prev=t;return}
+  var dt=t-prev;prev=t;
+  if(dt>200){dt=STEP;acc=0}
+  if(dt>40)slow++;else if(slow>0)slow--;
+  if(slow>90&&!LOWEND){LOWEND=true;resize()}
+  acc+=dt;
+  var guard=0;
+  while(acc>=STEP&&guard++<4){acc-=STEP;if(typeof update==='function')update(STEP/1000)}
+  if(typeof draw==='function')draw();
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;prev=0}
+function run(){if(!raf){prev=0;raf=requestAnimationFrame(tick)}}
+
+/* --- 通用 UI 绑定 --- */
+$('mutebtn').addEventListener('click',function(){
+  muted=!muted;lsSet('__mute',muted?'1':'0');
+  this.textContent=muted?'🔇':'♪';this.style.opacity=muted?.55:1;
+});
+$('mutebtn').textContent=muted?'🔇':'♪';
+$('mutebtn').style.opacity=muted?.55:1;
+$('homebtn').addEventListener('click',function(){location.href='/'});
+
+/* --- 表情贴图:按尺寸缓存后绘制,省掉每帧重复排版(CORE 附带,可直接用) --- */
+var _emCache={};
+function drawEm(em,x,y,px){
+  var s=Math.max(12,Math.ceil(px/8)*8),k=em+'@'+s;
+  if(!_emCache[k]){
+    var c=document.createElement('canvas');c.width=s;c.height=s;
+    var g=c.getContext('2d');
+    g.font=Math.floor(s*.86)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(em,s/2,s/2+s*.04);
+    _emCache[k]=c}
+  ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
+
+/* ================== GAME · 迷雾列车 II · 返程 ================== */
+var NAME = '迷雾列车 II · 返程';
+var state = 'start';
+var node = 'a1', trust = 3, memory = 3, ticket = 0, ending = null;
+var msg = '', msgT = 0;
+var FX = 0, FY = 0, FW = 0, CY0 = 0, CH = 0;
+
+var N = {
+  a1: { t: '一年后。雾又起了。你在同一个检票口,手里是一张新的车票——这次,始发站印着你的名字。', ch: [
+    { t: '上车', go: 'a2', fx: { t: 1 } },
+    { t: '先在站台喊那个孩子的名字', go: 'a3', fx: { m: 1 } }
+  ] },
+  a2: { t: '车厢还是空的,但每个座位上都放着一件旧物:一只鞋、一张地图、一块停摆的怀表。都是你上一次留下的。', ch: [
+    { t: '收起怀表', go: 'a4', fx: { w: 1 } },
+    { t: '收起地图', go: 'a4', fx: { map: 1 } }
+  ] },
+  a3: { t: '雾里传来回声:「……我一直在。」孩子从检票口后走出,把一只鞋递还给你:「这次换你带路。」', ch: [
+    { t: '带他一起上车', go: 'a4', fx: { kid: 1, t: 1 } }
+  ] },
+  a4: { t: '列车驶入雾海。报站声响起:「下一站——去年。」车窗上开始浮现上次旅程的画面。', ch: [
+    { t: '认真看窗上的画面', go: 'a5', fx: { m: 1 } },
+    { t: '闭眼不看(有些事不看更好)', go: 'a6', fx: { s: 1 } }
+  ] },
+  a5: { t: '画面里,那个没脸的列车员在对你点头。你忽然明白:他递怀表,是在托付,不是在索求。', ch: [
+    { t: '向画面郑重点头', go: 'a7', fx: { t: 1 } }
+  ] },
+  a6: { t: '你闭着眼,听见自己一年前的心跳。再睁眼时,车窗上映出的是现在的你——比那时平静多了。', ch: [
+    { t: '继续前行', go: 'a7' }
+  ] },
+  a7: { t: '「去年」到了站。站台上站着一年前的你,目光迷茫,手里攥着那张没有始发站的票。', ch: [
+    { t: '把新票塞给一年前的自己', go: 'a8', fx: { m: -1, t: 1 } },
+    { t: '只留下一句「别睡」', go: 'a8', fx: { s: 1 } }
+  ] },
+  a8: { t: '列车重新提速。广播:「前方到站——雾散站。」乘客席响起骚动:有人说雾散站只是传说。', ch: [
+    { t: '亮出你的旧车票', go: 'a9', need: 'map', fx: { m: -1 } },
+    { t: '沉默,等车自己停', go: 'a10' }
+  ] },
+  a9: { t: '旧票在指尖发光,骚动平息。所有人看着你——原来传说里的「持票人」,一直是你。', ch: [
+    { t: '带领大家到车门', go: 'a11', fx: { t: 1 } }
+  ] },
+  a10: { t: '列车缓缓减速。雾在窗外流动,像在等一个答案。', ch: [
+    { t: '走到门前', go: 'a11' }
+  ] },
+  a11: { t: '车门开了。站台上立着两块牌:一块「雾散」,一块「继续前行」。雾深处,隐约有返程列车的汽笛。', ch: [
+    { t: '走下「雾散」', go: 'ENDCHECK' },
+    { t: '登上返程车', go: 'ENDCHECK' }
+  ] }
+};
+var E = {
+  E1: { t: '你走下「雾散」。雾退成晨光,孩子的手在你掌心。传说结束了——因为你把它变成了日常。【结局:雾散之后 · 圆满】', rank: '圆满' },
+  E2: { t: '你登上返程列车。窗外的雾散站越来越远,车票上你的名字旁边,多了一行小字:「下一站,再来」。【结局:永远的旅人 · 自由】', rank: '自由' },
+  E3: { t: '你在两块牌之间站了很久,直到雾把两块牌都盖住。列车员(这次有脸)拍拍你:「想清楚了再来。」【结局:雾中徘徊 · 普通】', rank: '普通' },
+  E4: { t: '物资耗尽,你在雾里坐下。孩子的声音很远地喊你——但你已经听不见了。【结局:遗忘 · 遗憾】', rank: '遗憾' }
+};
+
+function layout() {
+  FX = VW * .08; FW = VW * .84; FY = VH * .3;
+  CY0 = VH * .58; CH = Math.min(70, VH * .095);
+}
+function onResize() { layout(); }
+function nodeOf(id) {
+  if (N[id]) return N[id];
+  if (id === 'ENDCHECK') {
+    if (flags.kid && flags.w && flags.t) return { t: '', ch: [{ t: '……', go: 'E1' }] };
+    if (ticket >= 2) return { t: '', ch: [{ t: '……', go: 'E2' }] };
+    if (trust < 2 || memory < 2) return { t: '', ch: [{ t: '……', go: 'E4' }] };
+    return { t: '', ch: [{ t: '……', go: 'E3' }] };
+  }
+  return E[id] ? { t: E[id].t, end: 1 } : null;
+}
+var flags = {};
+function resetMatch() {
+  node = 'a1'; trust = 3; memory = 3; ticket = 0; flags = {}; ending = null;
+  msg = ''; msgT = 0;
+  layout();
+  state = 'play';
+  $('start').classList.add('hide');
+  $('over').classList.add('hide');
+  syncHud();
+}
+function syncHud() {
+  $('ht').textContent = trust;
+  $('hs').textContent = memory;
+  $('hm').textContent = ticket;
+}
+function choose(ci) {
+  if (state !== 'play') return;
+  var n = nodeOf(node);
+  if (!n || n.end) return;
+  var c = n.ch[ci];
+  if (!c) return;
+  if (c.need === 'map' && !flags.map) {
+    msg = '没有地图,你说服不了他们……'; msgT = 1.3;
+    tone(240, .07, 'square', .03, 180);
+    return;
+  }
+  if (c.fx) {
+    if (c.fx.t) { trust += c.fx.t; ticket += c.fx.t; }
+    if (c.fx.s) memory += c.fx.s;
+    if (c.fx.m) ticket += c.fx.m;
+    if (c.fx.w) flags.w = 1;
+    if (c.fx.map) flags.map = 1;
+    if (c.fx.kid) flags.kid = 1;
+  }
+  node = c.go;
+  tone(430 + trust * 10, .05, 'sine', .03);
+  var nn = nodeOf(node);
+  if (nn && nn.end) {
+    ending = node;
+    state = 'over';
+    var e = E[node];
+    var sm = { 圆满: 900, 自由: 650, 普通: 300, 遗憾: 200 };
+    var score = (sm[e.rank] || 300) + trust * 12 + memory * 12;
+    KIT.addPlay(); KIT.streak();
+    var rec = KIT.setBest(score);
+    $('onewrec').style.display = rec ? 'block' : 'none';
+    $('ostats').innerHTML = '<b>「' + e.rank + '」</b><br>信赖 ' + trust + ' · 从容 ' + memory + ' · 行囊 ' + ticket +
+      '<br>本局得分 <b>' + score + '</b><br>历史最高 ' + KIT.best() + '<br>已玩 ' + KIT.plays() + ' 局' +
+      '<span style="font-size:12px"><br>四个结局,返程亦有归途</span>';
+    $('mini2').innerHTML = '带齐怀表+地图+孩子,才能走进真圆满';
+    $('padbar').classList.add('hide');
+    $('over').classList.remove('hide');
+    tone(640, .14, 'triangle', .06, 900);
+  }
+  syncHud();
+}
+function update(dt) {
+  if (msgT > 0) msgT -= dt;
+}
+function wrap(text, x, y, width, lh, color, size) {
+  ctx.font = '600 ' + size + 'px "PingFang SC",sans-serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  var line = '', yy = y;
+  for (var i = 0; i < text.length; i++) {
+    var test = line + text[i];
+    if (ctx.measureText(test).width > width && line) { ctx.fillText(line, x, yy); line = text[i]; yy += lh; }
+    else line = test;
+  }
+  if (line) ctx.fillText(line, x, yy);
+  return yy + lh;
+}
+function draw() {
+  var bg = ctx.createLinearGradient(0, 0, 0, VH);
+  bg.addColorStop(0, '#12101a'); bg.addColorStop(1, '#08070e');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, VW, VH);
+  ctx.fillStyle = 'rgba(180,180,220,.05)';
+  for (var i = 0; i < 4; i++) ctx.fillRect(FX - 6, VH * .06 + i * 30, FW + 12, 18);
+  var n = nodeOf(node);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(154,138,200,.55)';
+  ctx.font = '600 11px "PingFang SC",sans-serif';
+  ctx.fillText('迷雾列车 II · 返程', VW / 2, VH * .12);
+  if (n && n.t) wrap(n.t, FX, FY, FW, 26, 'rgba(232,228,245,.92)', 14.5);
+  if (n && n.ch && !n.end) {
+    for (var ci = 0; ci < n.ch.length; ci++) {
+      var c = n.ch[ci];
+      var y = CY0 + ci * (CH + 12);
+      var locked = c.need === 'map' && !flags.map;
+      ctx.fillStyle = locked ? 'rgba(255,255,255,.05)' : 'rgba(154,138,200,.2)';
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(FX, y, FW, CH, 14);
+      else ctx.rect(FX, y, FW, CH);
+      ctx.fill();
+      ctx.strokeStyle = locked ? 'rgba(255,255,255,.1)' : 'rgba(154,138,200,.55)';
+      ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = locked ? 'rgba(255,255,255,.35)' : '#e8e0ff';
+      ctx.font = '900 14.5px "PingFang SC",sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText((locked ? '🔒 ' : '▸ ') + c.t, FX + 18, y + CH / 2);
+      ctx.textAlign = 'center';
+    }
+  }
+  if (msgT > 0) {
+    ctx.fillStyle = 'rgba(255,180,150,.95)';
+    ctx.font = '600 12.5px "PingFang SC",sans-serif';
+    ctx.fillText(msg, VW / 2, CY0 - 18);
+  }
+}
+cv.addEventListener('pointerdown', function (e) {
+  e.preventDefault();
+  if (state !== 'play') return;
+  var n = nodeOf(node);
+  if (!n || !n.ch || n.end) return;
+  for (var ci = 0; ci < n.ch.length; ci++) {
+    var y = CY0 + ci * (CH + 12);
+    if (e.clientY > y && e.clientY < y + CH && e.clientX > FX && e.clientX < FX + FW) { choose(ci); return; }
+  }
+});
+cv.addEventListener('pointercancel', function () { });
+window.addEventListener('keydown', function (e) {
+  var n = nodeOf(node);
+  if (!n || !n.ch) return;
+  var k = +e.key;
+  if (k >= 1 && k <= n.ch.length) choose(k - 1);
+});
+function updMini() {
+  $('mini').innerHTML = '历史最高 <b>' + KIT.best() + '</b> 分 · 已玩 <b>' + KIT.plays() + '</b> 局';
+}
+$('startbtn').addEventListener('click', resetMatch);
+$('againbtn').addEventListener('click', resetMatch);
+$('sharebtn').addEventListener('click', function () {
+  share('我在「' + NAME + '」完成了返程之旅! ' + location.href.split('#')[0]);
+});
+$('hubbtn').addEventListener('click', function () { location.href = '/'; });
+window.__T = {
+  state: function () { return state; },
+  start: resetMatch,
+  step: function (k) { for (var i = 0; i < (k || 1); i++) update(1 / 60); },
+  score: function () { return 0; },
+  node: function () { return node; },
+  stats: function () { return { t: trust, s: memory, m: ticket, f: flags }; },
+  choose: choose,
+  ending: function () { return ending; }
+};
+resize();
+layout();
+$('padbar').classList.add('hide');
+updMini();
+syncHud();
+run();
+
+})();
+</script>
+<!-- __hub_enhance__ -->
+<script>
+(function(){
+try{
+  function lg(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function ls(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function ds(d){var m=d.getMonth()+1,y=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(y<10?'0':'')+y}
+  var st=+lg('__streak','0'),last=lg('__lastday',''),td=ds(new Date());
+  if(last!==td){var yd=ds(new Date(Date.now()-864e5));st=(last===yd)?st+1:1;ls('__lastday',td);ls('__streak',st)}
+  var SAFE='calc(10px + env(safe-area-inset-top,0px))';
+  var name=(document.title||'游戏').split(/[ ··|]/)[0];
+
+
+  // 结算页:晒战绩 + 换个游戏
+  var over=document.getElementById('over');
+  if(over){
+    var box=document.createElement('div');
+    box.style.cssText='display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:12px';
+    var mk=function(txt,bg,fg,fn){
+      var b=document.createElement('button');
+      b.setAttribute('type','button');b.textContent=txt;
+      b.style.cssText='border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:800;'+
+        'letter-spacing:1px;cursor:pointer;background:'+bg+';color:'+fg+';box-shadow:0 4px 0 rgba(0,0,0,.3)';
+      b.onclick=fn;return b;
+    };
+    box.appendChild(mk('\uD83D\uDCE4 晒战绩','rgba(255,255,255,.16)','#fff',function(){
+      var sc='',src=over.querySelector('[id*=stat]')||over.querySelector('[id*=score]')||over;
+      var m=(src.textContent||'').match(/\d+/);if(m)sc=m[0];
+      var txt='我在「'+name+'」'+(sc?'拿了 '+sc+' 分':'通关啦')+
+        (st>1?',连续打卡 '+st+' 天\uD83D\uDD25':'')+'!来比比? '+location.href.split('#')[0];
+      if(/micromessenger/i.test(navigator.userAgent)){alert('点右上角「···」→ 发送给朋友\n\n'+txt);return}
+      function done(ok){alert(ok?'战绩已复制,去微信粘贴给好友吧!':'复制失败,手动复制:\n'+txt)}
+      function fb(){try{
+        var ta=document.createElement('textarea');ta.value=txt;
+        ta.style.cssText='position:absolute;left:-9999px';document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);done(!!ok)}catch(e){done(false)}}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},fb)}catch(e){fb()}
+    }));
+    box.appendChild(mk('\uD83C\uDFAE 换个游戏','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/'}));
+    box.appendChild(mk('\uD83D\uDCCA 我的战绩','rgba(255,255,255,.1)','#fff',function(){
+      location.href='/stats/'}));
+    over.appendChild(box);
+  }
+}catch(e){}
+})();
+</script>
+
+
+<!-- __hub_recent__ -->
+<script>
+try{
+  /* ① 最近玩过 */
+  var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
+  r=r.filter(function(x){return x.k!=='story2'});
+  r.unshift({k:'story2',n:'迷雾列车 II · 返程',e:'🚉'});
+  if(r.length>8)r.length=8;
+  localStorage.setItem(R,JSON.stringify(r));
+
+  /* ② 打卡日历:记录有玩过的每一天 */
+  var D0=new Date(),DS=D0.getFullYear()+'-'+('0'+(D0.getMonth()+1)).slice(-2)+'-'+('0'+D0.getDate()).slice(-2);
+  var days=[];try{days=JSON.parse(localStorage.getItem('__days')||'[]')}catch(e){days=[]}
+  if(days.indexOf(DS)<0){days.push(DS);if(days.length>400)days=days.slice(-400);localStorage.setItem('__days',JSON.stringify(days))}
+
+  /* ③ 游玩次数(跨游戏累计) */
+  localStorage.setItem('__plays_all',String((+localStorage.getItem('__plays_all')||0)+1));
+
+  /* ④ 战绩汇总:把本游戏自己的最高分同步进共享的 __best */
+  (function(){
+    function syncBest(){
+      try{
+        var v=0;
+        ['story2_best','story2_hi'].forEach(function(bk){
+          var x=parseFloat(localStorage.getItem(bk)||'0');
+          if(!isNaN(x)&&x>v)v=x;
+        });
+        if(v>0){
+          var s=localStorage.getItem('__best');
+          var B=null;try{B=JSON.parse(s||'{}')}catch(e){B=null}
+          if(!B||typeof B!=='object')B={};
+          if(v>(B['story2']||0)){
+            B['story2']=v;
+            localStorage.setItem('__best',JSON.stringify(B));
+          }
+        }
+      }catch(e){}
+    }
+    syncBest();
+    setInterval(syncBest,3000);
+    document.addEventListener('visibilitychange',function(){if(document.hidden)syncBest()});
+    window.addEventListener('pagehide',syncBest);
+  })();
+}catch(e){}
+</script>
+
+</body>
+</html>
