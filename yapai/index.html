@@ -294,7 +294,6 @@ function newQ() {
       for (i = 0; i < pool.length; i++) if (pool[i] === j) dup = 1;
       if (!dup) pool.push(j);
     }
-    syncHud.name = right;
   } else {
     right = tiles[0] + '并' + tiles[1];
     pool = [right];
