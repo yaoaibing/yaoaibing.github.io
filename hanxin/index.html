@@ -266,7 +266,7 @@ function newQ() {
   var tries = 0, i, dup;
   while (pool.length < 4 && tries < 80) {
     tries++;
-    var off = [3, 5, 15, -3, -5, -15][Math.floor(Math.random() * 6)];
+    var off = [3, 5, 15, -3, -5, -15, 1, -1, 2, -2, 7, -7][Math.floor(Math.random() * 12)];
     var v = X + off;
     if (v <= 5 || v === X) continue;
     if (v % 3 === X % 3 && v % 5 === X % 5) continue;
