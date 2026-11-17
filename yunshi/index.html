@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>陨石观天 · 民间技艺 · 陨石观天,火</title>
-<meta name="description" content="陨石观天,火球坠地拾星子——记落点探坑深,四陨记录在册!">
-<meta property="og:title" content="陨石观天 · 民间技艺 · 陨石观天,火">
-<meta property="og:description" content="陨石观天,火球坠地拾星子——记落点探坑深,四陨记录在册!">
+<title>云势避险 · 民间技艺 · 云势避险,云</title>
+<meta name="description" content="云势避险,云势一变避风雨——云低雨急快避险,四云避险不淋雨!">
+<meta property="og:title" content="云势避险 · 民间技艺 · 云势避险,云">
+<meta property="og:description" content="云势避险,云势一变避风雨——云低雨急快避险,四云避险不淋雨!">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="undefined">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%E2%98%84%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%A7%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <style>
 
 /* ===== 配色：只改 :root 这一组，其余 CSS 不用动 ===== */
@@ -88,7 +88,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
   .padbtn{padding:10px 12px;font-size:13px}
 }
 
-/* ===== GAME · 陨石观天 · 民间技艺 专属样式 ===== */
+/* ===== GAME · 云势避险 · 民间技艺 专属样式 ===== */
 
 </style>
 <!-- __hub_head__ -->
@@ -102,7 +102,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--theme);
 <div id="start" class="screen">
   <div class="title">undefined<small>· undefined ·</small></div>
   <div class="howto">
-☄️ 陨石观天,火球坠<br>👆 点屏<b>开始挑战</b><br>⚡ 连击<b>越连越高</b><br>⚠️ 失误<b>折分</b><br>🏆 结算<b>历史最高分</b>
+🌧️ 云势避险,云势一<br>👆 点屏<b>开始挑战</b><br>⚡ 连击<b>越连越高</b><br>⚠️ 失误<b>折分</b><br>🏆 结算<b>历史最高分</b>
   </div>
   <button class="bigbtn" id="startbtn" type="button">undefined</button>
   <div class="mini" id="mini"></div>
@@ -236,8 +236,8 @@ function drawEm(em,x,y,px){
     _emCache[k]=c}
   ctx.drawImage(_emCache[k],x-px/2,y-px/2,px,px)}
 
-/* GAME · 陨石观天 */
-var NAME='陨石观天';var state='start',score=0,round=1,RN=4,step=0;
+/* GAME · 云势避险 */
+var NAME='云势避险';var state='start',score=0,round=1,RN=4,step=0;
 var msg='',msgT=0,phase='play',waitT=0;
 function layout(){}function onResize(){}
 function syncHud(){$('h_yunshi_r').textContent=round+'/'+RN;$('h_yunshi_s').textContent=step;$('hsc').textContent=score}
@@ -246,7 +246,7 @@ function act(){if(state!=='play')return;step++;score+=20;tone(500+step*8,.07,'tr
 function advance(){round++;if(round>RN){end();return}step=0;phase='play';syncHud()}
 function end(){state='over';KIT.addPlay();KIT.streak();var r=KIT.setBest(score);$('onewrec').style.display=r?'block':'none';$('ostats').innerHTML='<b>'+score+'</b> 分<br>历史最高 '+KIT.best()+' · 已玩 '+KIT.plays()+' 局';$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局';$('over').classList.remove('hide');tone(660,.16,'triangle',.06)}
 function update(dt){if(state!=='play')return;syncHud()}
-function draw(){ctx.fillStyle='#0c1024';ctx.fillRect(0,0,VW,VH);ctx.fillStyle='#b0c0d8';ctx.font='700 16px sans-serif';ctx.textAlign='center';ctx.fillText(NAME,VW*.5,VH*.35);ctx.fillText('第'+round+'/'+RN+'轮 · 进度 '+step+'/'+RN*3,VW*.5,VH*.45);ctx.fillText('得分 '+score,VW*.5,VH*.55);ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillText('点屏操作',VW*.5,VH*.7);if(msgT>0){ctx.fillStyle='#fff';ctx.fillText(msg,VW*.5,VH*.15)}ctx.textAlign='left'}
+function draw(){ctx.fillStyle='#3c5c5c';ctx.fillRect(0,0,VW,VH);ctx.fillStyle='#c0d0c0';ctx.font='700 16px sans-serif';ctx.textAlign='center';ctx.fillText(NAME,VW*.5,VH*.35);ctx.fillText('第'+round+'/'+RN+'轮 · 进度 '+step+'/'+RN*3,VW*.5,VH*.45);ctx.fillText('得分 '+score,VW*.5,VH*.55);ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillText('点屏操作',VW*.5,VH*.7);if(msgT>0){ctx.fillStyle='#fff';ctx.fillText(msg,VW*.5,VH*.15)}ctx.textAlign='left'}
 cv.addEventListener('pointerdown',function(e){e.preventDefault();act()});
 function updMini(){$('mini').innerHTML='历史最高 <b>'+KIT.best()+'</b> 分 · 已玩 <b>'+KIT.plays()+'</b> 局'}
 $('startbtn').addEventListener('click',start);
@@ -313,7 +313,7 @@ try{
   /* ① 最近玩过 */
   var R='__recent',r=[];try{r=JSON.parse(localStorage.getItem(R)||'[]')}catch(e){r=[]}
   r=r.filter(function(x){return x.k!=='yunshi'});
-  r.unshift({k:'yunshi',n:'陨石观天 · 民间技艺',e:'☄️'});
+  r.unshift({k:'yunshi',n:'云势避险 · 民间技艺',e:'🌧️'});
   if(r.length>8)r.length=8;
   localStorage.setItem(R,JSON.stringify(r));
 
